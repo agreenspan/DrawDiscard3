@@ -1,0 +1,45 @@
+<% provide(:title, "Bots") %>
+<% provide(:header, "BOTS") %>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-4">
+    	<div class="panel panel-info">
+        <div class="panel-heading">
+          <h4 class="panel-title">Admin Bots</h4>
+        </div>
+        <ul class="list-group">
+          <% @admin_bots.each do |bot| %>
+            <li class="list-group-item">
+              <%= bot.name %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+    <div class="col-sm-4">
+    	<div class="panel panel-info">
+        <div class="panel-heading">
+          <h4 class="panel-title">Runner Bots</h4>
+        </div>
+        <ul class="list-group">
+          <% @runner_bots.each do |bot| %>
+            <li class="list-group-item">
+              <%= bot.name %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+    <div class="col-sm-4">
+    	<div class="panel panel-warning">
+        <div class="panel-heading">
+          <h4 class="panel-title">Bot Commands</h4>
+        </div>
+        <ul class="list-group">
+          <li class="list-group-item">
+            <strong>Note:</strong> You may only be in queue with one magic account per DrawDiscard account at a time.
+          </li>
+        </ul>
+      </div>
+    </div>
+</div>

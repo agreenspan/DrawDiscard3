@@ -1,0 +1,138 @@
+<div class="panel panel-default">
+  <div class="panel-heading" style="background-color: #666666;">
+    <button type="button" class="btn btn-default btn-xs visible-xs visible-sm pull-right" data-toggle="collapse" data-target="#filter-collapse" style="margin-top: -2px;">
+      <span class="glyphicon glyphicon-align-justify"></span>
+      <span class="sr-only">Toggle filter</span>
+    </button>
+    <h4 class="panel-title" style="color: white;">
+      <strong>Filters</strong>
+    </h4>
+  </div>
+  <ul class="list-group filter-panel">
+    <div class="panel-collapse collapse" id="filter-collapse" style="border: 0px; margin: 0px; padding: 0px;">
+      <li class="list-group-item">
+        <input type="text" class="form-control input-sm" id="filters-search" placeholder="Search">
+      </li>
+      <% @filters.each do |filter_key, filter_labels| %>
+        <% if @filters[:on][filter_key] %>
+          <% if filter_key == :collection %>
+            <li class="list-group-item">
+              <dl style="margin-bottom: 0px;">
+                <dt style="margin-bottom: 5px;">
+                  <button type="button" class="btn <%= (session[:collection_filter] ? 'btn-success' : 'btn-danger') %> btn-xs pull-right" data-toggle="collapse" data-target="#collection-collapse" id="collection-button" style="margin-top: -2px;">
+                    <span class="glyphicon glyphicon-align-justify"></span>
+                    <span class="sr-only">Toggle filter</span>
+                  </button>
+                  <%= filter_key.to_s.titleize %>
+                </dt>
+                <div class="row collapse panel-collapse <%= (session[:collection_filter] ? 'in' : '') %>" id="<%= filter_key %>_filters">
+                  <% filter_labels.each do |label_key, value| %>
+                    <% unless value[0] == 0 %>
+                      <dd class="col-md-12 col-xs-6 col-sm-3">
+                        <%= check_box_tag label_key %>
+                        <%= label_tag label_key, image_tag(value[2], height: "20px", title: value[1]) %>
+                        <div style="float:right; height: 27px;">
+                          <div class="small not-bold grey">
+                            (<%= value[0] %>)
+                          </div>
+                        </div>
+                      </dd>
+                    <% end %>
+                  <% end %> 
+                </div>
+              </dl>
+            </li>
+          <% elsif filter_key == :set %>
+            <li class="list-group-item">
+              <dl style="margin-bottom: 0px;">
+                <dt style="margin-bottom: 5px;">
+                  <%= filter_key.to_s.titleize %>
+                </dt>
+                <div class="row" id="<%= filter_key %>_filters">
+                  <% filter_labels.sort_by {|code, count| set_filter_index.index code.to_s }.each do |label_key, value| %>
+                    <% unless  value[0] == 0 %>
+                      <dd class="col-md-12 col-xs-6 col-sm-3">
+                        <%= check_box_tag label_key.to_s.gsub(/_/, "") %>
+                        <%= label_tag label_key.to_s.gsub(/_/, ""), label_key.to_s.gsub(/_/, ""), class: "small not-bold", title: value[1] %>
+                        <div style="float:right; height: 27px;">
+                          <div class="small not-bold grey">
+                            (<%= value[0] %>)
+                          </div>
+                        </div>
+                      </dd>
+                    <% end %>
+                  <% end %> 
+                </div>
+              </dl>
+            </li>
+          <% else %>
+            <li class="list-group-item">
+              <dl style="margin-bottom: 0px;">
+                <dt style="margin-bottom: 5px;">
+                  <%= filter_key.to_s.titleize %>
+                </dt>
+                <div class="row" id="<%= filter_key %>_filters">
+                  <% filter_labels.each do |label_key, value| %>
+                    <% unless value == 0 %>
+                      <dd class="col-md-12 col-xs-6 col-sm-3">
+                        <%= check_box_tag label_key %>
+                        <%= label_tag label_key, label_key.to_s.titleize, class: "small not-bold" %>
+                        <div style="float:right; height: 27px;">
+                          <div class="small not-bold grey">
+                            (<%= value %>)
+                          </div>
+                        </div>
+                      </dd>
+                    <% end %>
+                  <% end %> 
+                </div>
+              </dl>
+            </li>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </ul>
+</div>
+
+<script>
+var user_uncollapsed = false;
+$('#filter-collapse').on('hide.bs.collapse', function (){ user_uncollapsed = false; });
+$('#filter-collapse').on('show.bs.collapse', function (){ user_uncollapsed = true; });
+$(window).load(function() {
+  if ($(window).width() <= (($(document).height() > $(window).height()) ? 974 : 991)){  
+    $('#filter-collapse').removeClass('in');
+  } else {
+    $('#filter-collapse').addClass('in');
+  };
+});
+$(window).resize(function(){
+  if ($(window).width() >= (($(document).height() > $(window).height()) ? 975 : 992)){  
+    $('#filter-collapse').addClass('in');
+  };
+  if ((!user_uncollapsed) && ($(window).width() <= (($(document).height() > $(window).height()) ? 974 : 991))){  
+    $('#filter-collapse').removeClass('in');
+  };
+});
+$('#collection-button').click(function(){
+  if ($('#collection-button').hasClass('btn-danger')) {
+    $('#collection-button').removeClass('btn-danger');
+    $('#collection-button').addClass('btn-success');
+    $('#collection_filters').addClass('in');
+    $.ajax({
+      url: '/session_update',
+      type: 'put',
+      data: { collection_filter: true }
+    })
+  } else {
+    $('#collection-button').removeClass('btn-success');
+    $('#collection-button').addClass('btn-danger');
+    $('#collection_filters').removeClass('in');
+    $.ajax({
+      url: '/session_update',
+      type: 'put',
+      data: { collection_filter: false }
+    })
+  }
+});
+</script>

@@ -1,0 +1,166 @@
+<% provide(:title, "Packs") %>
+<% provide(:header, "BOOSTER PACKS") %>
+<div class="container">
+  <div class="row">
+    <div class="col-md-2">
+      <%= render 'layouts/filters' %>
+    </div>
+    <div class="col-md-10" style="margin-top:-10px;">
+      <table class="table table-condensed set-table" id="pack_table">
+        <thead>
+          <tr>
+            <th>
+              Pack Name
+            </th>
+            <th>
+              Set 
+            </th>
+            <th>
+              High Buy
+            </th>
+            <th>
+              Low Sell
+            </th>
+            <% if @filters[:on][:collection] %>
+              <th>
+                <%= image_tag('DD.png', height: "20px", title: "DrawDiscard") %>
+              </th>
+              <th>
+                <%= image_tag('arrowDD.png', height: "20px", title: "Depositing") %>
+              </th>
+              <th>
+                <%= image_tag('arrowM.png', height: "20px", title: "Withdrawing") %>
+              </th>
+              <th>
+                <%= image_tag('M.png', height: "20px", title: "MTGO") %>
+              </th>
+              <th>
+                <%= image_tag('forSale.png', height: "20px", title: "Selling") %>
+              </th>
+              <th>
+                <%= image_tag('bids.png', height: "20px", title: "Buying") %>
+              </th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <% @packs.each do |pack| %>
+            <tr>
+              <td class="pack-link">
+                <%= link_to pack.name, magic_set_magic_card_path(pack.code, pack.mtgo_id) %>
+              </td>
+              <td class="set-link" title="<%= pack.set_name %>">
+                <%= link_to pack.code.gsub(/_/, ""), magic_set_path(pack.code) %>
+              </td>
+              <td>
+                <%= ( !pack.buying_price.nil? ? "$"+pack.buying_price.to_s : "" ) %>
+              </td>
+              <td>
+                <%= ( !pack.selling_price.nil? ? "$"+pack.selling_price.to_s : "" ) %>
+              </td>
+              <% if @filters[:on][:collection] %>
+                <% if pack.online > 0 %>
+                  <td data-search="online">
+                    <%= pack.online %> 
+                  </td>
+                <% else %>
+                  <td data-search=''></td>
+                <% end %> 
+                <% if pack.depositing > 0 %>
+                  <td data-search="depositing">
+                    <%= pack.depositing %> 
+                  </td>
+                <% else %>
+                  <td data-search=''></td>
+                <% end %> 
+                <% if pack.withdrawing > 0 %>
+                  <td data-search="withdrawing">
+                    <%= pack.withdrawing %> 
+                  </td>
+                <% else %>
+                  <td data-search=''></td>
+                <% end %> 
+                <% if pack.offline > 0 %>
+                  <td data-search="offline">
+                    <%= pack.offline %> 
+                  </td>
+                <% else %>
+                  <td data-search=''></td>
+                <% end %> 
+                <% if pack.selling > 0 %>
+                  <td data-search="selling">
+                    <%= pack.selling %> 
+                  </td>
+                <% else %>
+                  <td data-search=''></td>
+                <% end %> 
+                <% if pack.buying > 0 %>
+                  <td data-search="buying">
+                    <%= pack.buying %> 
+                  </td>
+                <% else %>
+                  <td data-search=''></td>
+                <% end %> 
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<br>
+
+<script>
+$(window).on("load", function() {
+  var pack_table = $('#pack_table').DataTable({
+    "autoWidth": false,
+    "paging": false,
+    "bSortCellsTop": true,
+    "sDom":     'ltipr',
+    "columnDefs": [
+      { "targets": [2,3], "searchable": false, "orderSequence": ["desc", "asc"]},
+      { "targets": [0], "width": "215px"} 
+      <%= ", { 'targets': [4,5,6,7,8,9], 'width': '20px', 'orderSequence': ['desc', 'asc'], 'visible': #{session[:collection_filter]} }".html_safe if @filters[:on][:collection] %>
+    ]
+  });
+  $('#collection-button').click(function(){
+    pack_table.columns([4,5,6,7,8,9]).visible( !(pack_table.column(4).visible()) );
+  });
+  $("#filters-search").keyup(function() {
+    pack_table.search(this.value).draw();
+  });
+  var selected = [];
+  var selected_sets = [];
+  var selected_collections = [];
+  $('input[type="checkbox"]').click(function() { map_checked(); pack_table.draw(); });
+  function map_checked() { 
+    selected = [];
+    selected_sets = [];
+    selected_collections = [];
+    $(":checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { selected.push(this.id); } });
+    $("#set_filters :checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { selected_sets.push(this.id); } });
+    $("#collection_filters :checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { selected_collections.push(this.id); } });
+  }
+  $.fn.dataTable.ext.search.push(
+    function( settings, data, dataIndex ) {
+      if (selected.length == 0) { return true; }
+      if (selected_sets.length > 0) {
+        if (($.inArray(data[1], selected_sets))==-1) { return false;}
+      }
+      <% if @filters[:on][:collection] %>
+        if (selected_collections.length > 0) {
+          if ((($.inArray("online", selected_collections))!==-1) && (data[4]=="online")) { return true;}
+          if ((($.inArray("depositing", selected_collections))!==-1) && (data[5]=="depositing")) { return true;}
+          if ((($.inArray("withdrawing", selected_collections))!==-1) && (data[6]=="withdrawing")) { return true;}
+          if ((($.inArray("offline", selected_collections))!==-1) && (data[7]=="offline")) { return true;}
+          if ((($.inArray("selling", selected_collections))!==-1) && (data[8]=="selling")) { return true;}
+          if ((($.inArray("buying", selected_collections))!==-1) && (data[9]=="buying")) { return true;}
+          return false;
+        }
+      <% end %>
+      return true;
+    }
+  );
+});
+</script>

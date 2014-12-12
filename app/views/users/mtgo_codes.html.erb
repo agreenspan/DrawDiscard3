@@ -1,0 +1,155 @@
+<% provide(:title, "MTGO Codes") %>
+<% provide(:header, "MTGO CODES") %>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-5">
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          Set MTGO Codes
+        </div>
+        <%= form_tag user_path(@user), method: :put, id: "form-set_mtgo_codes" do %>
+          <%= hidden_field_tag :update_type, "mtgo_codes" %>
+          <div class="panel-body">
+            <% if current_user.in_queue? %>
+              <div class="alert alert-danger">MTGO codes cannot be changed while in the trade queue.</div>
+            <% end %>
+            <input style="display:none" type="password" name="autocomplete_off"/>
+            <div class="form-group">
+              <%= label_tag 'user_code', "User Code", class: "control-label" %>
+              <%= password_field_tag 'user_code', nil, class: "form-control", disabled: current_user.in_queue?, autofocus: true  %>     
+            </div>
+            <div class="form-group">
+              <%= label_tag 'bot_code', "Bot Code", class: "control-label" %>
+              <%= password_field_tag 'bot_code', nil, class: "form-control", disabled: current_user.in_queue? %>     
+            </div>
+            <div class="form-group">
+              <%= label_tag 'password', "DrawDiscard Password", class: "control-label" %>
+              <%= password_field_tag 'password', nil, class: "form-control", disabled: current_user.in_queue? %>     
+            </div>
+          </div>
+          <div class="panel-footer">
+            <%= submit_tag "Set MTGO Codes", class: "btn btn-info", id: "btn-set_mtgo_codes", disabled: current_user.in_queue? %>
+          </div>
+        <% end %>
+      </div>
+      <% unless @no_codes || @show_codes %>
+        <div class="panel panel-warning">
+          <div class="panel-heading">
+            Show MTGO Codes
+          </div>
+          <%= form_tag user_mtgo_codes_path(@user), method: :post, id: "form-show_mtgo_codes" do %>
+            <div class="panel-body">
+              <div class="form-group">
+                <%= label_tag 'password', "DrawDiscard Password", class: "control-label" %>
+                <%= password_field_tag 'password', nil, class: "form-control", disabled: current_user.in_queue? %>     
+              </div>
+            </div>
+            <div class="panel-footer">
+              <%= submit_tag "Show MTGO Codes", class: "btn btn-warning", id: "btn-show_mtgo_codes", disabled: current_user.in_queue? %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+      <% if @show_codes %>
+        <div class="panel panel-warning">
+          <div class="panel-heading">
+            Your MTGO Codes
+          </div>
+          <div class="panel-body">
+            <h5><strong>User Code:</strong> <%= @user.user_code %></h5>
+            <h5><strong>Bot Code:</strong> <%= @user.bot_code %></h5>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <div class="col-sm-5">
+      <div class="well">
+        <p>
+        	Your MTGO codes are the means by which you authenticate your DrawDiscard account in game. They also ensure you are trading with a genuine DrawDiscard bot. Keep them secret!
+        </p>
+  	  <ul class="list-group">
+  	    <li class="list-group-item active">
+  	      The 'Handshake' Process (in-game):
+  	    </li>
+  	    <li class="list-group-item">
+  	      <strong>Step 1:</strong> Request a trade with one of the DrawDiscard admin bots, providing your DrawDiscard email. The bot will look up your DrawDiscard account with your email, checking if you've added the magic account you're on. If so, it will add that account to the trade queue.
+  	    </li>
+  	    <li class="list-group-item">
+  	      <strong>Step 2:</strong> When it's your turn in the queue, a DrawDiscard runner bot will message you with the bot code you set here. This is how you'll know the account is a genuine DrawDiscard bot.
+  	    </li>
+  	    <li class="list-group-item">
+  	      <strong>Step 3:</strong> Reply to the message with the user code you set here and you'll be authenticated. The runner bot will then procede with your trade.
+  	    </li>
+  	  </ul>
+        <p>For a list of DrawDiscard bots and bot commands, click <%= link_to "here", bots_path%>.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+  $('#form-set_mtgo_codes').bootstrapValidator({
+    feedbackIcons: {
+      valid: 'glyphicon glyphicon-ok',
+      invalid: 'glyphicon glyphicon-remove',
+      validating: 'glyphicon glyphicon-refresh'
+    },
+    fields: {
+      user_code: {
+        validators: {
+          notEmpty: {
+            message: 'The user code is required and cannot be empty'
+          },
+          stringLength: {
+            min: 6,
+            message: 'The user code must have at least 6 characters'
+          }
+        }
+      },
+      bot_code: {
+        validators: {
+          notEmpty: {
+            message: 'The bot code is required and cannot be empty'
+          },
+          stringLength: {
+            min: 6,
+            message: 'The bot code must have at least 6 characters'
+          }
+        }
+      },
+      password: {
+        validators: {
+          notEmpty: {
+            message: 'The password is required and cannot be empty'
+          },
+          stringLength: {
+            min: 8,
+            message: 'The password must have at least 8 characters'
+          }
+        }
+      }
+    }
+  });
+  $('#form-show_mtgo_codes').bootstrapValidator({
+    feedbackIcons: {
+      valid: 'glyphicon glyphicon-ok',
+      invalid: 'glyphicon glyphicon-remove',
+      validating: 'glyphicon glyphicon-refresh'
+    },
+    fields: {
+      password: {
+        validators: {
+          notEmpty: {
+            message: 'The password is required and cannot be empty'
+          },
+          stringLength: {
+            min: 8,
+            message: 'The password must have at least 8 characters'
+          }
+        }
+      }
+    }
+  });
+});
+</script>

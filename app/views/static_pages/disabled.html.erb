@@ -1,0 +1,70 @@
+<% provide(:title, "Disabled") %>
+<% provide(:header, "DISABLED") %>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12">
+      <h4 class="inverse">
+        These cards and packs are currently disabled due to multiple versioning. Support is planned.
+      </h4>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-4">
+      <table class="table table-condensed set-table">
+        <thead>
+          <tr>
+            <th>
+              Cards
+            </th>
+            <th>
+            </th>
+            <th>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @cards.select('DISTINCT name, collector_number, magic_set_id').order(:magic_set_id, :name, :collector_number).each do |card| %>
+            <tr>
+              <td>
+                <%= card.magic_set.code %> 
+              </td>
+              <td>
+                #<%= card.collector_number %> 
+              </td>
+              <td>
+                <%= card.name %> 
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-sm-4">
+      <table class="table table-condensed set-table">
+        <thead>
+          <tr>
+            <th>
+              Packs
+            </th>
+            <th>
+            </th>
+            <th>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @packs.select('DISTINCT name, magic_set_id').order(:magic_set_id, :name).each do |pack| %>
+            <tr>
+              <td>
+                <%= pack.magic_set.code %> 
+              </td>
+              <td>
+                <%= pack.name %> 
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

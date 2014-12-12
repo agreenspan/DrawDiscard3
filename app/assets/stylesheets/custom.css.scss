@@ -1,0 +1,286 @@
+@import "bootstrap-sprockets";
+@import "bootstrap";
+
+@font-face {
+    font-family: 'Treamd';
+    src:url('Treamd.eot');
+    src:url('Treamd.eot?#iefix') format('embedded-opentype'),
+    url('Treamd.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body { 
+  padding-top: 60px;
+  padding-bottom: 50px;
+  background-image: url('/assets/background.jpg');  
+}
+
+.banner1 {
+  position: fixed;
+  top: 51px;
+  z-index: 99;
+}
+.banner2 {
+  position: fixed;
+  left: 1921px;
+  top: 51px;
+  z-index: 99;
+}
+
+.wallet {
+  position: absolute;
+  left: 15px;
+  top: 70px;
+  z-index: 100;
+}
+
+.card-image {
+  width: 100%;
+  min-width: 239px;
+  max-width: 265px;
+}
+
+.inverse-dropdown {
+  top: 141% !important;
+  left: auto !important;
+  right: auto !important;
+  background-color: #222222;
+  border-color: black;
+  border-width: 1px;
+  &>li>a, &>li>small>a, &>li>strong>a, &>li>small>strong>a {
+    padding-left: 10px !important;
+    color: grey;
+    &:hover{
+      color: #eeeeee;
+      background-color: #222222;
+      text-decoration: none;
+    }
+  }
+  &>.divider {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background-color: black;
+  }
+}
+
+.divider {
+  background-color: gainsboro;
+  height: 1px;
+  margin: 0px 0px 20px 0px;
+}
+
+@media (max-width: 768px) {
+
+  .navbar-logo {
+    &>li{
+    position: float;
+    width: 215px;
+    left: auto;
+    right: auto;
+    text-align: center;
+    margin: auto;
+    }
+    &>li>a {
+      height: 45px;
+      margin-top:5px;
+      color: #f0f0f0 !important;
+      right: auto;
+      left: auto;
+    }
+  }
+  .navbar-nav,
+  .navbar-form {
+    margin-top: 0px; 
+    margin-bottom: 0px; 
+  }
+  .sign_in_register_padding {
+    width: 100%;
+    margin-top: 0px; 
+    margin-bottom: 0px; 
+    padding-top: 0px; 
+    padding-bottom: 0px; 
+    &>button {
+      border-radius: 0px;
+    }
+  }
+}
+.hidden {
+  display: none !important;
+}
+
+@media (max-width: 323px) {
+  .navbar-logo {
+     display:none !important;
+  }
+}
+
+@media (max-width: 1199px) and (min-width: 992px) {
+  ul.filter-panel>div>li {
+    padding: 8px !important;
+  }
+}
+
+.well {
+ background-color: gainsboro;
+}
+
+.panel-footer {
+ background-color: gainsboro;
+
+}
+
+.panel-body {
+ background-color: #f0f0f0;
+
+}
+
+.modal-body {
+ background-color: #f0f0f0;
+
+}
+
+.set-table>thead>tr>th, 
+.set-table>thead>tr>td,
+.set-table>tbody>tr>th,
+.set-table>tbody>tr>td,
+.set-table>tfoot>tr>th,
+.set-table>tfoot>tr>td{
+  color: gainsboro;
+}
+
+.dataTables_info {
+  display: none;
+}
+
+.inverse {
+  color: gainsboro;
+}
+
+.treamd-24 {
+  font-family: 'Treamd';
+  font-size: 24px;
+}
+.treamd-32 {
+  font-family: 'Treamd';
+  font-size: 32px;
+}
+.treamd-40 {
+  font-family: 'Treamd';
+  font-size: 40px;
+}
+
+.page-title {
+  margin-top: 0px;
+  margin-bottom: 10px;
+}
+
+.pack-link{
+  a:link { 
+  color: goldenrod;
+  }
+  a:visited { 
+  color: goldenrod;
+  }
+  a:hover { 
+    color: darkgoldenrod;
+  }
+}
+.planar-link{
+  a:link { 
+  color: #FF5C33;
+  }
+  a:visited { 
+  color: #FF5C33;
+  }
+  a:hover { 
+    color: #FF3300;
+  }
+}
+.vanguard-link{
+  a:link { 
+  color: #AD5BD6;
+  }
+  a:visited { 
+  color: #AD5BD6;
+  }
+  a:hover { 
+    color: #9932CC;
+  }
+}
+.set-link{
+  a:link { 
+  color: cyan;
+  }
+  a:visited { 
+  color: cyan;
+  }
+  a:hover { 
+    color: darkcyan;
+  }
+}
+
+.not-bold {
+  font-weight: normal;
+}
+
+.grey {
+  vertical-align: middle;
+  color: #999999;
+  margin-top: 4px;
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+
+}
+
+thead, tfoot {
+    display: table-header-group;
+}
+
+
+table.dataTable thead .sorting {
+  background: url("/assets/dataTables/sort_both.png") no-repeat center left;
+}
+table.dataTable thead .sorting_asc {
+  background: url("/assets/dataTables/sort_asc.png") no-repeat center left;
+}
+table.dataTable thead .sorting_desc {
+  background: url("/assets/dataTables/sort_desc.png") no-repeat center left;
+}
+table.dataTable tbody tr td {
+  background-image: url('/assets/background.jpg');  
+}
+table.dataTable thead tr th {
+  background-image: url('/assets/background.jpg');
+}
+
+.planar-text {
+  color: #FF5C33;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;  
+}
+.special-text {
+  color: rgb(183,145,189);
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;  
+}
+.mythic-text {
+  color: rgb(244,148,29);
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;  
+}
+.rare-text {
+  color: rgb(209,183,111);
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;    
+}
+.uncommon-text {
+  color: rgb(182,208,223);
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;  
+}
+.common-text {
+  font-weight: normal;
+  color: black;
+  text-shadow: -1px 0 #B2B2B2, 0 1px #B2B2B2, 1px 0 #B2B2B2, 0 -1px #B2B2B2;  
+}
+.basic-text {
+  color: gainsboro;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;  
+}
+

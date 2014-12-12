@@ -1,0 +1,133 @@
+<% provide(:title, @object.name ) %>
+<% provide(:header, ((link_to image_tag(set_rarity_image(@set.code, @object.rarity)), magic_set_path(@set.code)) + " " + @object.name + " " + (@object.foil ? image_tag("foil.png", height: "30px", title: "Foil") : "")).html_safe ) %>
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12 inverse">
+            <%= card_image(@object) %>
+            <br>
+            <strong>MTGO ID</strong>: <%= @object.mtgo_id %><br>
+            <%= "<strong>Collector #</strong>:  #{@object.collector_number}".html_safe if @object.collector_number.present? %>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <%= form_tag transaction_path, method: :post do %>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="form-group">
+              <%= label_tag 'price', "Price", class: "control-label" %>
+              <%= number_field_tag 'price', nil, min: 0.01, max: 999.9, step: 0.001 %>        
+            </div>
+            <div class="form-group">
+              <%= label_tag 'quantity', "Quantity", class: "control-label" %>
+              <%= number_field_tag 'quantity', 1, min: 1, max: 99 %>        
+            </div>
+          </div>
+          <div class="panel-footer">
+            <%= submit_tag "Buy", class: "btn btn-active", id: "submit-buy" %>
+            <%= submit_tag "Sell", class: "btn btn-active", id: "submit-sell" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Bids:
+        </div>
+        <ul class="list-group">
+          <% @bids.each do |bid| %>
+            <li class="list-group-item">
+              $<%= bid.price %>
+              <span class="badge"><%= bid.num_bids %></span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+    <div class="col-xs-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Listings:
+        </div>
+        <ul class="list-group">
+          <% @listings.each do |listing| %>
+            <li class="list-group-item">
+              $<%= listing.price %>
+              <span class="badge"><%= listing.num_listings %></span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+    <div class="col-xs-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Past Sales:
+        </div>
+        <ul class="list-group">
+          <% @sales.each do |sale| %>
+            <li class="list-group-item">
+              $<%= sale.price %>
+              <span class="badge"><%= sale.num_sales %></span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <h4 class="treamd-24">Other Versions</h4>
+      <table class="table table-condensed set-table" id="versions">
+        <thead>
+          <tr>
+            <th>
+              Version
+            </th>
+            <th>
+              High Buyer
+            </th>
+            <th>
+              Low Seller
+            </th>
+            <th>
+              Last Sale
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @other_versions.each do |card| %>
+            <% unless card == @object %>
+              <% version_string = card.name+", "+card.magic_set.name+(card.foil ? ", Foil" : "") %>
+              <%# version_string = card.name+", "+card.rarity.to_s.titleize+", "+card.magic_set.name+(card.foil ? ", Foil" : "") %>
+              <tr>
+                <td>
+                  <%= link_to magic_set_magic_card_path(card.magic_set, card.mtgo_id), title: version_string do %>
+                    <%= image_tag(set_rarity_image(card.magic_set.code, card.rarity), height: "50%", alt: version_string) %>
+                    <%= (card.foil ? image_tag("foil.png", height: "30%", alt: "Foil") : "") %>
+                  <% end %>
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+              </tr>
+            <% end %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+        Selling prices
+        Buying prices
+        Past sales
+    </div>
+  </div>
+</div>

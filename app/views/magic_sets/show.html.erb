@@ -1,0 +1,375 @@
+<% provide(:title, "#{@set.name}") %>
+<% provide(:header_image, full_set_title_image(@set, "")) %>
+<div class="container">
+  <div class="row">
+    <div class="col-md-2">
+      <%= render 'layouts/filters' %>
+    </div>
+    <div class="col-md-10 inverse" style="margin-top:-10px;">
+      <table class="table table-condensed set-table " id="set_show_table">
+        <thead>
+          <tr>
+            <th>
+              <%= ( @cards.present? ? "Card Name" : "Vanguard Name" ) %> 
+            </th>
+            <th></th>
+            <th>
+              <%= ( @cards.present? ? "Rarity" : "") %>
+            </th>
+            <th>
+              High Buyer
+            </th>
+            <th>
+              Low Seller
+            </th>
+            <% if @filters[:on][:collection] %>
+              <th>
+                <%= image_tag('DD.png', height: "20px", title: "DrawDiscard") %>
+              </th>
+              <th>
+                <%= image_tag('arrowDD.png', height: "20px", title: "Depositing") %>
+              </th>
+              <th>
+                <%= image_tag('arrowM.png', height: "20px", title: "Withdrawing") %>
+              </th>
+              <th>
+                <%= image_tag('M.png', height: "20px", title: "MTGO") %>
+              </th>
+              <th>
+                <%= image_tag('forSale.png', height: "20px", title: "Selling") %>
+              </th>
+              <th>
+                <%= image_tag('bids.png', height: "20px", title: "Buying") %>
+              </th>
+            <% end %>
+          </tr>
+        </thead>
+        <tfoot>
+          <% if @disabled_packs %> 
+            <tr>
+              <td colspan="<%= (@user.present? ? 11 : 5) %>">
+                <strong>Packs for this set are disabled. To see a list of disabled packs, click <%= link_to "here", disabled_path %>.</strong>
+              </td>
+            </tr>
+          <% end %>
+          <% if @disabled_cards %> 
+            <tr>
+              <td colspan="<%= (@user.present? ? 11 : 5) %>">
+                <strong>This set contains disabled cards. To see a list of disabled cards, click <%= link_to "here", disabled_path %>.</strong>
+              </td>
+            </tr>
+          <% end %>
+          <% @packs.each do |pack| %>
+            <tr>
+              <td class="pack-link">
+                <%= link_to pack.name, magic_set_magic_card_path(@set, pack.mtgo_id) %>
+              </td>
+              <td></td>
+              <td></td>
+              <td>
+                <%= ( !pack.buying_price.nil? ? "$"+pack.buying_price.to_s : "" ) %>
+              </td>
+              <td>
+                <%= ( !pack.selling_price.nil? ? "$"+pack.selling_price.to_s : "" ) %>
+              </td>
+              <% if @filters[:on][:collection] %>
+                <% if pack.online > 0 %>
+                  <td data-search="online">
+                    <%= pack.online %> 
+                  </td>
+                <% else %>
+                  <td data-search='`'></td>
+                <% end %> 
+                <% if pack.depositing > 0 %>
+                  <td data-search="depositing">
+                    <%= pack.depositing %> 
+                  </td>
+                <% else %>
+                  <td data-search='`'></td>
+                <% end %> 
+                <% if pack.withdrawing > 0 %>
+                  <td data-search="withdrawing">
+                    <%= pack.withdrawing %> 
+                  </td>
+                <% else %>
+                  <td data-search='`'></td>
+                <% end %> 
+                <% if pack.offline > 0 %>
+                  <td data-search="offline">
+                    <%= pack.offline %> 
+                  </td>
+                <% else %>
+                  <td data-search='`'></td>
+                <% end %> 
+                <% if pack.selling > 0 %>
+                  <td data-search="selling">
+                    <%= pack.selling %> 
+                  </td>
+                <% else %>
+                  <td data-search='`'></td>
+                <% end %> 
+                <% if pack.buying > 0 %>
+                  <td data-search="buying">
+                    <%= pack.buying %> 
+                  </td>
+                <% else %>
+                  <td data-search='`'></td>
+                <% end %> 
+              <% end %>
+            </tr>
+          <% end %>
+        </tfoot>
+        <tbody>
+          <% @cards.each do |card| %>
+            <tr>
+              <td data-search=<%= "\"#{card.name} #{card.plain_name}\"".html_safe %>>
+                <%= link_to card.name, magic_set_magic_card_path(@set, card.mtgo_id) %>
+                <%= (card.foil ? link_to(image_tag("foil.png", height: "30%", title: "Foil"), magic_set_magic_card_path(@set, card.mtgo_id)) : "") %>
+              </td>
+              <td data-search=<%= (card.foil ? "foil" : "normal") %> ></td>
+              <td data-search="<%= card.rarity %>" data-order="<%= rarity_number(card.rarity) %>">
+                <strong class="<%= card.rarity %>-text"><%= card.rarity.chars.first.capitalize %></strong>
+                <%#= image_tag(set_rarity_image(@set.code, card.rarity), height: "50%", title: card.rarity.titleize, alt: card.rarity) %>
+              </td>
+              <td>
+                <%= ( !card.buying_price.nil? ? "$"+card.buying_price.to_s : "" ) %>
+              </td>
+              <td>
+                <%= ( !card.selling_price.nil? ? "$"+card.selling_price.to_s : "" ) %>
+              </td>
+              <% if @filters[:on][:collection] %>
+                <% if card.online > 0 %>
+                  <td data-search="online">
+                    <%= card.online %> 
+                  </td>
+                <% else %>
+                  <td data-search='`'></td>
+                <% end %> 
+                <% if card.depositing > 0 %>
+                  <td data-search="depositing">
+                    <%= card.depositing %> 
+                  </td>
+                <% else %>
+                  <td data-search='`'></td>
+                <% end %> 
+                <% if card.withdrawing > 0 %>
+                  <td data-search="withdrawing">
+                    <%= card.withdrawing %> 
+                  </td>
+                <% else %>
+                  <td data-search='`'></td>
+                <% end %> 
+                <% if card.offline > 0 %>
+                  <td data-search="offline">
+                    <%= card.offline %> 
+                  </td>
+                <% else %>
+                  <td data-search='`'></td>
+                <% end %> 
+                <% if card.selling > 0 %>
+                  <td data-search="selling">
+                    <%= card.selling %> 
+                  </td>
+                <% else %>
+                  <td data-search='`'></td>
+                <% end %> 
+                <% if card.buying > 0 %>
+                  <td data-search="buying">
+                    <%= card.buying %> 
+                  </td>
+                <% else %>
+                  <td data-search='`'></td>
+                <% end %> 
+              <% end %>
+            </tr>
+          <% end %>
+          <% @planars.each do |planar| %>
+            <tr>
+              <td data-search=<%= "\"#{planar.name} #{planar.plain_name}\"".html_safe %> class="planar-link">
+                <%= link_to planar.name, magic_set_magic_card_path(@set, planar.mtgo_id) %>
+                <%= (planar.foil ? link_to(image_tag("foil.png", height: "30%", title: "Foil"), magic_set_magic_card_path(@set, planar.mtgo_id)) : "") %>
+              </td>
+              <td data-search=<%= (planar.foil ? "foil" : "normal") %> ></td>
+              <td data-search="planar" data-order="0">
+                <strong class="planar-text">P</strong>
+              </td>
+              <td>
+                <%= ( !planar.buying_price.nil? ? "$"+planar.buying_price.to_s : "" ) %>
+              </td>
+              <td>
+                <%= ( !planar.selling_price.nil? ? "$"+planar.selling_price.to_s : "" ) %>
+              </td>
+              <% if @filters[:on][:collection] %>
+                <% if planar.online > 0 %>
+                  <td data-search="online">
+                    <%= planar.online %> 
+                  </td>
+                <% else %>
+                  <td data-search='`'></td>
+                <% end %> 
+                <% if planar.depositing > 0 %>
+                  <td data-search="depositing">
+                    <%= planar.depositing %> 
+                  </td>
+                <% else %>
+                  <td data-search='`'></td>
+                <% end %> 
+                <% if planar.withdrawing > 0 %>
+                  <td data-search="withdrawing">
+                    <%= planar.withdrawing %> 
+                  </td>
+                <% else %>
+                  <td data-search='`'></td>
+                <% end %> 
+                <% if planar.offline > 0 %>
+                  <td data-search="offline">
+                    <%= planar.offline %> 
+                  </td>
+                <% else %>
+                  <td data-search='`'></td>
+                <% end %> 
+                <% if planar.selling > 0 %>
+                  <td data-search="selling">
+                    <%= planar.selling %> 
+                  </td>
+                <% else %>
+                  <td data-search='`'></td>
+                <% end %> 
+                <% if planar.buying > 0 %>
+                  <td data-search="buying">
+                    <%= planar.buying %> 
+                  </td>
+                <% else %>
+                  <td data-search='`'></td>
+                <% end %> 
+              <% end %>
+            </tr>
+          <% end %>
+          <% @vanguards.each do |vanguard| %>
+            <tr>
+              <td class="vanguard-link">
+                <%= link_to vanguard.name, magic_set_magic_card_path(@set, vanguard.mtgo_id) %>
+              </td>
+              <td></td>
+              <td></td>
+              <td>
+                <%= ( !vanguard.buying_price.nil? ? "$"+vanguard.buying_price.to_s : "" ) %>
+              </td>
+              <td>
+                <%= ( !vanguard.selling_price.nil? ? "$"+vanguard.selling_price.to_s : "" ) %>
+              </td>
+              <% if @filters[:on][:collection] %>
+                <% if vanguard.online > 0 %>
+                  <td data-search="online">
+                    <%= vanguard.online %> 
+                  </td>
+                <% else %>
+                  <td data-search='`'></td>
+                <% end %> 
+                <% if vanguard.depositing > 0 %>
+                  <td data-search="depositing">
+                    <%= vanguard.depositing %> 
+                  </td>
+                <% else %>
+                  <td data-search='`'></td>
+                <% end %> 
+                <% if vanguard.withdrawing > 0 %>
+                  <td data-search="withdrawing">
+                    <%= vanguard.withdrawing %> 
+                  </td>
+                <% else %>
+                  <td data-search='`'></td>
+                <% end %> 
+                <% if vanguard.offline > 0 %>
+                  <td data-search="offline">
+                    <%= vanguard.offline %> 
+                  </td>
+                <% else %>
+                  <td data-search='`'></td>
+                <% end %> 
+                <% if vanguard.selling > 0 %>
+                  <td data-search="selling">
+                    <%= vanguard.selling %> 
+                  </td>
+                <% else %>
+                  <td data-search='`'></td>
+                <% end %> 
+                <% if vanguard.buying > 0 %>
+                  <td data-search="buying">
+                    <%= vanguard.buying %> 
+                  </td>
+                <% else %>
+                  <td data-search='`'></td>
+                <% end %> 
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<br>
+
+<script>
+$(window).on("load", function() {
+  var set_show_table = $('#set_show_table').DataTable({
+    "autoWidth": false,
+    "paging": false,
+    "bSortCellsTop": true,
+    "sDom":     'ltipr',
+    "columnDefs": [
+      { "targets": [1], "visible": false},
+      <%= "{ 'targets': [2], 'visible': false},".html_safe if @cards.blank? %>
+      { "targets": [3,4], "searchable": false, "orderSequence": ["desc", "asc"]},
+      { "targets": [0], "width": "235px"}
+      <%= ", { 'targets': [5,6,7,8,9,10], 'width': '20px', 'orderSequence': ['desc', 'asc'], 'visible': #{session[:collection_filter]} }".html_safe if @filters[:on][:collection] %>
+    ]
+  });
+  $('#collection-button').click(function(){
+    set_show_table.columns([5,6,7,8,9,10]).visible( !(set_show_table.column(5).visible()) );
+  });
+  $("#filters-search").keyup(function() {
+    set_show_table.search(this.value).draw();
+  });
+  var selected = [];
+  var selected_foils = [];
+  var selected_rarities = [];
+  var selected_collections = [];
+  $('input[type="checkbox"]').click(function() { map_checked(); set_show_table.draw(); });
+  function map_checked() { 
+    selected = [];
+    selected_foils = [];
+    selected_rarities = [];
+    selected_collections = [];
+    $(":checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { selected.push(this.id); } });
+    $("#foil_filters :checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { selected_foils.push(this.id); } });
+    $("#rarity_filters :checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { selected_rarities.push(this.id); } });
+    $("#collection_filters :checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { selected_collections.push(this.id); } });
+  }
+  $.fn.dataTable.ext.search.push(
+    function( settings, data, dataIndex ) {
+      if (selected.length == 0) { return true; }
+      if (selected_foils.length > 0) {
+        if (($.inArray(data[1], selected_foils))==-1) { return false;}
+      }
+      if (selected_rarities.length > 0) {
+        if (($.inArray(data[2], selected_rarities))==-1) { return false;}
+      }
+      <% if @filters[:on][:collection] %>
+        if (selected_collections.length > 0) {
+          console.log(data);
+          if ((($.inArray("online", selected_collections))!==-1) && (data[5]=="online")) { return true;}
+          if ((($.inArray("depositing", selected_collections))!==-1) && (data[6]=="depositing")) { return true;}
+          if ((($.inArray("withdrawing", selected_collections))!==-1) && (data[7]=="withdrawing")) { return true;}
+          if ((($.inArray("offline", selected_collections))!==-1) && (data[8]=="offline")) { return true;}
+          if ((($.inArray("selling", selected_collections))!==-1) && (data[9]=="selling")) { return true;}
+          if ((($.inArray("buying", selected_collections))!==-1) && (data[10]=="buying")) { return true;}
+          return false;
+        }
+      <% end %>
+      return true;
+    }
+  );
+});
+</script>

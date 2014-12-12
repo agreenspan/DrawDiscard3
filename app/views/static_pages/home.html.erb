@@ -1,0 +1,81 @@
+<% provide(:title, "Home") %>
+<%= image_tag("banner.jpg", width: "1920px", class: "banner1") %>
+<%= image_tag("banner.jpg", width: "1920px", class: "banner2") %>
+<div id="padding" style="height: 100px;"></div>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="row">
+        <% block_count = 0 %>
+        <% @blocks.reverse.each do |block| %>
+          <div class="col-sm-3 equal-col">
+            <div class="panel panel-default equal-panel" style="background-color: gainsboro;">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <strong class="treamd-24"><%= block.name %></strong>
+                </h4>
+              </div>
+              <div class="panel-footer equal-panel-footer" style="margin: 2px; padding: 0px;">
+                <ul class="list-unstyled">
+                  <% block.magic_sets.each do |set| %>
+                    <li>
+                      <%= link_to full_set_title_image(set, "width: 250%; margin-left: -15%;"), magic_set_path(set)%>
+                    </li>
+                  <% end %>
+                  <% if block.name == "Other" %>
+                    <li>
+                      <%= link_to "Planars", '/planars' %>
+                    </li>
+                    <li>
+                      <%= link_to "Booster Packs", '/packs' %>
+                    </li>
+                  <% end %> 
+                </ul>
+              </div>
+            </div>
+          </div>
+          <% if block_count % 4 == 3 %>
+      </div>
+      <div class="row">
+          <% end %>
+          <% block_count += 1 %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+ //equal height plugin
+$.fn.max = function(selector) {
+  return Math.max.apply(null, this.map(function(index, el) {return selector.apply(el);}).get() );
+};
+$(window).on("load resize", function(e) {
+  equalHeight();
+});
+function equalHeight(){
+  $('.equal-panel-footer').css('height', '');
+  $('.equal-panel').css('height', '');
+  $('.equal-col').css('height', '');
+  if ( $( window ).width() > 768 ) {
+    $('.equal-panel-footer').height(function () {
+      var maxHeight = $(this).closest('.row').find('.equal-panel-footer').max( function () {
+        return $(this).height();
+      });
+      return maxHeight;
+    });
+    $('.equal-panel').height(function () {
+      var maxHeight = $(this).closest('.row').find('.equal-panel').max( function () {
+        return $(this).height();
+      });
+      return maxHeight;
+    });
+    $('.equal-col').height(function () {
+      var maxHeight = $(this).closest('.row').find('.equal-col').max( function () {
+        return $(this).height();
+      });
+      return maxHeight;
+    });
+  }
+}
+</script>

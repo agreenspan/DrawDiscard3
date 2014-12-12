@@ -1,0 +1,6 @@
+You have successfully signed up with DrawDiscard.com.
+Enter your confirmation code, '<%= @user.confirmation_code %>' <%= link_to "here", confirmation_url, method: :get %>, or just <%= link_to "confirm", confirmation_url(email: @user.email, confirmation_code: @user.confirmation_code, commit:"Confirm Email", email_confirmation: true) %>.
+The site will now walk you through the setup of your Magic Online account.
+Thanks for joining!
+-DrawDiscard
+

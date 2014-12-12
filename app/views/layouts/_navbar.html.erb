@@ -1,0 +1,138 @@
+<nav class="navbar navbar-fixed-top navbar-inverse" >
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <%= link_to image_tag("DDiconlarge.png", size:"70x50"), "/", class: "pull-left", style: "padding: 0px;" %>
+      <ul class="nav navbar-nav navbar-logo visible-xs" width="100%">
+        <li>
+          <%= link_to image_tag("Draw-Discard.png", title: "DrawDiscard", style: "height: 35px"), "/", style: "margin-top: 5px; padding: 5px;" %>
+        </li>
+      </ul>
+    </div> 
+    <div class="collapse navbar-collapse" id="navbar-collapse-1" >
+      <%= form_tag search_path, method: :get, class: 'navbar-form visible-xs search' do %>
+        <div class="input-group input-group-sm form-group">
+          <%= text_field_tag :search, nil, placeholder: "Card Search", class: "form-control" %>
+          <span class="input-group-btn">
+            <%= button_tag(type: "submit", class: "btn btn-default") do %>
+              <span class="glyphicon glyphicon-search"></span>
+            <% end %>
+          </span>
+        </div>
+      <% end %>
+      <ul class="nav navbar-nav navbar-left">
+        <li>
+          <%= link_to image_tag("Draw-Discard.png", title: "DrawDiscard", style: "height: 35px"), "/", {class: "hidden-xs "+( @user.present? ? "hidden-sm" : "" ), style: "margin-top: 5px; padding: 5px;"} %>
+        </li>
+        <% if @user.present? %>
+          <li >
+            <%= link_to user_collection_path(current_user) do %>
+              Collection
+              <span class="text-success visible-xs pull-right"><%= current_user.email %></span>
+            <% end %>
+          </li>
+          <li>
+            <%= link_to "Transactions", user_transactions_path(current_user) %>
+          </li>
+          <li class="visible-xs">
+            <%= link_to "MTGO Accounts", user_mtgo_accounts_path(current_user) %>
+          </li>
+          <li class="visible-xs">
+            <%= link_to "MTGO Codes", user_mtgo_codes_path(current_user) %>
+          </li>
+          <li class="visible-xs">
+            <%= link_to "Change Password", user_change_password_path(current_user) %>
+          </li>
+          <li class="visible-xs">
+            <%= link_to "Sign Out", sign_out_path, method: :delete %>
+          </li>
+       <% end %>
+      </ul>
+      <% unless @user.present? %>
+        <ul class="nav navbar-nav navbar-right">
+          <li>
+            <div class="navbar-btn navbar-right btn-group hidden-xs"%>
+              <%= button_tag("Register", class: "btn btn-info btn-sm register", onclick: "$('#register_modal').modal('show'); return false;") %>
+            </div>
+            <div class="navbar-btn navbar-right btn-group hidden-xs" style="margin-right: 10px"%>
+              <%= button_tag("Sign In", class: "btn btn-primary btn-sm sign_in", onclick: "$('#sign_in_modal').modal('show'); return false;") %>
+            </div>
+            <div class="btn-group visible-xs sign_in_register_padding"%>
+              <%= button_tag("Sign In", class: "btn btn-primary btn-sm btn-block sign_in", onclick: "$('#sign_in_modal').modal('show'); return false;") %>
+            </div>
+            <div class="btn-group visible-xs sign_in_register_padding"%>
+              <%= button_tag("Register", class: "btn btn-info btn-sm btn-block register", onclick: "$('#register_modal').modal('show'); return false;") %>
+            </div>
+          </li>
+        </ul>
+      <% else %>
+        <ul class="nav navbar-nav navbar-right hidden-xs">
+          <li class="dropdown btn-group navbar-btn navbar-right">
+            <%= button_tag(class: "btn btn-success btn-sm email dropdown-toggle", :'data-toggle' => 'dropdown') do %>
+              <%= current_user.email %>
+              <span class="caret"/>
+            <% end %>
+            <ul class="dropdown-menu inverse-dropdown" role="menu">
+              <li>
+                <%= link_to "MTGO Accounts", user_mtgo_accounts_path(current_user) %>
+              </li>
+              <li>
+                <%= link_to "MTGO Codes", user_mtgo_codes_path(current_user) %>
+              </li>
+              <li>
+                <%= link_to "Change Password", user_change_password_path(current_user) %>
+              </li>
+              <li class="divider"/>
+              <li>
+                <strong><%= link_to "Sign Out", sign_out_path, method: :delete %></strong>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      <% end %>
+      <%= form_tag search_path, method: :get, class: 'navbar-form pull-right hidden-xs search' do %>
+        <div class="input-group input-group-sm form-group">
+          <%= text_field_tag :search, nil, placeholder: "Card Search", class: "form-control" %>
+          <span class="input-group-btn">
+            <%= button_tag(type: "submit", class: "btn btn-default") do %>
+              <span class="glyphicon glyphicon-search"></span>
+            <% end %>
+          </span>
+          <span class="hidden"/>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</nav>
+<script>
+$('.dropdown-toggle').dropdown();
+$('.search').bootstrapValidator({
+  feedbackIcons: {
+    valid: null,
+    invalid: null,
+    validating: null
+  },
+  container: 'span[class=hidden]',
+  fields: {
+    search: {
+      validators: {
+        notEmpty: {
+        },
+        stringLength: {
+          min: 3
+        }
+      }
+    }
+  }
+})
+.on('status.field.bv', function(e, data) {
+  var $parent = data.element.parents('.form-group');
+  $parent.removeClass('has-success');
+  $parent.removeClass('has-error');
+});
+</script>

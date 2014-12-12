@@ -1,0 +1,77 @@
+<% provide(:title, "Confirmation") %>
+<% provide(:header_image, "CONFIRMATION") %>
+<div class="container">
+  <div class="col-sm-5">
+    <div class="panel panel-info">
+      <div class="panel-heading">
+        Confirm Email
+      </div>
+      <%= form_tag confirmation_path, method: :post, id: "form-confirmation" do %>
+        <div class="panel-body">
+          <div class="form-group">
+            <%= label_tag 'email', "Email Address", class: "control-label" %>
+            <%= email_field_tag 'email', (logged_in? ? current_user.email : nil ), class: "form-control", autofocus: !logged_in? %>
+          </div>
+          <input style="display:none" type="password" name="autocomplete_off"/>
+          <div class="form-group">
+            <%= label_tag 'confirmation_code', "Confirmation Code", class: "control-label" %>
+            <%= password_field_tag 'confirmation_code', nil, class: "form-control", autofocus: logged_in? %>     
+          </div>
+        </div>
+        <div class="panel-footer">
+          <%= submit_tag "Confirm Email", class: "btn btn-info", id: "submit-confirm" %>
+          <%= submit_tag "Re-send Confirmation Email", class: "btn btn-warning", id: "submit-re-send-email" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+<script>
+$(document).ready(function() {
+  $('#form-confirmation').bootstrapValidator({
+    feedbackIcons: {
+      valid: 'glyphicon glyphicon-ok',
+      invalid: 'glyphicon glyphicon-remove',
+      validating: 'glyphicon glyphicon-refresh'
+    },
+    fields: {
+      email: {
+        enabled: true,
+        onError: function(e,data){
+          document.getElementById('submit-re-send-email').disabled = true;
+        },
+        onSuccess: function(e,data){
+          document.getElementById('submit-re-send-email').disabled = false;
+        },
+        validators: {
+          notEmpty: {
+            message: 'The email address is required and cannot be empty'
+          },
+          emailAddress: {
+            message: 'The email address is not valid'
+          }
+        }
+      },
+      confirmation_code: {
+        validators: {
+          notEmpty: {
+            message: 'The confirmation code is required and cannot be empty'
+          },
+          stringLength: {
+            min: 22,
+            max: 22,
+            message: 'Incorrect size'
+          }
+        }
+      }
+    },
+    submitButtons: 'input[id="submit-confirm"]'
+  })
+  $(document.getElementById('submit-confirm')).on('click', function() {
+    $('#form-reset_password').bootstrapValidator('enableFieldValidators', 'confirmation_code', true)
+  });
+  $(document.getElementById('submit-re-send-email')).on('click', function() {
+    $('#form-reset_password').bootstrapValidator('enableFieldValidators', 'confirmation_code', false)
+  });
+});
+</script>

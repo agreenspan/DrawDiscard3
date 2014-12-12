@@ -1,0 +1,66 @@
+<div id="sign_in_modal" class="modal fade">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content panel-primary">
+      <div class="modal-header panel-heading ">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title ">Sign In</h4>        
+      </div>
+      <%= form_tag sign_in_path, method: :post, id: "form-sign_in_modal" do %>
+        <div class="modal-body">
+          <div class="form-group">
+            <%= label_tag 'email', "Email Address", class: "control-label" %>
+            <%= email_field_tag 'email', nil, class: "form-control",  id: "sign_in-email" %>
+          </div>
+          <input style="display:none" type="password" name="autocomplete_off"/>
+          <div class="form-group">
+            <%= label_tag 'password', "Password", class: "control-label" %>
+      		  <%= password_field_tag 'password', nil, class: "form-control" %>
+          </div>     
+		      <br>     
+          <%= link_to "Forgot Password?", reset_password_path %>
+        </div>
+        <div class="modal-footer">
+          <%= submit_tag "Sign In", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+  $('#form-sign_in_modal').bootstrapValidator({
+    feedbackIcons: {
+      valid: 'glyphicon glyphicon-ok',
+      invalid: 'glyphicon glyphicon-remove',
+      validating: 'glyphicon glyphicon-refresh'
+    },
+    fields: {
+      email: {
+        validators: {
+          notEmpty: {
+            message: 'The email address is required and cannot be empty'
+          },
+          emailAddress: {
+            message: 'The email address is not valid'
+          }
+        }
+      },
+      password: {
+        validators: {
+          notEmpty: {
+            message: 'The password is required and cannot be empty'
+          },
+          stringLength: {
+            min: 8,
+            message: 'The password must have at least 8 characters'
+          }
+        }
+      }
+    }
+  });
+  $('#sign_in_modal').on('shown.bs.modal', function () {
+    $('#sign_in-email').focus(); 
+  })
+});
+</script>

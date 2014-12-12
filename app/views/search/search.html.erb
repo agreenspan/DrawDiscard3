@@ -1,0 +1,591 @@
+<% provide(:title, "Search") %>
+<% provide(:header, "Search Results for: #{params[:search]}") %>
+<div class="container">
+  <div class="row">
+    <div class="col-md-2">
+      <%= render 'layouts/filters' %>
+    </div>
+    <div class="col-md-10" style="margin-top:-10px;">
+    <% unless @sets.empty?%>
+        <table class="table table-condensed set-table" id="set_table">
+          <thead>
+            <tr>
+              <th>
+                Set Name
+              </th>
+              <th></th>
+              <th>
+                Set Code
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @sets.each do |set| %>
+             <tr>
+                <td class="set-link">
+                  <%= link_to set.name, magic_set_path(set) %>
+                </td>
+                <td></td>
+                <td class="set-link">
+                  <%= link_to set.code.gsub(/\_/, ""), magic_set_path(set) %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% end %>
+      <% unless @packs.empty?%>
+        <table class="table table-condensed set-table" id="pack_table">
+          <thead>
+            <tr>
+              <th>
+                Pack Name
+              </th>
+              <th></th>
+              <th>
+                Set 
+              </th>
+              <th></th>
+              <th>
+                High Buy
+              </th>
+              <th>
+                Low Sell
+              </th>
+              <% if @filters[:on][:collection] %>
+                <th>
+                  <%= image_tag('DD.png', height: "20px", title: "DrawDiscard") %>
+                </th>
+                <th>
+                  <%= image_tag('arrowDD.png', height: "20px", title: "Depositing") %>
+                </th>
+                <th>
+                  <%= image_tag('arrowM.png', height: "20px", title: "Withdrawing") %>
+                </th>
+                <th>
+                  <%= image_tag('M.png', height: "20px", title: "MTGO") %>
+                </th>
+                <th>
+                  <%= image_tag('forSale.png', height: "20px", title: "Selling") %>
+                </th>
+                <th>
+                  <%= image_tag('bids.png', height: "20px", title: "Buying") %>
+                </th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody>
+            <% @packs.each do |pack| %>
+              <tr>
+                <td class="pack-link">
+                  <%= link_to pack.name, magic_set_magic_card_path(pack.code, pack.mtgo_id) %>
+                </td>
+                <td></td>
+                <td class="set-link" title="<%= pack.set_name %>">
+                  <%= link_to pack.code.gsub(/_/, ""), magic_set_path(pack.code) %>
+                </td>
+                <td></td>
+                <td>
+                  <%= ( !pack.buying_price.nil? ? "$"+pack.buying_price.to_s : "" ) %>
+                </td>
+                <td>
+                  <%= ( !pack.selling_price.nil? ? "$"+pack.selling_price.to_s : "" ) %>
+                </td>
+                <% if @filters[:on][:collection] %>
+                  <% if pack.online > 0 %>
+                    <td data-search="online">
+                      <%= pack.online %> 
+                    </td>
+                  <% else %>
+                    <td data-search='`'></td>
+                  <% end %> 
+                  <% if pack.depositing > 0 %>
+                    <td data-search="depositing">
+                      <%= pack.depositing %> 
+                    </td>
+                  <% else %>
+                    <td data-search='`'></td>
+                  <% end %> 
+                  <% if pack.withdrawing > 0 %>
+                    <td data-search="withdrawing">
+                      <%= pack.withdrawing %> 
+                    </td>
+                  <% else %>
+                    <td data-search='`'></td>
+                  <% end %> 
+                  <% if pack.offline > 0 %>
+                    <td data-search="offline">
+                      <%= pack.offline %> 
+                    </td>
+                  <% else %>
+                    <td data-search='`'></td>
+                  <% end %> 
+                  <% if pack.selling > 0 %>
+                    <td data-search="selling">
+                      <%= pack.selling %> 
+                    </td>
+                  <% else %>
+                    <td data-search='`'></td>
+                  <% end %> 
+                  <% if pack.buying > 0 %>
+                    <td data-search="buying">
+                      <%= pack.buying %> 
+                    </td>
+                  <% else %>
+                    <td data-search='`'></td>
+                  <% end %> 
+                <% end %>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% end %>
+      <% unless @planars.empty?%>
+        <table class="table table-condensed set-table" id="planar_table">
+          <thead>
+            <tr>
+              <th>
+                Planar Name
+              </th>
+              <th></th>
+              <th>
+                Set
+              </th>
+              <th></th>
+              <th>
+                High Buy
+              </th>
+              <th>
+                Low Sell
+              </th>
+              <% if @filters[:on][:collection] %>
+                <th>
+                  <%= image_tag('DD.png', height: "20px", title: "DrawDiscard") %>
+                </th>
+                <th>
+                  <%= image_tag('arrowDD.png', height: "20px", title: "Depositing") %>
+                </th>
+                <th>
+                  <%= image_tag('arrowM.png', height: "20px", title: "Withdrawing") %>
+                </th>
+                <th>
+                  <%= image_tag('M.png', height: "20px", title: "MTGO") %>
+                </th>
+                <th>
+                  <%= image_tag('forSale.png', height: "20px", title: "Selling") %>
+                </th>
+                <th>
+                  <%= image_tag('bids.png', height: "20px", title: "Buying") %>
+                </th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody>
+            <% @planars.each do |planar| %>
+              <tr>
+                <td data-search=<%= "\"#{planar.name} #{planar.plain_name} #{planar.set_name}\"".html_safe %> class="planar-link">
+                  <%= link_to planar.name, magic_set_magic_card_path(planar.code, planar.mtgo_id) %>
+                  <%= (planar.foil ? link_to(image_tag("foil.png", height: "30%", title: "Foil"), magic_set_magic_card_path(planar.code, planar.mtgo_id)) : "") %>
+                </td>
+                <td data-search=<%= (planar.foil ? "foil" : "normal") %> ></td>
+                <td class="set-link" title="<%= planar.set_name %>">
+                  <%= link_to planar.code.gsub(/_/, ""), magic_set_path(planar.code) %>
+                </td>
+                <td></td>
+                <td>
+                  <%= ( !planar.buying_price.nil? ? "$"+planar.buying_price.to_s : "" ) %>
+                </td>
+                <td>
+                  <%= ( !planar.selling_price.nil? ? "$"+planar.selling_price.to_s : "" ) %>
+                </td>
+                <% if @filters[:on][:collection] %>
+                  <% if planar.online > 0 %>
+                    <td data-search="online">
+                      <%= planar.online %> 
+                    </td>
+                  <% else %>
+                    <td data-search='`'></td>
+                  <% end %> 
+                  <% if planar.depositing > 0 %>
+                    <td data-search="depositing">
+                      <%= planar.depositing %> 
+                    </td>
+                  <% else %>
+                    <td data-search='`'></td>
+                  <% end %> 
+                  <% if planar.withdrawing > 0 %>
+                    <td data-search="withdrawing">
+                      <%= planar.withdrawing %> 
+                    </td>
+                  <% else %>
+                    <td data-search='`'></td>
+                  <% end %> 
+                  <% if planar.offline > 0 %>
+                    <td data-search="offline">
+                      <%= planar.offline %> 
+                    </td>
+                  <% else %>
+                    <td data-search='`'></td>
+                  <% end %> 
+                  <% if planar.selling > 0 %>
+                    <td data-search="selling">
+                      <%= planar.selling %> 
+                    </td>
+                  <% else %>
+                    <td data-search='`'></td>
+                  <% end %> 
+                  <% if planar.buying > 0 %>
+                    <td data-search="buying">
+                      <%= planar.buying %> 
+                    </td>
+                  <% else %>
+                    <td data-search='`'></td>
+                  <% end %> 
+                <% end %>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% end %>
+      <% unless @vanguards.empty?%>
+        <table class="table table-condensed set-table" id="vanguard_table">
+          <thead>
+            <tr>
+              <th>
+                Vanguard Name
+              </th>
+              <th></th>
+              <th>
+                Set 
+              </th>
+              <th></th>
+              <th>
+                High Buy
+              </th>
+              <th>
+                Low Sell
+              </th>
+              <% if @filters[:on][:collection] %>
+                <th>
+                  <%= image_tag('DD.png', height: "20px", title: "DrawDiscard") %>
+                </th>
+                <th>
+                  <%= image_tag('arrowDD.png', height: "20px", title: "Depositing") %>
+                </th>
+                <th>
+                  <%= image_tag('arrowM.png', height: "20px", title: "Withdrawing") %>
+                </th>
+                <th>
+                  <%= image_tag('M.png', height: "20px", title: "MTGO") %>
+                </th>
+                <th>
+                  <%= image_tag('forSale.png', height: "20px", title: "Selling") %>
+                </th>
+                <th>
+                  <%= image_tag('bids.png', height: "20px", title: "Buying") %>
+                </th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody>
+            <% @vanguards.each do |vanguard| %>
+              <tr>
+                <td data-search=<%= "\"#{vanguard.name} #{vanguard.set_name}\"".html_safe %> class="vanguard-link">
+                  <%= link_to vanguard.name, magic_set_magic_card_path(vanguard.code, vanguard.mtgo_id) %>
+                </td>
+                <td></td>
+                <td class="set-link" title="<%= vanguard.set_name %>">
+                  <%= link_to vanguard.code.gsub(/_/, ""), magic_set_path(vanguard.code) %>
+                </td>
+                <td></td>
+                <td>
+                  <%= ( !vanguard.buying_price.nil? ? "$"+vanguard.buying_price.to_s : "" ) %>
+                </td>
+                <td>
+                  <%= ( !vanguard.selling_price.nil? ? "$"+vanguard.selling_price.to_s : "" ) %>
+                </td>
+                <% if @filters[:on][:collection] %>
+                  <% if vanguard.online > 0 %>
+                    <td data-search="online">
+                      <%= vanguard.online %> 
+                    </td>
+                  <% else %>
+                    <td data-search='`'></td>
+                  <% end %> 
+                  <% if vanguard.depositing > 0 %>
+                    <td data-search="depositing">
+                      <%= vanguard.depositing %> 
+                    </td>
+                  <% else %>
+                    <td data-search='`'></td>
+                  <% end %> 
+                  <% if vanguard.withdrawing > 0 %>
+                    <td data-search="withdrawing">
+                      <%= vanguard.withdrawing %> 
+                    </td>
+                  <% else %>
+                    <td data-search='`'></td>
+                  <% end %> 
+                  <% if vanguard.offline > 0 %>
+                    <td data-search="offline">
+                      <%= vanguard.offline %> 
+                    </td>
+                  <% else %>
+                    <td data-search='`'></td>
+                  <% end %> 
+                  <% if vanguard.selling > 0 %>
+                    <td data-search="selling">
+                      <%= vanguard.selling %> 
+                    </td>
+                  <% else %>
+                    <td data-search='`'></td>
+                  <% end %> 
+                  <% if vanguard.buying > 0 %>
+                    <td data-search="buying">
+                      <%= vanguard.buying %> 
+                    </td>
+                  <% else %>
+                    <td data-search='`'></td>
+                  <% end %> 
+                <% end %>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% end %>
+      <% unless @cards.empty?%>
+        <table class="table table-condensed set-table" id="card_table">
+          <thead>
+            <tr>
+              <th>
+                Card Name
+              </th>
+              <th></th>
+              <th>
+                Set
+              </th>
+              <th>
+                Rarity
+              </th>
+              <th>
+                High Buy
+              </th>
+              <th>
+                Low Sell
+              </th>
+              <% if @filters[:on][:collection] %>
+                <th>
+                  <%= image_tag('DD.png', height: "20px", title: "DrawDiscard") %>
+                </th>
+                <th>
+                  <%= image_tag('arrowDD.png', height: "20px", title: "Depositing") %>
+                </th>
+                <th>
+                  <%= image_tag('arrowM.png', height: "20px", title: "Withdrawing") %>
+                </th>
+                <th>
+                  <%= image_tag('M.png', height: "20px", title: "MTGO") %>
+                </th>
+                <th>
+                  <%= image_tag('forSale.png', height: "20px", title: "Selling") %>
+                </th>
+                <th>
+                  <%= image_tag('bids.png', height: "20px", title: "Buying") %>
+                </th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody>
+            <% @cards.each do |card| %>
+              <tr>
+                <td data-search=<%= "\"#{card.name} #{card.plain_name} #{card.set_name}\"".html_safe %>>
+                  <%= link_to card.name, magic_set_magic_card_path(card.code, card.mtgo_id) %>
+                  <%= (card.foil ? link_to(image_tag("foil.png", height: "30%", title: "Foil"), magic_set_magic_card_path(card.code, card.mtgo_id)) : "") %>
+                </td>
+                <td data-search=<%= (card.foil ? "foil" : "normal") %> ></td>
+                <td class="set-link" title="<%= card.set_name %>">
+                  <%= link_to card.code.gsub(/_/, ""), magic_set_path(card.code) %>
+                </td>
+                <td data-search="<%= card.rarity %>" data-order="<%= rarity_number(card.rarity) %>">
+                <strong class="<%= card.rarity %>-text"><%= card.rarity.chars.first.capitalize %></strong>
+                <%#= image_tag(set_rarity_image(@set.code, card.rarity), height: "50%", title: card.rarity.titleize, alt: card.rarity) %>
+                </td>
+                <td>
+                  <%= ( !card.buying_price.nil? ? "$"+card.buying_price.to_s : "" ) %>
+                </td>
+                <td>
+                  <%= ( !card.selling_price.nil? ? "$"+card.selling_price.to_s : "" ) %>
+                </td>
+                <% if @filters[:on][:collection] %>
+                  <% if card.online > 0 %>
+                    <td data-search="online">
+                      <%= card.online %> 
+                    </td>
+                  <% else %>
+                    <td data-search='`'></td>
+                  <% end %> 
+                  <% if card.depositing > 0 %>
+                    <td data-search="depositing">
+                      <%= card.depositing %> 
+                    </td>
+                  <% else %>
+                    <td data-search='`'></td>
+                  <% end %> 
+                  <% if card.withdrawing > 0 %>
+                    <td data-search="withdrawing">
+                      <%= card.withdrawing %> 
+                    </td>
+                  <% else %>
+                    <td data-search='`'></td>
+                  <% end %> 
+                  <% if card.offline > 0 %>
+                    <td data-search="offline">
+                      <%= card.offline %> 
+                    </td>
+                  <% else %>
+                    <td data-search='`'></td>
+                  <% end %> 
+                  <% if card.selling > 0 %>
+                    <td data-search="selling">
+                      <%= card.selling %> 
+                    </td>
+                  <% else %>
+                    <td data-search='`'></td>
+                  <% end %> 
+                  <% if card.buying > 0 %>
+                    <td data-search="buying">
+                      <%= card.buying %> 
+                    </td>
+                  <% else %>
+                    <td data-search='`'></td>
+                  <% end %> 
+                <% end %>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+$(window).on("load", function() {
+  var set_table = $('#set_table').DataTable({
+    "autoWidth": false,
+    "paging": false,
+    "bSortCellsTop": true,
+    "sDom":     'ltipr',
+    "columnDefs": [
+      { "targets": [0], "width": "235px"},
+      { "targets": [1], "visible": false}
+    ]
+  });
+  var pack_table = $('#pack_table').DataTable({
+    "autoWidth": false,
+    "paging": false,
+    "bSortCellsTop": true,
+    "sDom":     'ltipr',
+    "columnDefs": [
+      { "targets": [1,3], "visible": false},
+      { "targets": [0], "width": "235px"},
+      { "targets": [4,5], "searchable": false, "orderSequence": ["desc", "asc"]}
+      <%= ", { 'targets': [6,7,8,9,10,11], 'width': '20px', 'orderSequence': ['desc', 'asc'], 'visible': #{session[:collection_filter]} }".html_safe if @filters[:on][:collection] %>
+    ]
+  });
+  var planar_table = $('#planar_table').DataTable({
+    "autoWidth": false,
+    "paging": false,
+    "bSortCellsTop": true,
+    "sDom":     'ltipr',
+    "columnDefs": [
+      { "targets": [1,3], "visible": false},
+      { "targets": [0], "width": "235px"},
+      { "targets": [4,5], "searchable": false, "orderSequence": ["desc", "asc"]}
+      <%= ", { 'targets': [6,7,8,9,10,11], 'width': '20px', 'orderSequence': ['desc', 'asc'], 'visible': #{session[:collection_filter]} }".html_safe if @filters[:on][:collection] %>
+    ]
+  });
+  var vanguard_table = $('#vanguard_table').DataTable({
+    "autoWidth": false,
+    "paging": false,
+    "bSortCellsTop": true,
+    "sDom":     'ltipr',
+    "columnDefs": [
+      { "targets": [1,3], "visible": false},
+      { "targets": [0], "width": "235px"},
+      { "targets": [4,5], "searchable": false, "orderSequence": ["desc", "asc"]}
+      <%= ", { 'targets': [6,7,8,9,10,11], 'width': '20px', 'orderSequence': ['desc', 'asc'], 'visible': #{session[:collection_filter]} }".html_safe if @filters[:on][:collection] %>
+    ]
+  });
+  var card_table = $('#card_table').DataTable({
+    "autoWidth": false,
+    "paging": false,
+    "bSortCellsTop": true,
+    "sDom":     'ltipr',
+    "columnDefs": [
+      { "targets": [1], "visible": false},
+      { "targets": [0], "width": "235px"},
+      { "targets": [4,5], "searchable": false, "orderSequence": ["desc", "asc"]}
+      <%= ", { 'targets': [6,7,8,9,10,11], 'width': '20px', 'orderSequence': ['desc', 'asc'], 'visible': #{session[:collection_filter]} }".html_safe if @filters[:on][:collection] %>
+    ]
+  });
+  $('#collection-button').click(function(){
+    pack_table.columns([6,7,8,9,10,11]).visible( !(pack_table.column(6).visible()) );
+    planar_table.columns([6,7,8,9,10,11]).visible( !(planar_table.column(6).visible()) );
+    vanguard_table.columns([6,7,8,9,10,11]).visible( !(vanguard_table.column(6).visible()) );
+    card_table.columns([6,7,8,9,10,11]).visible( !(card_table.column(6).visible()) );
+  });
+  $("#filters-search").keyup(function() {
+    set_table.search(this.value).draw();
+    pack_table.search(this.value).draw();
+    planar_table.search(this.value).draw();
+    vanguard_table.search(this.value).draw();
+    card_table.search(this.value).draw();
+  });
+  var selected = [];
+  var selected_foils = [];
+  var selected_rarities = [];
+  var selected_sets = [];
+  var selected_collections = [];
+  $('input[type="checkbox"]').click(function() { map_checked(); set_table.draw(); pack_table.draw(); planar_table.draw(); vanguard_table.draw(); card_table.draw(); });
+  function map_checked() { 
+    selected = [];
+    selected_foils = [];
+    selected_rarities = [];
+    selected_sets = [];
+    selected_collections = [];
+    $(":checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { selected.push(this.id); } });
+    $("#foil_filters :checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { selected_foils.push(this.id); } });
+    $("#rarity_filters :checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { selected_rarities.push(this.id); } });
+    $("#set_filters :checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { selected_sets.push(this.id); } });
+    $("#collection_filters :checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { selected_collections.push(this.id); } });
+  }
+  $.fn.dataTable.ext.search.push(
+    function( settings, data, dataIndex ) {
+      if (selected.length == 0) { return true; }
+      if (selected_sets.length > 0) {
+        if (($.inArray(data[2], selected_sets))==-1) { console.log("set not found"); return false; }
+      }
+      if (settings.sInstance == 'set_table') { return true; }
+      if ((selected_foils.length > 0) && ((settings.sInstance == 'planar_table') || (settings.sInstance == 'card_table'))) {
+        if (($.inArray(data[1], selected_foils))==-1) { console.log("foil not found"); return false; }
+      }
+      if ((selected_rarities.length > 0) && (settings.sInstance == 'card_table')) {
+        if (($.inArray(data[3], selected_rarities))==-1) { console.log("rarity not found"); return false; }
+      }
+      <% if @filters[:on][:collection] %>
+        if (selected_collections.length > 0) {
+          if ((($.inArray("online", selected_collections))!==-1) && (data[6]=="online")) { return true;}
+          if ((($.inArray("depositing", selected_collections))!==-1) && (data[7]=="depositing")) { return true;}
+          if ((($.inArray("withdrawing", selected_collections))!==-1) && (data[8]=="withdrawing")) { return true;}
+          if ((($.inArray("offline", selected_collections))!==-1) && (data[9]=="offline")) { return true;}
+          if ((($.inArray("selling", selected_collections))!==-1) && (data[10]=="selling")) { return true;}
+          if ((($.inArray("buying", selected_collections))!==-1) && (data[11]=="buying")) { return true;}
+          return false;
+        }
+      <% end %>
+      return true;
+    }
+  );
+});
+</script>

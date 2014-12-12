@@ -1,0 +1,178 @@
+<% provide(:title, "Planars") %>
+<% provide(:header, "PLANARS") %>
+<div class="container">
+  <div class="row">
+    <div class="col-md-2">
+      <%= render 'layouts/filters' %>
+    </div>
+    <div class="col-md-10" style="margin-top:-10px;">
+      <table class="table table-condensed set-table" id="planar_table">
+        <thead>
+          <tr>
+            <th>
+              Planar Name
+            </th>
+            <th></th>
+            <th>
+              Set 
+            </th>
+            <th>
+              High Buy
+            </th>
+            <th>
+              Low Sell
+            </th>
+            <% if @filters[:on][:collection] %>
+              <th>
+                <%= image_tag('DD.png', height: "20px", title: "DrawDiscard") %>
+              </th>
+              <th>
+                <%= image_tag('arrowDD.png', height: "20px", title: "Depositing") %>
+              </th>
+              <th>
+                <%= image_tag('arrowM.png', height: "20px", title: "Withdrawing") %>
+              </th>
+              <th>
+                <%= image_tag('M.png', height: "20px", title: "MTGO") %>
+              </th>
+              <th>
+                <%= image_tag('forSale.png', height: "20px", title: "Selling") %>
+              </th>
+              <th>
+                <%= image_tag('bids.png', height: "20px", title: "Buying") %>
+              </th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <% @planars.each do |planar| %>
+            <tr>
+              <td data-search=<%= "\"#{planar.name} #{planar.plain_name} #{planar.set_name}\"".html_safe %> class="planar-link">
+                <%= link_to planar.name, magic_set_magic_card_path(planar.code, planar.mtgo_id) %>
+                <%= (planar.foil ? link_to(image_tag("foil.png", height: "30%", title: "Foil"), magic_set_magic_card_path(planar.code, planar.mtgo_id)) : "") %>
+              </td>
+              <td data-search=<%= (planar.foil ? "foil" : "normal") %> ></td>
+              <td class="set-link" title="<%= planar.set_name %>">
+                <%= link_to planar.code.gsub(/_/, ""), magic_set_path(planar.code) %>
+              </td>
+              <td>
+                <%= ( !planar.buying_price.nil? ? "$"+planar.buying_price.to_s : "" ) %>
+              </td>
+              <td>
+                <%= ( !planar.selling_price.nil? ? "$"+planar.selling_price.to_s : "" ) %>
+              </td>
+              <% if @filters[:on][:collection] %>
+                <% if planar.online > 0 %>
+                  <td data-search="online">
+                    <%= planar.online %> 
+                  </td>
+                <% else %>
+                  <td data-search=''></td>
+                <% end %> 
+                <% if planar.depositing > 0 %>
+                  <td data-search="depositing">
+                    <%= planar.depositing %> 
+                  </td>
+                <% else %>
+                  <td data-search=''></td>
+                <% end %> 
+                <% if planar.withdrawing > 0 %>
+                  <td data-search="withdrawing">
+                    <%= planar.withdrawing %> 
+                  </td>
+                <% else %>
+                  <td data-search=''></td>
+                <% end %> 
+                <% if planar.offline > 0 %>
+                  <td data-search="offline">
+                    <%= planar.offline %> 
+                  </td>
+                <% else %>
+                  <td data-search=''></td>
+                <% end %> 
+                <% if planar.selling > 0 %>
+                  <td data-search="selling">
+                    <%= planar.selling %> 
+                  </td>
+                <% else %>
+                  <td data-search=''></td>
+                <% end %> 
+                <% if planar.buying > 0 %>
+                  <td data-search="buying">
+                    <%= planar.buying %> 
+                  </td>
+                <% else %>
+                  <td data-search=''></td>
+                <% end %> 
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<br>
+
+<script>
+$(window).on("load", function() {
+  var planar_table = $('#planar_table').DataTable({
+    "autoWidth": false,
+    "paging": false,
+    "bSortCellsTop": true,
+    "sDom":     'ltipr',
+    "columnDefs": [
+      { "targets": [1], "visible": false},
+      { "targets": [3,4], "searchable": false, "orderSequence": ["desc", "asc"]},
+      { "targets": [0], "width": "200px"}
+      <%= ", { 'targets': [5,6,7,8,9,10], 'width': '20px', 'orderSequence': ['desc', 'asc'], 'visible': #{session[:collection_filter]} }".html_safe if @filters[:on][:collection] %>
+    ]
+  });
+  $('#collection-button').click(function(){
+    planar_table.columns([5,6,7,8,9,10]).visible( !(planar_table.column(5).visible()) );
+  });
+  $("#filters-search").keyup(function() {
+    planar_table.search(this.value).draw();
+  });
+  var selected = [];
+  var selected_foils = [];
+  var selected_sets = [];
+  var selected_collections = [];
+  $('input[type="checkbox"]').click(function() { map_checked(); planar_table.draw(); });
+  function map_checked() { 
+    selected = [];
+    selected_foils = [];
+    selected_sets = [];
+    selected_collections = [];
+    $(":checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { selected.push(this.id); } });
+    $("#foil_filters :checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { selected_foils.push(this.id); } });
+    $("#set_filters :checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { selected_sets.push(this.id); } });
+    $("#collection_filters :checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { selected_collections.push(this.id); } });
+  }
+  $.fn.dataTable.ext.search.push(
+    function( settings, data, dataIndex ) {
+      console.log(settings.sInstance);
+      console.log(settings);
+      if (selected.length == 0) { return true; }
+      if (selected_foils.length > 0) {
+        if (($.inArray(data[1], selected_foils))==-1) { return false;}
+      }
+      if (selected_sets.length > 0) {
+        if (($.inArray(data[2], selected_sets))==-1) { return false;}
+      }
+      <% if @filters[:on][:collection] %>
+        if (selected_collections.length > 0) {
+          if ((($.inArray("online", selected_collections))!==-1) && (data[5]=="online")) { return true;}
+          if ((($.inArray("depositing", selected_collections))!==-1) && (data[6]=="depositing")) { return true;}
+          if ((($.inArray("withdrawing", selected_collections))!==-1) && (data[7]=="withdrawing")) { return true;}
+          if ((($.inArray("offline", selected_collections))!==-1) && (data[8]=="offline")) { return true;}
+          if ((($.inArray("selling", selected_collections))!==-1) && (data[9]=="selling")) { return true;}
+          if ((($.inArray("buying", selected_collections))!==-1) && (data[10]=="buying")) { return true;}
+          return false;
+        }
+      <% end %>
+      return true;
+    }
+  );
+});
+</script>

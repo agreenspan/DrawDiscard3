@@ -1,0 +1,214 @@
+<% provide(:title, "MTGO Accounts") %>
+<% provide(:header, "MTGO ACCOUNTS") %>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-5">
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          Add Magic Account
+        </div>
+        <%= form_tag user_path(@user), method: :put, id: "form-add_mtgo_account" do %>
+          <%= hidden_field_tag :update_type, "add_mtgo_account" %>
+          <div class="panel-body">
+            <div class="form-group">
+              <%= label_tag 'magic_account', "Magic Account Name", class: "control-label" %>
+              <%= text_field_tag 'magic_account', nil, class: "form-control", autofocus: true, disabled: max_accounts? %>
+            </div>
+            <input style="display:none" type="password" name="autocomplete_off"/>
+            <div class="form-group">
+              <%= label_tag 'password', "DrawDiscard Password", class: "control-label" %>
+              <%= password_field_tag 'password', nil, class: "form-control", disabled: max_accounts? %>     
+            </div>
+          </div>
+          <div class="panel-footer">
+            <%= submit_tag "Add Magic Account", class: "btn btn-info", id: "btn-add_mtgo_account", disabled: max_accounts? %>
+          </div>
+        <% end %>
+      </div>
+      <div class="panel panel-danger">
+        <div class="panel-heading">
+          Remove Magic Account
+        </div>
+        <%= form_tag user_path(@user), method: :put, id: "form-remove_mtgo_account" do %>
+          <%= hidden_field_tag :update_type, "remove_mtgo_account" %>
+          <div class="panel-body">
+            <div class="form-group">
+              <%= label_tag 'magic_account', "Magic Account Name", class: "control-label" %>
+              <%= text_field_tag 'magic_account', nil, class: "form-control", disabled: @magic_accounts.empty? %>
+            </div>
+            <input style="display:none" type="password" name="autocomplete_off"/>
+            <div class="form-group"> 
+              <%= label_tag 'password', "DrawDiscard Password", class: "control-label" %>
+              <%= password_field_tag 'password', nil, class: "form-control", disabled: @magic_accounts.empty? %>     
+            </div>
+          </div>
+          <div id="remove_mtgo_account_modal" class="modal fade">
+            <div class="modal-dialog">
+  		        <div class="modal-content panel-danger">
+    		        <div class="modal-header panel-heading ">
+    		          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    		          <h4 class="modal-title ">Remove Magic Account</h4>        
+    		        </div>
+                <div class="modal-body">
+                  Are you sure you wish to remove this magic account and all stocks associated with it?
+                  <br>
+                  This will not affect any stocks that have been deposited to DrawDiscard.
+                  <% if @magic_accounts.count == 1 %>
+   				          <br> <br>
+   				          <div class="alert alert-warning">WARNING: This is your last magic account. If you remove it, you will not be able to continue until you add another magic account.</div> 
+                  <% end %>
+                </div>        
+  		          <div class="modal-footer">
+  		            <button type="cancel-button" class="btn btn-info" data-dismiss="modal" aria-hidden="true">Cancel</button>
+  		            <%= submit_tag "Remove Magic Account", class: "btn btn-danger", disabled: @magic_accounts.empty? %>
+  		          </div>
+  		        </div>
+  		      </div>
+  		    </div>
+          <div class="panel-footer">
+            <%= button_tag "Remove Magic Account", class: "btn btn-danger", id: "btn-remove_mtgo_account", onclick: "", disabled: @magic_accounts.empty? %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    <div class="col-sm-5">
+      <div class="panel panel-info" style="height:">
+        <div class="panel-heading">
+          Magic Accounts 
+          <span class="badge pull-right"><%= @magic_accounts.count.to_s+"/10"%></span>
+        </div>
+        <table class="table" id="magic_accounts_table">
+          <% if @magic_accounts.empty? %>
+            <tr>
+    		    <td>
+    		      You haven't added any magic accounts.
+              </td>
+            </tr>
+          <% end %>
+          <% @magic_accounts.each do |account| %>
+            <tr>
+              <td <%= 'class=active' if account.in_queue? %> >
+                <%= account.name %>
+                <% if account.in_queue? %>
+              </td>
+              <td class="active">
+                  <span class="label label-danger pull-right"> In Queue</span>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function() {
+    var accounts = [];
+    $('td').each(function() {
+      accounts.push($.trim($(this).text()));
+    });
+  $('#form-add_mtgo_account').bootstrapValidator({
+    feedbackIcons: {
+      valid: 'glyphicon glyphicon-ok',
+      invalid: 'glyphicon glyphicon-remove',
+      validating: 'glyphicon glyphicon-refresh'
+    },
+    fields: {
+      magic_account: {
+        validators: {
+          notEmpty: {
+            message: 'The magic account name is required and cannot be empty'
+          },
+          regexp: {
+            regexp: /^[\w\-\.\_]+$/,
+            message: "The magic account name must consist of only letters, numbers, dots, dashes or underscores"
+          },
+          stringLength: {
+            min: 3,
+            message: 'The magic account name must have at least 3 characters'
+          }
+        }
+      },
+      password: {
+        validators: {
+          notEmpty: {
+            message: 'The password is required and cannot be empty'
+          },
+          stringLength: {
+            min: 8,
+            message: 'The password must have at least 8 characters'
+          }
+        }
+      }
+    }
+  });
+  $('#form-remove_mtgo_account').bootstrapValidator({
+    feedbackIcons: {
+      valid: 'glyphicon glyphicon-ok',
+      invalid: 'glyphicon glyphicon-remove',
+      validating: 'glyphicon glyphicon-refresh'
+    },
+    fields: {
+      magic_account: {
+        validators: {
+          notEmpty: {
+            message: 'The magic account name is required and cannot be empty'
+          },
+          regexp: {
+            regexp: /^[\w\-\.\_]+$/,
+            message: "The magic account name must consist of only letters, numbers, dots, dashes or underscores"
+          },
+          stringLength: {
+            min: 3,
+            message: 'The magic account name must have at least 3 characters'
+          },
+          callback: {
+            message: "Magic account invalid",
+            callback: function(value, validator, $field) {
+              if (jQuery.inArray(value, accounts)==-1) {
+                return {
+                  message: "You must have added this magic account",
+                  valid: false
+                };
+              } else {
+                if ($('td:contains('+value+')').hasClass('active')) {
+                  return {
+                  message: "The magic account cannot be in the trade queue",
+                  valid: false
+                  };
+                }
+              }
+              return true;
+            }
+          }
+        }
+      },
+      password: {
+        validators: {
+          notEmpty: {
+            message: 'The password is required and cannot be empty'
+          },
+          stringLength: {
+            min: 8,
+            message: 'The password must have at least 8 characters'
+          }
+        }
+      }
+    },
+    submitButtons: 'button[id="btn-remove_mtgo_account"]', 
+    onSuccess: function(e) {
+      e.preventDefault();
+      $('#remove_mtgo_account_modal').modal('show');
+    }
+  });
+  $('#remove_mtgo_account_modal').on('hidden.bs.modal', function () {
+    document.getElementById('btn-remove_mtgo_account').disabled = false;
+  })
+});
+</script>
+
+
+
+
