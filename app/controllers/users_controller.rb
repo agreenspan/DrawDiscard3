@@ -25,7 +25,7 @@ before_action :mtgo_configured?, only: [:collection, :transactions, :transfers]
   def register
     redirect_to user_collection_path(@user) and return if @user.present?
   end
-  
+
   def reset_password
     redirect_to user_change_password_path(@user) and return if @user.present?
     if request.post?
