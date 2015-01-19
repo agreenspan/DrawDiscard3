@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" hash="639611206">
+    <data-source source="LOCAL" name="Rails DrawDiscard3: development" uuid="43c291af-2dfe-4789-93d4-4f4504c9f7f7">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://10.0.10.20:5432/drawdiscard_development</jdbc-url>
+      <libraries />
+    </data-source>
+    <data-source source="LOCAL" name="Rails DrawDiscard3: test" uuid="565f6501-edab-490f-bd19-8ffce34f0cd7">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://10.0.10.20:5432/drawdiscard_test</jdbc-url>
+      <libraries />
+    </data-source>
+    <data-source source="LOCAL" name="Rails DrawDiscard3: production" uuid="58ddb250-b3fc-4314-97fb-8639b3f7caba">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://10.0.10.20:5432/drawdiscard_production</jdbc-url>
+      <libraries />
+    </data-source>
+  </component>
+</project>
