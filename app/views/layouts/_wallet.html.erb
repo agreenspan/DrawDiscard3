@@ -5,114 +5,35 @@
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h4 class="modal-title ">Tickets</h4>        
       </div>
-      <%= form_tag users_path, method: :post, id: "form-wallet_modal" do %>
-        <table class="table table-condensed">
-          <tbody>
+      <table class="table table-condensed" style="margin-bottom: 0px;">
+        <tbody>
+          <tr>
+            <td>
+              <%= image_tag('DD.png', height: "20px", title: "DrawDiscard") %>
+            </td>
+            <td align="right">
+              $<%=@user.wallet %>
+            </td>
+          </tr>
+          <% @user.magic_accounts.each do |account| %>
             <tr>
               <td>
-                <%= image_tag('DD.png', height: "20px", title: "DrawDiscard") %>
+                <%= image_tag('M.png', height: "20px", title: "MTGO") %>
+                <strong><%= account.name %></strong>
               </td>
-              <td>
-              </td>
-              <td>
-              
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <span class="pull-rght"><%="$"+@user.wallet %></span>
-              </td>
-              <td>
-              </td>
-              <td>
-              
+              <td align="right">
+                $<%= account.wallet %> 
               </td>
             </tr>
-            <% @user.magic_accounts.each do |account| %>
-              <tr>
-                <td>
-                  Account: <%= account.name %> <br>
-                  MTGO: <%= account.wallet %> 
-                </td>
-                <td></td>
-                <td></td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
+          <% end %>
+        </tbody>
+      </table>
+      <% if @user.wallet == 0.0 %>
+        <div class="modal-footer">
+          <span class="pull-left"> Deposit tickets on the <%= link_to 'transfer', user_transfers_path(@user) %> page. </span>
+        </div>
       <% end %>
     </div>
   </div>
 </div>
 
-<script>
-$(document).ready(function() {
-  $('#form-wallet_modal').bootstrapValidator({
-    feedbackIcons: {
-      valid: 'glyphicon glyphicon-ok',
-      invalid: 'glyphicon glyphicon-remove',
-      validating: 'glyphicon glyphicon-refresh'
-    },
-    fields: {
-      email: {
-        validators: {
-          notEmpty: {
-            message: 'The email address is required and cannot be empty'
-          },
-          emailAddress: {
-            message: 'The email address is not valid'
-          }
-        }
-      },
-      password: {
-        validators: {
-          notEmpty: {
-            message: 'The password is required and cannot be empty'
-          },
-          stringLength: {
-            min: 8,
-            message: 'The password must have at least 8 characters'
-          }
-        }
-      },
-      password_confirmation: {
-        validators: {
-          notEmpty: {
-            message: 'The password confirmation is required and cannot be empty'
-          },
-          stringLength: {
-            min: 8,
-            message: 'The password confirmation must have at least 8 characters'
-          },
-          identical: {
-            field: 'password',
-            message: "The password and the password confirmation must be the same"
-          }
-        }
-      }
-    }
-  });
-  $('#register_modal').on('shown.bs.modal', function () {
-    $('#register-email').focus(); 
-  })
-});
-</script>
-
-<!--           <div class="form-group">
-            <%= label_tag 'email', "Email Address", class: "control-label" %>
-            <%= email_field_tag 'email', nil, class: "form-control", id: "register-email" %>
-          </div>
-          <input style="display:none" type="password" name="autocomplete_off"/>
-          <div class="form-group">
-            <%= label_tag 'password', "Password", class: "control-label" %>
-            <%= password_field_tag 'password', nil, class: "form-control" %>     
-          </div>
-          <div class="form-group">
-            <%= label_tag 'password_confirmation', "Confirm Password", class: "control-label" %>
-            <%= password_field_tag 'password_confirmation', nil, class: "form-control" %>     
-          </div>
-        
-        <div class="modal-footer">
-          <%= submit_tag "Register", class: "btn btn-info" %>
-        </div>
- -->

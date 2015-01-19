@@ -1,4 +1,4 @@
-<nav class="navbar navbar-fixed-top navbar-inverse" >
+<nav class="navbar navbar-fixed-top navbar-inverse" style="margin-bottom: 0px;">
   <div class="container-fluid">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1">
@@ -10,7 +10,7 @@
       <%= link_to image_tag("DDiconlarge.png", size:"70x50"), "/", class: "pull-left", style: "padding: 0px;" %>
       <ul class="nav navbar-nav navbar-logo visible-xs" width="100%">
         <li>
-          <%= link_to image_tag("Draw-Discard.png", title: "DrawDiscard", style: "height: 35px"), "/", style: "margin-top: 5px; padding: 5px;" %>
+          <%= link_to image_tag("Draw-Discard.png", title: "DrawDiscard", style: "height: 35px"), "/", style: "margin-top: 3px; padding: 5px;" %>
         </li>
       </ul>
     </div> 
@@ -27,7 +27,7 @@
       <% end %>
       <ul class="nav navbar-nav navbar-left">
         <li>
-          <%= link_to image_tag("Draw-Discard.png", title: "DrawDiscard", style: "height: 35px"), "/", {class: "hidden-xs "+( @user.present? ? "hidden-sm" : "" ), style: "margin-top: 5px; padding: 5px;"} %>
+          <%= link_to image_tag("Draw-Discard.png", title: "DrawDiscard", style: "height: 35px"), "/", {class: "hidden-xs "+( @user.present? ? "hidden-sm" : "" ), style: "margin-top: 3px; padding: 5px;"} %>
         </li>
         <% if @user.present? %>
           <li >
@@ -38,6 +38,9 @@
           </li>
           <li>
             <%= link_to "Transactions", user_transactions_path(current_user) %>
+          </li>
+          <li>
+            <%= link_to "Transfers", user_transfers_path(current_user) %>
           </li>
           <li class="visible-xs">
             <%= link_to "MTGO Accounts", user_mtgo_accounts_path(current_user) %>

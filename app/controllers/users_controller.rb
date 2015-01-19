@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
 before_action :check_user?, except: [:create, :register, :reset_password, :confirmation]
-before_action :mtgo_configured?, only: [:collection, :transactions]
+before_action :mtgo_configured?, only: [:collection, :transactions, :transfers]
 
 ### Methods available when not logged in
 
@@ -195,6 +195,9 @@ before_action :mtgo_configured?, only: [:collection, :transactions]
   end
 
   def transactions
+  end
+
+  def transfers
   end
 
   def change_password

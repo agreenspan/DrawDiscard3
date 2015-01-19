@@ -11,7 +11,7 @@
 }
 
 body { 
-  padding-top: 60px;
+  padding-top: 50px;
   padding-bottom: 50px;
   background-image: url('/assets/background.jpg');  
 }
@@ -31,7 +31,7 @@ body {
 .wallet {
   position: absolute;
   left: 15px;
-  top: 70px;
+  top: 60px;
   z-index: 100;
 }
 
@@ -173,6 +173,12 @@ body {
 .page-title {
   margin-top: 0px;
   margin-bottom: 10px;
+  color: #f0f0f0;
+  margin-bottom: 0px;
+  height: 65px;
+  vertical-align: middle !important;
+  float: none !important;
+  display: inline-block !important;
 }
 
 .pack-link{

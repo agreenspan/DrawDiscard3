@@ -51,7 +51,7 @@ GEM
     jbuilder (2.2.5)
       activesupport (>= 3.0.0, < 5)
       multi_json (~> 1.2)
-    jquery-datatables-rails (3.1.0)
+    jquery-datatables-rails (3.1.1)
       actionpack (>= 3.1)
       jquery-rails
       railties (>= 3.1)
@@ -135,7 +135,7 @@ DEPENDENCIES
   bootstrap-validator-rails (~> 0.5.3)
   coffee-rails (~> 4.0.0)
   jbuilder (~> 2.0)
-  jquery-datatables-rails (~> 3.1.0)
+  jquery-datatables-rails (~> 3.1.1)
   jquery-rails
   pg
   rails (= 4.1.7)

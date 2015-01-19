@@ -3,7 +3,8 @@ class User < ActiveRecord::Base
   has_many :magic_accounts
   has_many :trade_queues, through: :magic_accounts
   has_many :stocks
-  has_many :transactions
+  has_many :bids, class_name: "Transaction", foreign_key: "buyer_id"
+  has_many :listings, class_name: "Transaction", foreign_key: "seller_id"
   has_many :transfers
   belongs_to :bank, class_name: 'Bot', foreign_key: "bot_id"
 

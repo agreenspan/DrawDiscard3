@@ -16,13 +16,13 @@ class Stock < ActiveRecord::Base
 
     def check_status_before_destroy
       if !["depositing", "offline"].include?(self.status) 
-        raise CustomExepction.new("Stock cannot be deleted while in this state.")
+        raise CustomException.new("Stock cannot be deleted while in this state.")
       end
     end
 
     def bot_or_magic_account?
       if bot_id.blank? && magic_account_id.blank? #&& status != "ghost"
-        raise CustomExepction.new("Stock must be on a bank bot or a magic account.")
+        raise CustomException.new("Stock must be on a bank bot or a magic account.")
         return false
       else
         return true

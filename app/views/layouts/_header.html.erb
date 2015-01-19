@@ -1,26 +1,22 @@
-<div class="container">
+<div class="container" style="height: 65px;">
   <% if !yield(:header_image).empty? %>
     <div class="row">
-      <div class="col-xs-12 text-center">
-        <h5 class="page-title treamd-40" style="color: #f0f0f0;">
-          <%= yield(:header_image) %>
-        </h5>
+      <div class="col-xs-12 text-center page-title treamd-40">
+        <%= yield(:header_image) %>
       </div>
     </div>
   <% end %>
   <% if !yield(:header).empty? %>
     <div class="row">
-      <div class="col-xs-12">
-        <h5 class="page-title treamd-40" style="color: #f0f0f0;">
-          <%= yield(:header) %>
-        </h5>
+      <div class="col-xs-12 text-center page-title treamd-40">
+        <%= yield(:header) %>
       </div>
     </div>
   <% end %>
   <% if (!yield(:header).empty? || !yield(:header_image).empty?) && @user.present? %>
     <%= render "layouts/wallet" %>
     <div class="wallet">
-      <%= button_tag("$"+@user.wallet_drawdiscard.to_s, class: "btn btn-success btn-lg", onclick: "$('#wallet_modal').modal('show'); return false;") %>
+      <%= button_tag("$"+@user.wallet.to_s, class: "btn btn-success btn-lg", onclick: "$('#wallet_modal').modal('show'); return false;") %>
     </div>
   <% end %>
 </div>
