@@ -7,12 +7,12 @@
         <div class="panel-heading">
           Add Magic Account
         </div>
-        <%= form_tag user_path(@user), method: :put, id: "form-add_mtgo_account" do %>
+        <%= form_tag user_path(@user), method: :put, id: "form-add_mtgo_account", html: {autocomplete: "off"} do %>
           <%= hidden_field_tag :update_type, "add_mtgo_account" %>
           <div class="panel-body">
             <div class="form-group">
               <%= label_tag 'magic_account', "Magic Account Name", class: "control-label" %>
-              <%= text_field_tag 'magic_account', nil, class: "form-control", autofocus: true, disabled: max_accounts? %>
+              <%= text_field_tag 'magic_account', nil, class: "form-control", autofocus: true, autocomplete: "off", disabled: max_accounts? %>
             </div>
             <input style="display:none" type="password" name="autocomplete_off"/>
             <div class="form-group">
@@ -29,12 +29,12 @@
         <div class="panel-heading">
           Remove Magic Account
         </div>
-        <%= form_tag user_path(@user), method: :put, id: "form-remove_mtgo_account" do %>
+        <%= form_tag user_path(@user), method: :put, id: "form-remove_mtgo_account", html: {autocomplete: "off"} do %>
           <%= hidden_field_tag :update_type, "remove_mtgo_account" %>
           <div class="panel-body">
             <div class="form-group">
               <%= label_tag 'magic_account', "Magic Account Name", class: "control-label" %>
-              <%= text_field_tag 'magic_account', nil, class: "form-control", disabled: @magic_accounts.empty? %>
+              <%= text_field_tag 'magic_account', nil, class: "form-control", autocomplete: "off", disabled: @magic_accounts.empty? %>
             </div>
             <input style="display:none" type="password" name="autocomplete_off"/>
             <div class="form-group"> 

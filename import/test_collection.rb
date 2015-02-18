@@ -54,7 +54,7 @@ end
   @user = User.create(email: user[:email], password: user[:password], password_confirmation: user[:password])
   @user.update_attribute(:confirmed, true)
   @user.update_attributes(user_code: "123456", bot_code: "654321", wallet: 1000.0)
-  @account = MagicAccount.create(user_id: @user.id, name: "sample", wallet: 1000)
+  @account = MagicAccount.create(user_id: @user.id, name: "sample")
   MagicCard.all.each do |card|
     make_samples(card, 'magic_card_id')
   end

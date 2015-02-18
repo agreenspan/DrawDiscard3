@@ -4,6 +4,7 @@ class ApplicationController < ActionController::Base
   include SessionHelper
   include MagicSetHelper
   include MagicCardHelper
+  include TransactionsHelper
 
   before_action :account_disabled?, except: [sessions_controller: :sign_out]
   before_action :instance_user

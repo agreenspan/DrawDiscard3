@@ -33,6 +33,18 @@ body {
   left: 15px;
   top: 60px;
   z-index: 100;
+  &>.panel.panel-success {
+    border-color: #4cae4c !important;
+    &>.panel-heading {
+      background-color: #5cb85c !important;
+      border: 0px;
+      color: white;
+      font-size: 18px;
+      padding: 10px;
+      line-height: 20px;
+      vertical-align: text-bottom;
+    }
+  }
 }
 
 .card-image {

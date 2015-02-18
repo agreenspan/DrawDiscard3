@@ -587,5 +587,12 @@ $(window).on("load", function() {
       return true;
     }
   );
+  // browser-back handling
+  map_checked();
+  set_table.search($("#filters-search").val()).draw();
+  pack_table.search($("#filters-search").val()).draw();
+  planar_table.search($("#filters-search").val()).draw();
+  vanguard_table.search($("#filters-search").val()).draw();
+  card_table.search($("#filters-search").val()).draw();
 });
 </script>

@@ -26,4 +26,3 @@ end
 #Attributes
 #name | string
 #user_id | integer
-#wallet | integer 

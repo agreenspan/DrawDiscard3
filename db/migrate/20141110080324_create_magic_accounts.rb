@@ -4,8 +4,6 @@ class CreateMagicAccounts < ActiveRecord::Migration
       t.integer :user_id
       t.string :name
 
-      t.integer :wallet, default: 0
-
       t.timestamps
     end
 

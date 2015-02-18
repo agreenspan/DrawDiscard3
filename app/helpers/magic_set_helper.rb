@@ -1,8 +1,16 @@
 module MagicSetHelper
 
   def full_set_title_image(set, style)
-    if FileTest.exist?("app/assets/images/full_set_titles/#{set.code}.png")
-      return image_tag("full_set_titles/#{set.code}.png", alt: set.name, title: set.name, style: style)  
+    if FileTest.exist?("app/assets/images/set_titles/full/#{set.code}.png")
+      return image_tag("set_titles/full/#{set.code}.png", alt: set.name, title: set.name, style: style)  
+    else
+      return "#{set.name}"
+    end
+  end
+
+  def set_title_image(set, style)
+    if FileTest.exist?("app/assets/images/set_titles/#{set.code}.png")
+      return image_tag("set_titles/#{set.code}.png", alt: set.name, title: set.name, style: style)  
     else
       return "#{set.name}"
     end
@@ -48,6 +56,7 @@ module MagicSetHelper
 
   def set_filter_index
     return [
+      "DTK", "FRF",
       "KTK", "M15", "JOU", "BNG", "THS", "M14", "MMA", "DGM", "GTC", "RTR", "M13", "AVR", "DKA", "ISD", "M12",
       "NPH", "MBS", "SOM", "M11", "ROE", "WWK", "ZEN", "M10", "ARB", "_CON", "CON", "ALA", "EVE", "SHM", "MOR",
       "LRW", "10E", "FUT", "PLC", "TSB", "TSP", "CSP", "DIS", "GPT", "RAV", "9ED", "SOK", "BOK", "CHK", "5DN",

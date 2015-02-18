@@ -2,33 +2,46 @@
 <% provide(:header, ((link_to image_tag(set_rarity_image(@set.code, @object.rarity)), magic_set_path(@set.code)) + " " + @object.name + " " + (@object.foil ? image_tag("foil.png", height: "30px", title: "Foil") : "")).html_safe ) %>
 <div class="container">
   <div class="row">
-    <div class="col-xs-12 inverse">
-            <%= card_image(@object) %>
-            <br>
-            <strong>MTGO ID</strong>: <%= @object.mtgo_id %><br>
-            <%= "<strong>Collector #</strong>:  #{@object.collector_number}".html_safe if @object.collector_number.present? %>
+    <div class="col-xs-6 inverse">
+      This
+      
+    </div>
+    <div class="col-xs-6 inverse">
+      All
     </div>
   </div>
-  <% if @user.present? %>
-    <div class="row">
-      <div class="col-xs-6">
-        <%= form_tag transaction_path, method: :post, id: "form-transaction" do %>
+  <div class="row">
+    <div class="col-xs-3 inverse">
+      <%= card_image(@object) %>
+      <br>
+      <strong>MTGO ID</strong>: <%= @object.mtgo_id %><br>
+      <%= "<strong>Collector #</strong>:  #{@object.collector_number}".html_safe if @object.collector_number.present? %>
+    </div>
+    <% if @user.present? %>
+      <div class="col-xs-3">
+        <%= form_tag transaction_path, method: :post, id: "form-transaction", html: {autocomplete: "off"} do %>
+          <%= hidden_field_tag :mtgo_id, @object.mtgo_id %>
           <div class="panel panel-default">
+            <div class="panel-heading">
+              <div class="panel-title">
+                Transactions
+              </div>
+            </div>
             <div class="panel-body">
               <div class="form-group">
                 <%= label_tag 'price', "Price", class: "control-label" %>
-                <%= number_field_tag 'price', nil, min: 0.01, max: 999.9, step: 0.001, class: "form-control" %>        
+                <%= number_field_tag 'price', nil, min: 0.01, max: 999.9, step: 0.001, autocomplete: "off", class: "form-control" %>        
               </div>
               <div class="form-group">
                 <%= label_tag 'quantity', "Quantity", class: "control-label" %>
-                <%= number_field_tag 'quantity', 1, min: 1, max: 999, class: "form-control" %>        
+                <%= number_field_tag 'quantity', 1, min: 1, max: 999, autocomplete: "off", class: "form-control" %>       
               </div>
               <small id="insufficient-tickets" style="display: none; color: #a94442;">
                 You do not have enough tickets for this purchase.
               <br>
               </small>
               <small id="insufficient-cards" style="display: none; color: #a94442;">
-                You do not have that many copies deposited. 
+                You do not have that many copies on DrawDiscard. 
               <br>
               </small>
             </div>
@@ -42,8 +55,12 @@
       <div class="col-xs-6">
         <%= form_tag transfer_path, method: :post do %>
           <div class="panel panel-default">
+            <div class="panel-heading">
+              <div class="panel-title">
+                Transfers
+              </div>
+            </div>
             <div class="panel-body">
-              Transfers
               <div class="form-group">
               </div>
               <div class="form-group">
@@ -54,52 +71,114 @@
           </div>
         <% end %>
       </div>
-    </div>
-  <% end %>
+    <% end %>
+  </div>
   <div class="row">
-    <div class="col-xs-4">
+    <div class="col-xs-12">
       <div class="panel panel-default">
-        <div class="panel-heading">
-          Bids:
-        </div>
-        <ul class="list-group">
-          <% @bids.each do |bid| %>
-            <li class="list-group-item">
-              $<%= bid.price %>
-              <span class="badge"><%= bid.num_bids %></span>
-            </li>
-          <% end %>
-        </ul>
-      </div>
-    </div>
-    <div class="col-xs-4">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          Listings:
-        </div>
-        <ul class="list-group">
-          <% @listings.each do |listing| %>
-            <li class="list-group-item">
-              $<%= listing.price %>
-              <span class="badge"><%= listing.num_listings %></span>
-            </li>
-          <% end %>
-        </ul>
-      </div>
-    </div>
-    <div class="col-xs-4">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          Past Sales:
-        </div>
-        <ul class="list-group">
-          <% @sales.each do |sale| %>
-            <li class="list-group-item">
-              $<%= sale.price %>
-              <span class="badge"><%= sale.num_sales %></span>
-            </li>
-          <% end %>
-        </ul>
+        <table class="table table-condensed table-bordered">
+          <thead>
+            <tr>
+              <th>
+                Bids:
+              </th>
+              <th>
+                Listings:
+              </th>
+              <th>
+                Past Sales:
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td width="30%">
+                <table class="table table-condensed" style="margin-bottom: 0px;">
+                  <thead>
+                    <tr>
+                      <th>
+                        Price
+                      </th>
+                      <th>
+                        Quantity
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% @bids.each do |bid| %>
+                      <tr>
+                        <td>
+                          $<%= bid.price %>
+                        </td>
+                        <td>
+                          <span class="badge"><%= bid.num_bids %></span>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>                  
+                </table>
+              </td>
+              <td width="30%">
+                <table class="table table-condensed" style="margin-bottom: 0px;">
+                  <thead>
+                    <tr>
+                      <th>
+                        Price
+                      </th>
+                      <th>
+                        Quantity
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% @listings.each do |listing| %>
+                      <tr>
+                        <td>
+                          $<%= listing.price %>
+                        </td>
+                        <td>
+                          <span class="badge"><%= listing.num_listings %></span>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>                  
+                </table>
+              </td>
+              <td width="40%">
+                <table class="table table-condensed" style="margin-bottom: 0px;">
+                  <thead>
+                    <tr>
+                      <th>
+                        Time
+                      </th>
+                      <th>
+                        Price
+                      </th>
+                      <th>
+                        Quantity
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% @sales.each do |sale| %>
+                      <tr>
+                        <td>
+                          <%= sale.truncated_finish %><br>
+                        </td>
+                        <td>
+                          $<%= sale.price %>
+                        </td>
+                        <td>
+                          <span class="badge"> <%= sale.num_sales %> </span>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>                  
+                </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -207,6 +286,7 @@
     </div>
   </div>
   <% if @user.present? %>
+    <%= render 'transactions/cancel' %>
     <div class="row">
       <div class="col-xs-6">
         <div class="panel panel-default">
@@ -292,82 +372,82 @@ $(document).ready(function() {
     else if ($("#price").val() > 10 ) { document.getElementById("price").step = "0.1"; }
   }
 
-  $('#form-transaction').bootstrapValidator({
-    feedbackIcons: {
-      valid: 'glyphicon glyphicon-ok',
-      invalid: 'glyphicon glyphicon-remove',
-      validating: 'glyphicon glyphicon-refresh'
-    },
-    fields: {
-      price: {
-        validators: {
-          notEmpty: {
-            message: 'The price is required and cannot be empty'
-          },
-          callback: {
-            callback: function (value, validator, $field) {
-              value = parseFloat(value);
-              if ((value >= .01) && (value <= 2) && (value.toFixed(3) != value) ) {
-                return {
-                  valid: false,
-                  message: 'Prices under 2 tickets must be set in increments of .001'
-                }
-              }
-              else if ((value >= 2) && (value <= 10) && (value.toFixed(2) != value)) {
-                return {
-                  valid: false,
-                  message: 'Prices between 2 and 10 tickets must be set in increments of .01'
-                }
-              }
-              else if ((value >= 10) && (value.toFixed(1) != value) ) {
-                return {
-                  valid: false,
-                  message: 'Prices above 10 tickets must be set in increments of .01'
-                }
-              }
-              else {
-                return {
-                  valid: true
-                }
-              }
-            }
-          }
-        }
-      },
-      quantity: {
-        validators: {
-          notEmpty: {
-            message: 'The quantity is required and cannot be empty'
-          },
-          integer: {
-            message: 'The quantity must be an integer'
-          }
-        }
-      }
-    }
-  });
+ $('#form-transaction').bootstrapValidator({
+   feedbackIcons: {
+     valid: 'glyphicon glyphicon-ok',
+     invalid: 'glyphicon glyphicon-remove',
+     validating: 'glyphicon glyphicon-refresh'
+   },
+   fields: {
+     price: {
+       validators: {
+         notEmpty: {
+           message: 'The price is required and cannot be empty'
+         },
+         callback: {
+           callback: function (value, validator, $field) {
+             value = parseFloat(value);
+             if ((value >= .01) && (value <= 2) && (value.toFixed(3) != value) ) {
+               return {
+                 valid: false,
+                 message: 'Prices under 2 tickets must be set in increments of 0.001'
+               }
+             }
+             else if ((value >= 2) && (value <= 10) && (value.toFixed(2) != value)) {
+               return {
+                 valid: false,
+                 message: 'Prices between 2 and 10 tickets must be set in increments of 0.01'
+               }
+             }
+             else if ((value >= 10) && (value.toFixed(1) != value) ) {
+               return {
+                 valid: false,
+                 message: 'Prices above 10 tickets must be set in increments of 0.1'
+               }
+             }
+             else {
+               return {
+                 valid: true
+               }
+             }
+           }
+         }
+       }
+     },
+     quantity: {
+       validators: {
+         notEmpty: {
+           message: 'The quantity is required and cannot be empty'
+         },
+         integer: {
+           message: 'The quantity must be an integer'
+         }
+       }
+     }
+   }
+ });
   <% if @user.present? %>
-    $("#price, #quantity").on("input", function() {
-      $('#form-transaction').data('bootstrapValidator').validate();
-      if (+$("#quantity").val() > <%= @versions.select {|o| o.id == @object.id}.first.online %>) {
-        document.getElementById('submit-sell').disabled = true;
-        $('#insufficient-cards').show();
-      } else if ($('#form-transaction').data('bootstrapValidator').isValid()) {
-        document.getElementById('submit-sell').disabled = false;
-        $('#insufficient-cards').hide();
-      } else {
-        $('#insufficient-cards').hide();
-      }
-      if ((+$("#quantity").val() * +$('#price').val()) > <%= @user.wallet %>) {
-        document.getElementById('submit-buy').disabled = true;
-        $('#insufficient-tickets').show();
-      } else if ($('#form-transaction').data('bootstrapValidator').isValid()) {
-        document.getElementById('submit-buy').disabled = false; 
-        $('#insufficient-tickets').hide();
-      } else {
-        $('#insufficient-tickets').hide();
-      }
-    });
+   $("#price, #quantity").on("input", function() {
+     $('#form-transaction').data('bootstrapValidator').validate();
+     if (+$("#quantity").val() > <%= @versions.select {|o| o.id == @object.id}.first.online %>) {
+       document.getElementById('submit-sell').disabled = true;
+       $('#insufficient-cards').show();
+     } else if ($('#form-transaction').data('bootstrapValidator').isValid()) {
+       document.getElementById('submit-sell').disabled = false;
+       $('#insufficient-cards').hide();
+     } else {
+       $('#insufficient-cards').hide();
+     }
+     if ((+$("#quantity").val() * +$('#price').val()) > <%= @user.wallet %>) {
+       document.getElementById('submit-buy').disabled = true;
+       $('#insufficient-tickets').show();
+     } else if ($('#form-transaction').data('bootstrapValidator').isValid()) {
+       document.getElementById('submit-buy').disabled = false;
+       $('#insufficient-tickets').hide();
+     } else {
+       $('#insufficient-tickets').hide();
+     }
+   });
   <% end %>
 });
 </script>

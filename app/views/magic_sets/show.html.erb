@@ -324,12 +324,12 @@ $(window).on("load", function() {
       { "targets": [3,4], "searchable": false, "orderSequence": ["desc", "asc"]},
       { "targets": [0], "width": "235px"}
       <%= ", { 'targets': [5,6,7,8,9,10], 'width': '20px', 'orderSequence': ['desc', 'asc'], 'visible': #{session[:collection_filter]} }".html_safe if @filters[:on][:collection] %>
-    ]
+    ],
   });
   $('#collection-button').click(function(){
     set_show_table.columns([5,6,7,8,9,10]).visible( !(set_show_table.column(5).visible()) );
   });
-  $("#filters-search").keyup(function() {
+  $("#filters-search").on("input", function() {
     set_show_table.search(this.value).draw();
   });
   var selected = [];
@@ -371,5 +371,8 @@ $(window).on("load", function() {
       return true;
     }
   );
+  // browser-back handling
+  map_checked();
+  set_show_table.search($("#filters-search").val()).draw();
 });
 </script>

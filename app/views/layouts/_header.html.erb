@@ -14,9 +14,15 @@
     </div>
   <% end %>
   <% if (!yield(:header).empty? || !yield(:header_image).empty?) && @user.present? %>
-    <%= render "layouts/wallet" %>
     <div class="wallet">
-      <%= button_tag("$"+@user.wallet.to_s, class: "btn btn-success btn-lg", onclick: "$('#wallet_modal').modal('show'); return false;") %>
+      <div class="panel panel-success">
+        <div class="panel-heading">
+          <!-- <%= image_tag('DD.png', height: "20px", title: "DrawDiscard") %> -->
+          <!-- <%= image_tag('tickets.png', height: "30px", title: "Tickets", style: "margin-top: -12px; margin-bottom: -10px; margin-left: -8px;") %> -->
+          <!-- <%= image_tag('ticket.png', height: "40px", title: "Tickets", style: "margin-top: -10px; margin-bottom: -10px;") %> -->
+          $<%= @user.wallet.to_s %>
+        </div>
+      </div>
     </div>
   <% end %>
 </div>

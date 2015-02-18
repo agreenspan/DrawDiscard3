@@ -8,6 +8,9 @@ class Transaction < ActiveRecord::Base
   validates_presence_of :status
   validates_presence_of :magic_card_id
   validate :has_buyer_or_seller?
+  if ["selling", "finished"].include? :status
+    validates_presence_of :stock_id
+  end
 
   private
 
@@ -29,5 +32,6 @@ end
 #price | decimal
 #start | datetime
 #finish | datetime
+#status | string
 
 

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal">
+    <data-source name="Rails DrawDiscard3: development" uuid="43c291af-2dfe-4789-93d4-4f4504c9f7f7">
+      <user-name>rails</user-name>
+      <user-password>dffedfd8dfeadfcedfc3dfc4dfcddffadf9adfd9dfde</user-password>
+      <schema-pattern>drawdiscard_development.pg_catalog drawdiscard_development.public</schema-pattern>
+      <default-schemas>drawdiscard_development.pg_catalog drawdiscard_development.public</default-schemas>
+    </data-source>
+    <data-source name="Rails DrawDiscard3: test" uuid="565f6501-edab-490f-bd19-8ffce34f0cd7">
+      <user-name>rails</user-name>
+      <user-password>dffedfd8dfeadfcedfc3dfc4dfcddffadf9adfd9dfde</user-password>
+      <schema-pattern>drawdiscard_test.pg_catalog drawdiscard_test.public</schema-pattern>
+      <default-schemas>drawdiscard_test.pg_catalog drawdiscard_test.public</default-schemas>
+    </data-source>
+    <data-source name="Rails DrawDiscard3: production" uuid="58ddb250-b3fc-4314-97fb-8639b3f7caba">
+      <user-name>rails</user-name>
+      <user-password>dffedfd8dfeadfcedfc3dfc4dfcddffadf9adfd9dfde</user-password>
+      <schema-pattern>drawdiscard_production.pg_catalog drawdiscard_production.public</schema-pattern>
+      <default-schemas>drawdiscard_production.pg_catalog drawdiscard_production.public</default-schemas>
+    </data-source>
+  </component>
+</project>

@@ -6,7 +6,6 @@ class MagicCardsController < ApplicationController
   	redirect_to magic_set_path(@set) and return if @object.nil?
     redirect_to magic_set_path(@set) and return if @object.disabled
 
-
     versions_sql = "SELECT 
       Magic_Cards.id, Magic_Cards.mtgo_id, Magic_Cards.name, Magic_Cards.plain_name, Magic_Cards.foil, Magic_Cards.rarity, Magic_Cards.object_type, Magic_Cards.magic_set_id 
       , (SELECT MAX(Transactions.price) FROM Transactions WHERE (Transactions.magic_card_id = Magic_Cards.id AND Transactions.status = 'buying')) AS buying_price 
@@ -20,13 +19,11 @@ class MagicCardsController < ApplicationController
       , (SELECT COUNT(*) FROM Transactions WHERE (Transactions.magic_card_id = Magic_Cards.id AND Transactions.status = 'buying' AND Transactions.buyer_id = #{@user.id})) AS buying
       " if @user.present?
     versions_sql += " FROM Magic_Cards WHERE (Magic_Cards.disabled = false AND 
-      Magic_Cards.name = \'"+@object.name.chomp(" (Alt.)")+"\' OR
-      Magic_Cards.name = \'"+@object.name+" (Alt.)\'  OR
-      Magic_Cards.name = \'"+@object.name+"\'
+      Magic_Cards.name = $$"+@object.name.chomp(" (Alt.)")+"$$ OR
+      Magic_Cards.name = $$"+@object.name+" (Alt.)$$ OR
+      Magic_Cards.name = $$"+@object.name+"$$
       ) ORDER BY Magic_Cards.id ASC"
     @versions = MagicCard.find_by_sql(versions_sql)
-
-
 
     @bids = Transaction.find_by_sql("SELECT t.price, t.magic_card_id, t.status,
       (SELECT COUNT(*) FROM Transactions WHERE Transactions.magic_card_id = #{@object.id} AND Transactions.price = t.price AND Transactions.status = 'buying') AS num_bids
@@ -34,10 +31,9 @@ class MagicCardsController < ApplicationController
     @listings = Transaction.find_by_sql("SELECT t.price, t.magic_card_id, t.status,
       (SELECT COUNT(*) FROM Transactions WHERE Transactions.magic_card_id = #{@object.id} AND Transactions.price = t.price AND Transactions.status = 'selling') AS num_listings
       FROM Transactions AS t WHERE t.magic_card_id = #{@object.id} AND t.status = 'selling' GROUP BY t.price, t.magic_card_id, t.status ORDER BY t.price ASC").first(10)
-    @sales = Transaction.find_by_sql("SELECT t.price, t.magic_card_id, t.status, t.finish,
+    @sales = Transaction.find_by_sql("SELECT t.price, t.magic_card_id, t.status, date_trunc('second', t.finish) AS truncated_finish,
       (SELECT COUNT(*) FROM Transactions WHERE Transactions.magic_card_id = #{@object.id} AND Transactions.price = t.price AND Transactions.status = 'finished') AS num_sales
-      FROM Transactions AS t WHERE t.magic_card_id = #{@object.id} AND t.status = 'finished' GROUP BY t.price, t.magic_card_id, t.status, t.finish ORDER BY t.finish DESC").first(10)
-
+      FROM Transactions AS t WHERE t.magic_card_id = #{@object.id} AND t.status = 'finished' GROUP BY t.price, t.magic_card_id, t.status, truncated_finish ORDER BY truncated_finish DESC").first(10)
 
     if @user.present?
       @user_bids = Transaction.find_by_sql("SELECT t.price, t.magic_card_id, t.status,
