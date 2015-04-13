@@ -103,4 +103,14 @@ module UserHelper
       end
     end
 
+    def associated_account?
+      if @user.magic_accounts.map {|account| account.name }.include?(params[:magic_account])
+        return true
+      else
+        flash_message :danger, "You have not added this account."
+        return false
+      end
+    end
+
+
 end

@@ -121,7 +121,10 @@
     <orderEntry type="library" scope="PROVIDED" name="coffee-script (v2.3.0, ruby-2.0.0-p594) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="coffee-script-source (v1.8.0, ruby-2.0.0-p594) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="erubis (v2.7.0, ruby-2.0.0-p594) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="eventmachine (v1.0.7, ruby-2.0.0-p594) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="execjs (v2.2.2, ruby-2.0.0-p594) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="graphite-api (v0.1.5, ruby-2.0.0-p594) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="highstocks-rails (v2.0.4, ruby-2.0.0-p594) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="hike (v1.2.3, ruby-2.0.0-p594) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="i18n (v0.6.11, ruby-2.0.0-p594) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="jbuilder (v2.2.5, ruby-2.0.0-p594) [gem]" level="application" />
@@ -151,6 +154,7 @@
     <orderEntry type="library" scope="PROVIDED" name="tzinfo (v1.2.2, ruby-2.0.0-p594) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="tzinfo-data (v1.2014.10, ruby-2.0.0-p594) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="uglifier (v2.5.3, ruby-2.0.0-p594) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="zscheduler (v0.0.6, ruby-2.0.0-p594) [gem]" level="application" />
   </component>
   <component name="RModuleSettingsStorage">
     <LOAD_PATH number="0" />

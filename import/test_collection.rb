@@ -3,9 +3,6 @@ def make_samples(object, object_id)
   rand(0...12).times do
     Stock.create(user_id: @user.id, status: "offline", magic_account_id: @account.id, object_id => object.id)
   end
-  rand(0...12).times do
-    Stock.create(user_id: @user.id, status: "online", bot_id: @bank.id, object_id => object.id)
-  end
   @price = nil
   @price = Transaction.where(status: "selling", object_id => object.id).order(price: :asc).first.price if Transaction.where(status: "selling", object_id => object.id).present?
   @price ||= Transaction.where(status: "buying", object_id => object.id).order(price: :desc).first.price if Transaction.where(status: "buying", object_id => object.id).present?
@@ -60,4 +57,6 @@ end
   end
 
 end
+
+
 

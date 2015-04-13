@@ -1,0 +1,38 @@
+<select size="10" class="form-control" id="card_selector" style="height: 185px; overflow-y:hidden;">
+  <% @objects.each do |object| %>
+    <option value="<%= object.name %>" title="<%= object.name %>"> 
+      <%= object.name %>
+    </option>
+  <% end %>
+
+  <% if @objects.empty? %>
+  <option disabled>
+    No Results
+  </option>
+  <% end %>>
+</select>
+
+<div id="set_results">
+</div>
+ 
+
+
+<script>
+  $("#deposit_button").addClass("disabled");
+  $("#withdraw_button").addClass("disabled");
+  card_selection_complete = false;
+
+  $("#card_selector").on("change", function() {
+    var selected_card = $("#card_selector option:selected").text().trim();
+    $.ajax({
+      url: "/setsearch?search="+selected_card,
+      dataType: "html",
+      type: "GET",
+      success: function (data) {
+        var html = $('<div />').append(data);
+        $("#set_results").html(html);
+      }
+    })
+  });
+
+</script>

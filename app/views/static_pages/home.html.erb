@@ -6,76 +6,106 @@
   <div class="row">
     <div class="col-sm-12">
       <div class="row">
-        <% block_count = 0 %>
-        <% @blocks.reverse.each do |block| %>
-          <div class="col-sm-3 equal-col">
-            <div class="panel panel-default equal-panel" style="background-color: gainsboro;">
-              <div class="panel-heading">
-                <h4 class="panel-title">
-                  <strong class="treamd-24"><%= block.name %></strong>
-                </h4>
-              </div>
-              <div class="panel-footer equal-panel-footer" style="margin: 2px; padding: 0px;">
-                <ul class="list-unstyled">
-                  <% block.magic_sets.each do |set| %>
-                    <li>
-                      <%= link_to set_title_image(set, "width: 100%; margin-left: 0%;"), magic_set_path(set)%>
-                    </li>
-                  <% end %>
-                  <% if block.name == "Other" %>
-                    <li>
-                      <%= link_to "Planars", '/planars' %>
-                    </li>
-                    <li>
-                      <%= link_to "Booster Packs", '/packs' %>
-                    </li>
-                  <% end %> 
-                </ul>
+        <div class="mobile-row">
+          <% block_count = 0 %>
+          <% @blocks.reverse.each do |block| %>
+            <div class="col-xs-6 col-sm-3 equal-col">
+              <div class="panel panel-default equal-panel" style="background-color: gainsboro;">
+                <div class="panel-heading">
+                  <h4 class="panel-title">
+                    <strong class="treamd-24"><%= block.name %></strong>
+                  </h4>
+                </div>
+                <div class="panel-footer equal-panel-footer" style="margin: 2px; padding: 0px;">
+                  <ul class="list-unstyled">
+                    <% block.magic_sets.each do |set| %>
+                      <li>
+                        <%= link_to set_title_image(set, "width: 100%; margin-left: 0%;"), magic_set_path(set)%>
+                      </li>
+                    <% end %>
+                    <% if block.name == "Other" %>
+                      <li>
+                        <%= link_to "Planars", '/planars' %>
+                      </li>
+                      <li>
+                        <%= link_to "Booster Packs", '/packs' %>
+                      </li>
+                    <% end %> 
+                  </ul>
+                </div>
               </div>
             </div>
+            <% if block_count % 2 == 1 && block_count % 4 != 3 %>
           </div>
-          <% if block_count % 4 == 3 %>
-      </div>
-      <div class="row">
+          <div class="mobile-row">
+            <% end %>
+            <% if block_count % 4 == 3 %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="mobile-row">
+            <% end %>
+            <% block_count += 1 %>
           <% end %>
-          <% block_count += 1 %>
-        <% end %>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
- //equal height plugin
-$.fn.max = function(selector) {
-  return Math.max.apply(null, this.map(function(index, el) {return selector.apply(el);}).get() );
-};
-$(window).on("load resize", function(e) {
-  equalHeight();
-});
-function equalHeight(){
-  $('.equal-panel-footer').css('height', '');
-  $('.equal-panel').css('height', '');
-  $('.equal-col').css('height', '');
-  if ( $( window ).width() > 768 ) {
-    $('.equal-panel-footer').height(function () {
-      var maxHeight = $(this).closest('.row').find('.equal-panel-footer').max( function () {
-        return $(this).height();
+  //equal height plugin
+  $.fn.max = function(selector) {
+    return Math.max.apply(null, this.map(function(index, element) {
+      return selector.apply(element);
+    }).get() );
+  };
+  $(window).on("load resize", function(e) {
+    equalHeight();
+  });
+  function equalHeight(){
+    $('.equal-panel-footer').css('height', '');
+    $('.equal-panel').css('height', '');
+    $('.equal-col').css('height', '');
+    if ( $( window ).width() > 768 ) {
+      $('.equal-panel-footer').height(function () {
+        var maxHeight = $(this).closest('.row').find('.equal-panel-footer').max( function () {
+          return $(this).height();
+        });
+        return maxHeight;
       });
-      return maxHeight;
-    });
-    $('.equal-panel').height(function () {
-      var maxHeight = $(this).closest('.row').find('.equal-panel').max( function () {
-        return $(this).height();
+      $('.equal-panel').height(function () {
+        var maxHeight = $(this).closest('.row').find('.equal-panel').max( function () {
+          return $(this).height();
+        });
+        return maxHeight;
       });
-      return maxHeight;
-    });
-    $('.equal-col').height(function () {
-      var maxHeight = $(this).closest('.row').find('.equal-col').max( function () {
-        return $(this).height();
+      $('.equal-col').height(function () {
+        var maxHeight = $(this).closest('.row').find('.equal-col').max( function () {
+          return $(this).height();
+        });
+        return maxHeight;
       });
-      return maxHeight;
-    });
+    }
+    if ( $( window ).width() <= 768 ) {
+      $('.equal-panel-footer').height(function () {
+        var maxHeight = $(this).closest('.mobile-row').find('.equal-panel-footer').max( function () {
+          return $(this).height();
+        });
+        return maxHeight;
+      });
+      $('.equal-panel').height(function () {
+        var maxHeight = $(this).closest('.mobile-row').find('.equal-panel').max( function () {
+          return $(this).height();
+        });
+        return maxHeight;
+      });
+      $('.equal-col').height(function () {
+        var maxHeight = $(this).closest('.mobile-row').find('.equal-col').max( function () {
+          return $(this).height();
+        });
+        return maxHeight;
+      });
+    }
   }
-}
 </script>

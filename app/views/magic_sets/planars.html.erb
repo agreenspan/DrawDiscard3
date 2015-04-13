@@ -33,9 +33,6 @@
                 <%= image_tag('arrowM.png', height: "20px", title: "Withdrawing") %>
               </th>
               <th>
-                <%= image_tag('M.png', height: "20px", title: "MTGO") %>
-              </th>
-              <th>
                 <%= image_tag('forSale.png', height: "20px", title: "Selling") %>
               </th>
               <th>
@@ -83,13 +80,6 @@
                 <% else %>
                   <td data-search=''></td>
                 <% end %> 
-                <% if planar.offline > 0 %>
-                  <td data-search="offline">
-                    <%= planar.offline %> 
-                  </td>
-                <% else %>
-                  <td data-search=''></td>
-                <% end %> 
                 <% if planar.selling > 0 %>
                   <td data-search="selling">
                     <%= planar.selling %> 
@@ -112,7 +102,6 @@
     </div>
   </div>
 </div>
-<br>
 
 <script>
 $(window).on("load", function() {
@@ -125,11 +114,11 @@ $(window).on("load", function() {
       { "targets": [1], "visible": false},
       { "targets": [3,4], "searchable": false, "orderSequence": ["desc", "asc"]},
       { "targets": [0], "width": "200px"}
-      <%= ", { 'targets': [5,6,7,8,9,10], 'width': '20px', 'orderSequence': ['desc', 'asc'], 'visible': #{session[:collection_filter]} }".html_safe if @filters[:on][:collection] %>
+      <%= ", { 'targets': [5,6,7,8,9], 'width': '20px', 'orderSequence': ['desc', 'asc'], 'visible': #{session[:collection_filter]} }".html_safe if @filters[:on][:collection] %>
     ]
   });
   $('#collection-button').click(function(){
-    planar_table.columns([5,6,7,8,9,10]).visible( !(planar_table.column(5).visible()) );
+    planar_table.columns([5,6,7,8,9]).visible( !(planar_table.column(5).visible()) );
   });
   $("#filters-search").keyup(function() {
     planar_table.search(this.value).draw();
@@ -151,8 +140,6 @@ $(window).on("load", function() {
   }
   $.fn.dataTable.ext.search.push(
     function( settings, data, dataIndex ) {
-      console.log(settings.sInstance);
-      console.log(settings);
       if (selected.length == 0) { return true; }
       if (selected_foils.length > 0) {
         if (($.inArray(data[1], selected_foils))==-1) { return false;}
@@ -165,9 +152,8 @@ $(window).on("load", function() {
           if ((($.inArray("online", selected_collections))!==-1) && (data[5]=="online")) { return true;}
           if ((($.inArray("depositing", selected_collections))!==-1) && (data[6]=="depositing")) { return true;}
           if ((($.inArray("withdrawing", selected_collections))!==-1) && (data[7]=="withdrawing")) { return true;}
-          if ((($.inArray("offline", selected_collections))!==-1) && (data[8]=="offline")) { return true;}
-          if ((($.inArray("selling", selected_collections))!==-1) && (data[9]=="selling")) { return true;}
-          if ((($.inArray("buying", selected_collections))!==-1) && (data[10]=="buying")) { return true;}
+          if ((($.inArray("selling", selected_collections))!==-1) && (data[8]=="selling")) { return true;}
+          if ((($.inArray("buying", selected_collections))!==-1) && (data[9]=="buying")) { return true;}
           return false;
         }
       <% end %>

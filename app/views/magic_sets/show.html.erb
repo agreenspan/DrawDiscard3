@@ -33,9 +33,6 @@
                 <%= image_tag('arrowM.png', height: "20px", title: "Withdrawing") %>
               </th>
               <th>
-                <%= image_tag('M.png', height: "20px", title: "MTGO") %>
-              </th>
-              <th>
                 <%= image_tag('forSale.png', height: "20px", title: "Selling") %>
               </th>
               <th>
@@ -47,14 +44,14 @@
         <tfoot>
           <% if @disabled_packs %> 
             <tr>
-              <td colspan="<%= (@user.present? ? 11 : 5) %>">
+              <td colspan="<%= (@user.present? ? 10 : 5) %>">
                 <strong>Packs for this set are disabled. To see a list of disabled packs, click <%= link_to "here", disabled_path %>.</strong>
               </td>
             </tr>
           <% end %>
           <% if @disabled_cards %> 
             <tr>
-              <td colspan="<%= (@user.present? ? 11 : 5) %>">
+              <td colspan="<%= (@user.present? ? 10 : 5) %>">
                 <strong>This set contains disabled cards. To see a list of disabled cards, click <%= link_to "here", disabled_path %>.</strong>
               </td>
             </tr>
@@ -90,13 +87,6 @@
                 <% if pack.withdrawing > 0 %>
                   <td data-search="withdrawing">
                     <%= pack.withdrawing %> 
-                  </td>
-                <% else %>
-                  <td data-search='`'></td>
-                <% end %> 
-                <% if pack.offline > 0 %>
-                  <td data-search="offline">
-                    <%= pack.offline %> 
                   </td>
                 <% else %>
                   <td data-search='`'></td>
@@ -159,13 +149,6 @@
                 <% else %>
                   <td data-search='`'></td>
                 <% end %> 
-                <% if card.offline > 0 %>
-                  <td data-search="offline">
-                    <%= card.offline %> 
-                  </td>
-                <% else %>
-                  <td data-search='`'></td>
-                <% end %> 
                 <% if card.selling > 0 %>
                   <td data-search="selling">
                     <%= card.selling %> 
@@ -217,13 +200,6 @@
                 <% if planar.withdrawing > 0 %>
                   <td data-search="withdrawing">
                     <%= planar.withdrawing %> 
-                  </td>
-                <% else %>
-                  <td data-search='`'></td>
-                <% end %> 
-                <% if planar.offline > 0 %>
-                  <td data-search="offline">
-                    <%= planar.offline %> 
                   </td>
                 <% else %>
                   <td data-search='`'></td>
@@ -280,13 +256,6 @@
                 <% else %>
                   <td data-search='`'></td>
                 <% end %> 
-                <% if vanguard.offline > 0 %>
-                  <td data-search="offline">
-                    <%= vanguard.offline %> 
-                  </td>
-                <% else %>
-                  <td data-search='`'></td>
-                <% end %> 
                 <% if vanguard.selling > 0 %>
                   <td data-search="selling">
                     <%= vanguard.selling %> 
@@ -309,7 +278,6 @@
     </div>
   </div>
 </div>
-<br>
 
 <script>
 $(window).on("load", function() {
@@ -323,11 +291,11 @@ $(window).on("load", function() {
       <%= "{ 'targets': [2], 'visible': false},".html_safe if @cards.blank? %>
       { "targets": [3,4], "searchable": false, "orderSequence": ["desc", "asc"]},
       { "targets": [0], "width": "235px"}
-      <%= ", { 'targets': [5,6,7,8,9,10], 'width': '20px', 'orderSequence': ['desc', 'asc'], 'visible': #{session[:collection_filter]} }".html_safe if @filters[:on][:collection] %>
+      <%= ", { 'targets': [5,6,7,8,9], 'width': '20px', 'orderSequence': ['desc', 'asc'], 'visible': #{session[:collection_filter]} }".html_safe if @filters[:on][:collection] %>
     ],
   });
   $('#collection-button').click(function(){
-    set_show_table.columns([5,6,7,8,9,10]).visible( !(set_show_table.column(5).visible()) );
+    set_show_table.columns([5,6,7,8,9]).visible( !(set_show_table.column(5).visible()) );
   });
   $("#filters-search").on("input", function() {
     set_show_table.search(this.value).draw();
@@ -362,9 +330,8 @@ $(window).on("load", function() {
           if ((($.inArray("online", selected_collections))!==-1) && (data[5]=="online")) { return true;}
           if ((($.inArray("depositing", selected_collections))!==-1) && (data[6]=="depositing")) { return true;}
           if ((($.inArray("withdrawing", selected_collections))!==-1) && (data[7]=="withdrawing")) { return true;}
-          if ((($.inArray("offline", selected_collections))!==-1) && (data[8]=="offline")) { return true;}
-          if ((($.inArray("selling", selected_collections))!==-1) && (data[9]=="selling")) { return true;}
-          if ((($.inArray("buying", selected_collections))!==-1) && (data[10]=="buying")) { return true;}
+          if ((($.inArray("selling", selected_collections))!==-1) && (data[8]=="selling")) { return true;}
+          if ((($.inArray("buying", selected_collections))!==-1) && (data[9]=="buying")) { return true;}
           return false;
         }
       <% end %>

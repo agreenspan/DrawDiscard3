@@ -5,7 +5,6 @@ class CreateTradeQueues < ActiveRecord::Migration
       t.integer :runner_id
       t.integer :bank_id
       t.string :status
-      t.string :transfer_id
       t.boolean :cancelled, default: false 
       t.text :history, array: true, default: []
 

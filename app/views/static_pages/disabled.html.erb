@@ -23,13 +23,15 @@
           </tr>
         </thead>
         <tbody>
-          <% @cards.select('DISTINCT name, collector_number, magic_set_id').order(:magic_set_id, :name, :collector_number).each do |card| %>
+          <tr>
+            <td colspan="3">
+            All Basic Lands (Including Urza's in ME4)
+            </td>
+          </tr>
+          <% @cards.select('DISTINCT name, magic_set_id').order(:magic_set_id, :name).each do |card| %>
             <tr>
               <td>
                 <%= card.magic_set.code %> 
-              </td>
-              <td>
-                #<%= card.collector_number %> 
               </td>
               <td>
                 <%= card.name %> 

@@ -6,7 +6,6 @@ class CreateStocks < ActiveRecord::Migration
       t.integer :bot_id
       t.integer :magic_card_id
       t.string :status
-      t.integer :transfer_id
 
       t.timestamps
     end

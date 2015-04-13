@@ -37,4 +37,3 @@ end
 #bot_id | integer
 #magic_card_id | integer
 #status | string
-#transfer_id | integer

@@ -198,13 +198,86 @@ before_action :mtgo_configured?, only: [:collection, :transactions, :transfers]
   end
 
   def transfers
+    @magic_accounts = @user.magic_accounts.order(:created_at)
+  end
+
+  def get_transfer_data
+    errors = false
+    errors = true unless account_valid?
+    errors = true unless associated_account?
+    redirect_to user_transfers_path(@user) and return if errors == true
+    @account = MagicAccount.where(user_id: @user.id, name: params[:magic_account]).first
+    @depositing = Stock.find_by_sql(["SELECT Stocks.magic_card_id, Magic_Cards.name, Magic_Cards.mtgo_id, Magic_Cards.foil, Magic_Sets.code, COUNT (*) AS quantity
+      FROM Stocks JOIN Magic_Cards ON Stocks.magic_card_id = Magic_Cards.id JOIN Magic_Sets ON Magic_Cards.magic_set_id = Magic_Sets.id
+      WHERE Stocks.user_id = ? AND Stocks.magic_account_id = ? AND Stocks.status = 'depositing'
+      GROUP BY Stocks.magic_card_id, Magic_Cards.name, Magic_Cards.mtgo_id, Magic_Cards.foil, Magic_Sets.code
+      ORDER BY Magic_Cards.name
+      ", "#{@user.id}", "#{@account.id}"])
+    @withdrawing = Stock.find_by_sql(["SELECT Stocks.magic_card_id, Magic_Cards.name, Magic_Cards.mtgo_id, Magic_Cards.foil, Magic_Sets.code, COUNT (*) AS quantity
+      FROM Stocks JOIN Magic_Cards ON Stocks.magic_card_id = Magic_Cards.id JOIN Magic_Sets ON Magic_Cards.magic_set_id = Magic_Sets.id
+      WHERE Stocks.user_id = ? AND Stocks.magic_account_id = ? AND Stocks.status = 'withdrawing'
+      GROUP BY Stocks.magic_card_id, Magic_Cards.name, Magic_Cards.mtgo_id, Magic_Cards.foil, Magic_Sets.code
+      ORDER BY Magic_Cards.name
+      ", "#{@user.id}", "#{@account.id}"])
+    render partial: 'users/transfer_data'
+  end
+
+  def post_transfer_data
+    errors = false
+    errors = true unless account_valid?
+    errors = true unless associated_account?
+    @set = MagicSet.find_by_name( params[:set] )
+    if @set != nil
+      if params[:foil] == "undefined"
+        @card = MagicCard.where(name: params[:card], magic_set_id: @set.id)
+      elsif params[:foil] == "foil"
+        @card = MagicCard.where(name: params[:card], magic_set_id: @set.id, foil: true)
+      elsif params[:foil] == "normal"
+        @card = MagicCard.where(name: params[:card], magic_set_id: @set.id, foil: false)
+      end       
+    else
+      @card = []
+      errors = true
+    end
+    errors = true unless @card.count == 1
+    errors = true unless ["deposit", "withdraw"].include?(params[:direction])
+    redirect_to user_transfers_path(@user) and return if errors == true
+    @account = MagicAccount.where(user_id: @user.id, name: params[:magic_account]).first
+    @card = @card.first
+    case params[:direction]
+      when "deposit"
+        errors = true if @account.tickets_depositing + Stock.where(user_id: @user.id, magic_account_id: @account.id, status: "depositing").count >= 400
+      when "withdraw"
+        errors = true if @account.tickets_withdrawing + Stock.where(user_id: @user.id, magic_account_id: @account.id, status: "withdrawing").count >= 400
+        errors = true if Stock.where(user_id: @user.id, status: "online", magic_card_id: @card.id).count < 1 
+    end
+    redirect_to user_transfers_path(@user) and return if errors == true
+    case params[:direction]
+      when "deposit"
+        Stock.create(user_id: @user.id, magic_account_id: @account.id, status: "depositing", magic_card_id: @card.id)
+      when "withdraw"
+        Stock.where(user_id: @user.id, status: "online", magic_card_id: @card.id).first.update_attributes(status: "depositing", magic_account_id: @account.id)
+    end
+    @depositing = Stock.find_by_sql(["SELECT Stocks.magic_card_id, Magic_Cards.name, Magic_Cards.mtgo_id, Magic_Cards.foil, Magic_Sets.code, COUNT (*) AS quantity
+      FROM Stocks JOIN Magic_Cards ON Stocks.magic_card_id = Magic_Cards.id JOIN Magic_Sets ON Magic_Cards.magic_set_id = Magic_Sets.id
+      WHERE Stocks.user_id = ? AND Stocks.magic_account_id = ? AND Stocks.status = 'depositing'
+      GROUP BY Stocks.magic_card_id, Magic_Cards.name, Magic_Cards.mtgo_id, Magic_Cards.foil, Magic_Sets.code
+      ORDER BY Magic_Cards.name
+      ", "#{@user.id}", "#{@account.id}"])
+    @withdrawing = Stock.find_by_sql(["SELECT Stocks.magic_card_id, Magic_Cards.name, Magic_Cards.mtgo_id, Magic_Cards.foil, Magic_Sets.code, COUNT (*) AS quantity
+      FROM Stocks JOIN Magic_Cards ON Stocks.magic_card_id = Magic_Cards.id JOIN Magic_Sets ON Magic_Cards.magic_set_id = Magic_Sets.id
+      WHERE Stocks.user_id = ? AND Stocks.magic_account_id = ? AND Stocks.status = 'withdrawing'
+      GROUP BY Stocks.magic_card_id, Magic_Cards.name, Magic_Cards.mtgo_id, Magic_Cards.foil, Magic_Sets.code
+      ORDER BY Magic_Cards.name
+      ", "#{@user.id}", "#{@account.id}"])
+    render partial: 'users/transfer_data'
   end
 
   def change_password
   end
 
   def mtgo_accounts
-    @magic_accounts = @user.magic_accounts
+    @magic_accounts = @user.magic_accounts.order(:created_at)
   end
 
   def mtgo_codes

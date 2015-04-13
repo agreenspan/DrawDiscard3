@@ -1,0 +1,40 @@
+<div class="panel panel-default">
+  <table class="table table-condensed table-bordered" id="versions">
+    <thead>
+      <tr>
+        <th colspan="3">All Versions:</th>
+      </tr>
+      <tr>
+        <th>
+          Version
+        </th>
+        <th>
+          High Buyer
+        </th>
+        <th>
+          Low Seller
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @versions.each do |card| %>
+        <% version_string = card.name+", "+card.magic_set.name+(card.foil ? ", Foil" : "") %>
+        <%# version_string = card.name+", "+card.rarity.to_s.titleize+", "+card.magic_set.name+(card.foil ? ", Foil" : "") %>
+        <tr>
+          <td>
+            <%= link_to magic_set_magic_card_path(card.magic_set, card.mtgo_id), title: version_string do %>
+              <%= image_tag(set_rarity_image(card.magic_set.code, card.rarity), height: "50%", alt: version_string) %>
+              <%= (card.foil ? image_tag("foil.png", height: "30%", alt: "Foil") : "") %>
+            <% end %>
+        </td>
+        <td>
+          <%= ( !card.buying_price.nil? ? "$"+card.buying_price.to_s : "" ) %>
+        </td>
+        <td>
+          <%= ( !card.selling_price.nil? ? "$"+card.selling_price.to_s : "" ) %>
+        </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

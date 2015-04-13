@@ -1,0 +1,61 @@
+<br>
+<% if @sets.count > 0 %>
+  <select class="form-control" id="set_selector">
+    <% if @sets.count > 1 %>
+      <option value="" disabled selected>
+      Select a Set...
+      </option>
+    <% end %>
+    <% @sets.each do |set| %>
+      <option value="<%= set.code %>"> 
+        <%= set.name %>
+      </option>
+    <% end %>
+  </select>
+<% end %>
+<br>
+<% if @foil == "on" %>
+  <div class="col-xs-12" >
+    Foil  
+    <div class="btn-group pull-right" data-toggle="buttons" id="foil_selector">
+      <button class="btn btn-xs btn-default" id="foil_button" value="foil">
+        Yes
+      </button> 
+      <button class="btn btn-xs btn-default active" id="normal_button" value="normal">
+        No
+      </button> 
+    </div>
+  </div>
+<% end %>
+
+<script>
+  $("#deposit_button").addClass("disabled");
+  $("#withdraw_button").addClass("disabled");
+  card_selection_complete = false;
+  <% if @foil == "on" %>
+    selected_foil = "normal";
+  <% else %>
+    selected_foil = undefined;
+  <% end %>
+
+  $("#set_selector").on("change", function(){
+    card_selection_complete = true;
+    update_transfer();
+  })
+
+  $("#foil_button").on("select click", function() {
+    $("#normal_button").removeClass("active");
+    $(this).addClass("active");
+    selected_foil = "foil";
+  })
+
+  $("#normal_button").on("select click", function() {
+    $("#foil_button").removeClass("active");
+    $(this).addClass("active");
+    selected_foil = "normal";
+  })
+
+  <% if @sets.count == 1 %>
+    $("#set_selector").trigger("change");
+  <% end %>
+</script>

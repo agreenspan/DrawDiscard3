@@ -1,0 +1,111 @@
+<div id="graph" style="width: 100%;"> </div>
+<br>
+
+<script>
+var groupingUnits = [ ['day', [1]], ['week', [1]], ['month', [1,3]] ]
+$('#graph').highcharts('StockChart', {
+  rangeSelector: {
+    selected: 0
+  },
+
+  chart: {
+    backgroundColor: 'transparent',
+    borderColor: "#dddddd",
+    borderRadius: 1,
+    borderWidth: 1
+  },
+
+  legend: {
+    align: "center",
+    verticalAlign: 'bottom',
+    enabled: true,
+    y: 0,
+    x: 0,
+    layout: 'horizontal'
+  },
+
+  xAxis: { type: "datetime" },
+
+  yAxis: [
+    {
+      labels: {
+        align: 'right',
+        x: -3
+      },
+      title: {
+        text: 'Price'
+      },
+      min: 0,
+      height: '70%',
+      offset: 0,
+      tickPixelInterval: 25,
+      lineWidth: 2
+    }, {
+      labels: {
+        align: 'right',
+        x: -3
+      },
+      title: {
+        text: 'Volume'
+      },
+      top: '70%',
+      height: '30%',
+      min: 0,
+      offset: 0,
+      tickPixelInterval: 40,
+      lineWidth: 2
+  }],
+
+
+  series: [
+    {
+      name: 'High',
+      data: <%= @graph_data[:high].to_json %>,
+      yAxis: 0,
+      color: "lightgreen",
+      dataGrouping: {
+        units: groupingUnits
+      },
+      marker: {
+        enabled: true
+      }
+    },
+    {
+      name: 'Average',
+      data: <%= @graph_data[:avg].to_json %>,
+      yAxis: 0,
+      color: "yellow",
+      zIndex: 10,
+      dataGrouping: {
+        units: groupingUnits
+      },
+      marker: {
+        enabled: true
+      }
+    },
+    {
+      name: 'Low',
+      data: <%= @graph_data[:low].to_json %>,
+      yAxis: 0,
+      color: "orange",
+      dataGrouping: {
+        units: groupingUnits
+      },
+      marker: {
+        enabled: true
+      }
+    },
+    {
+      type: "column",
+      name: 'Volume',
+      data: <%= @graph_data[:volume].to_json %>,
+      yAxis: 1,
+      color: "#FA5858",
+      dataGrouping: {
+        units: groupingUnits
+      }
+    }
+  ]
+});
+
+</script>

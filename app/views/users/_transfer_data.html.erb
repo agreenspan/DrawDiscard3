@@ -1,0 +1,80 @@
+<div id="depositing_count">
+  <span class="pull-right" id="depositing_count_data" >
+    <%= @account.tickets_depositing.to_i + @depositing.map{|x| x.quantity}.sum %>
+  </span>
+</div>
+
+<div id="depositing_list">
+  <div id="depositing_data" class="table-responsive" style="height: 456px !important;">
+    <table class="table table-condensed" >
+      <tr>
+        <th colspan="3">
+          Tickets 
+        </th>
+        <th width="30px">
+          <%= @account.tickets_depositing.to_i %>
+        </th>
+      </tr>
+      <% @depositing.each do |stock| %>
+        <tr>
+          <td>
+            <%= link_to stock.name, magic_set_magic_card_path(stock.code, stock.mtgo_id) %>
+          </td>
+          <td width="30px">
+            <strong>
+              <%= (stock.foil ? "F" : "") %>
+            </strong>
+          </td>
+          <td width="30px">
+            <%= stock.code %>
+          </td>
+          <td>
+            <%= stock.quantity %>
+          </td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+</div>
+
+<div id="withdrawing_count" >
+  <span class="pull-right" id="withdrawing_count_data" >
+    <%= @account.tickets_withdrawing.to_i + @withdrawing.map{|x| x.quantity}.sum %>
+  </span>
+</div>
+
+<div id="withdrawing_list">
+  <div id="withdrawing_data" class="table-responsive" height="456px">
+    <table class="table table-condensed">
+      <tr>
+        <th colspan="3">
+          Tickets 
+        </th>
+        <th width="30px">
+          <%= @account.tickets_withdrawing.to_i %>
+        </th>
+      </tr>
+      <% @withdrawing.each do |stock| %>
+        <tr>
+          <td>
+            <%= stock.name %>
+          </td>
+          <td width="30px">
+            <strong>
+              <%= (stock.magic_card.foil ? "F" : "") %>
+            </strong>
+          </td>
+          <td width="30px">
+            <%= stock.code %>
+          </td>
+          <td>
+            <%= stock.quantity %>
+          </td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+</div>
+
+
+

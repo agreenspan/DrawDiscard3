@@ -1,7 +1,9 @@
 Rails.application.routes.draw do
-
+ 
   root to: 'static_pages#home'
   match 'search', to: 'search#search', via: [:get]
+  match 'livesearch', to: 'search#livesearch', via: [:get], constraints: -> (req) { req.xhr? }
+  match 'setsearch', to: 'search#setsearch', via: [:get], constraints: -> (req) { req.xhr? }
   match 'contact', to: 'static_pages#contact', via: [:get]
   match 'bots', to: 'static_pages#bots', via: [:get]
   match 'disabled', to: 'static_pages#disabled', via: [:get]
@@ -14,7 +16,6 @@ Rails.application.routes.draw do
   match 'confirmation', to: "users#confirmation", via: [:get, :post]
   match 'session_update', to: 'sessions#update', via: [:put]
   match 'transaction', to: 'transactions#transaction', via: [:post]
-  match 'transfer', to: 'transfers#transfer', via: [:post]
   match 'cancel', to: 'transactions#cancel', via: [:post]
 
 
@@ -22,6 +23,8 @@ Rails.application.routes.draw do
     get 'collection'
     get 'transactions'
     get 'transfers'
+    get 'get_transfer_data', constraints: -> (req) { req.xhr? }
+    get 'post_transfer_data', constraints: -> (req) { req.xhr? }
     match 'change_password', to: 'users#change_password', via: [:get]
     match 'mtgo_accounts', to: 'users#mtgo_accounts', via: [:get]
     match 'mtgo_codes', to: 'users#mtgo_codes', via: [:get, :post]

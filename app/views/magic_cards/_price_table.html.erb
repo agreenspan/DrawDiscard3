@@ -1,0 +1,53 @@
+<div class="panel panel-default">
+  <table class="table table-condensed table-bordered price-table" >
+    <thead>
+      <tr>
+        <th colspan="2" width="25%">
+          Bids:
+        </th>
+        <th colspan="2" width="25%">
+          Listings:
+        </th>
+        <th colspan="3" width="40%">
+          Past Sales:
+        </th>
+      </tr>
+      <tr>
+        <th width="12.5%">
+          Price
+        </th>
+        <th width="12.5%">
+          Quantity
+        </th>
+        <th width="12.5%">
+          Price
+        </th>
+        <th width="12.5%">
+          Quantity
+        </th>
+        <th width="25%">
+          Time
+        </th>
+        <th width="12.5%">
+          Price
+        </th>
+        <th width="12.5%">
+          Quantity
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% [@bids.count, @listings.count, @sales.count].max.times do |row| %>
+        <tr>
+          <td> <%= ( row < @bids.count ? "$"+@bids[row].price.to_s : "" ) %> </td>
+          <td> <%= ( row < @bids.count ? @bids[row].num_bids : "" ) %> </td>
+          <td> <%= ( row < @listings.count ? "$"+@listings[row].price.to_s : "" ) %> </td>
+          <td> <%= ( row < @listings.count ? @listings[row].num_listings : "" ) %> </td>
+          <td> <%= ( row < @sales.count ? @sales[row].truncated_finish : "" ) %> </td>
+          <td> <%= ( row < @sales.count ? "$"+@sales[row].price.to_s : "" ) %> </td>
+          <td> <%= ( row < @sales.count ? @sales[row].num_sales : "" ) %> </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

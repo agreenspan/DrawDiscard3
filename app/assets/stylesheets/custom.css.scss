@@ -28,35 +28,15 @@ body {
   z-index: 99;
 }
 
-.wallet {
-  position: absolute;
-  left: 15px;
-  top: 60px;
-  z-index: 100;
-  &>.panel.panel-success {
-    border-color: #4cae4c !important;
-    &>.panel-heading {
-      background-color: #5cb85c !important;
-      border: 0px;
-      color: white;
-      font-size: 18px;
-      padding: 10px;
-      line-height: 20px;
-      vertical-align: text-bottom;
-    }
-  }
-}
-
 .card-image {
-  width: 100%;
-  min-width: 239px;
-  max-width: 265px;
+  min-width: 228px;
+  max-width: 228px;
 }
 
 .inverse-dropdown {
   top: 141% !important;
   left: auto !important;
-  right: auto !important;
+  right: -17px !important;
   background-color: #222222;
   border-color: black;
   border-width: 1px;
@@ -74,12 +54,14 @@ body {
     margin-bottom: 5px;
     background-color: black;
   }
+  &>li>span {
+    padding-left: 10px !important;
+  }
 }
 
-.divider {
-  background-color: gainsboro;
-  height: 1px;
-  margin: 0px 0px 20px 0px;
+.table-responsive {
+  overflow-y: auto;
+  -webkit-overflow-scroling: touch;
 }
 
 @media (max-width: 768px) {
@@ -116,14 +98,30 @@ body {
       border-radius: 0px;
     }
   }
+
 }
+
 .hidden {
   display: none !important;
 }
 
-@media (max-width: 323px) {
+@media (max-width: 333px) {
   .navbar-logo {
      display:none !important;
+  }
+}
+
+@media (max-width: 418px) {
+  .page-title {
+    padding-top: 8px;
+    font-size: 32px !important;
+  }
+}
+
+@media (max-width: 350px) {
+  .page-title {
+    padding-top: 12px;
+    font-size: 24px !important;
   }
 }
 
@@ -186,7 +184,6 @@ body {
   margin-top: 0px;
   margin-bottom: 10px;
   color: #f0f0f0;
-  margin-bottom: 0px;
   height: 65px;
   vertical-align: middle !important;
   float: none !important;
@@ -302,3 +299,7 @@ table.dataTable thead tr th {
   text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;  
 }
 
+.price-table {
+  &>tbody>tr>th, &>tbody>tr>td {
+  } 
+}

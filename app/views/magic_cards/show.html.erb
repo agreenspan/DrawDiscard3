@@ -1,289 +1,29 @@
+
 <% provide(:title, @object.name ) %>
-<% provide(:header, ((link_to image_tag(set_rarity_image(@set.code, @object.rarity)), magic_set_path(@set.code)) + " " + @object.name + " " + (@object.foil ? image_tag("foil.png", height: "30px", title: "Foil") : "")).html_safe ) %>
+<% provide(:header, ((link_to image_tag(set_rarity_image(@set.code, @object.rarity), title: @set.name), magic_set_path(@set.code)) + " " + @object.name + " " + (@object.foil ? image_tag("foil.png", height: "30px", title: "Foil") : "")).html_safe ) %>
 <div class="container">
   <div class="row">
-    <div class="col-xs-6 inverse">
-      This
-      
-    </div>
-    <div class="col-xs-6 inverse">
-      All
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-xs-3 inverse">
-      <%= card_image(@object) %>
+    <div class="col-xs-12 col-sm-4 col-md-3 inverse card-holder">
+      <%= image_tag(card_image(@object), width: "100%", class: "card-holder card-image") %>
       <br>
       <strong>MTGO ID</strong>: <%= @object.mtgo_id %><br>
       <%= "<strong>Collector #</strong>:  #{@object.collector_number}".html_safe if @object.collector_number.present? %>
     </div>
+    <div class="col-xs-12 col-sm-8 col-md-9">
+      <%= render 'magic_cards/price_graph' %>
+    </div>
+    <div class="col-xs-12 col-sm-8">
+      <%= render 'magic_cards/price_table' %>
+    </div>
+    <div class="col-xs-4 col-md-3">
+      <%= render 'magic_cards/versions' %>
+    </div>
+  </div>
+  <div class="row">
     <% if @user.present? %>
-      <div class="col-xs-3">
-        <%= form_tag transaction_path, method: :post, id: "form-transaction", html: {autocomplete: "off"} do %>
-          <%= hidden_field_tag :mtgo_id, @object.mtgo_id %>
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <div class="panel-title">
-                Transactions
-              </div>
-            </div>
-            <div class="panel-body">
-              <div class="form-group">
-                <%= label_tag 'price', "Price", class: "control-label" %>
-                <%= number_field_tag 'price', nil, min: 0.01, max: 999.9, step: 0.001, autocomplete: "off", class: "form-control" %>        
-              </div>
-              <div class="form-group">
-                <%= label_tag 'quantity', "Quantity", class: "control-label" %>
-                <%= number_field_tag 'quantity', 1, min: 1, max: 999, autocomplete: "off", class: "form-control" %>       
-              </div>
-              <small id="insufficient-tickets" style="display: none; color: #a94442;">
-                You do not have enough tickets for this purchase.
-              <br>
-              </small>
-              <small id="insufficient-cards" style="display: none; color: #a94442;">
-                You do not have that many copies on DrawDiscard. 
-              <br>
-              </small>
-            </div>
-            <div class="panel-footer">
-              <%= submit_tag "Buy", class: "btn btn-primary", id: "submit-buy" %>
-              <%= submit_tag "Sell", class: "btn btn-primary", id: "submit-sell" %>
-            </div>
-          </div>
-        <% end %>
-      </div>
-      <div class="col-xs-6">
-        <%= form_tag transfer_path, method: :post do %>
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <div class="panel-title">
-                Transfers
-              </div>
-            </div>
-            <div class="panel-body">
-              <div class="form-group">
-              </div>
-              <div class="form-group">
-              </div>
-            </div>
-            <div class="panel-footer">
-            </div>
-          </div>
-        <% end %>
-      </div>
+      <%= render 'magic_cards/transaction_form' %>
+      <%= render 'magic_cards/transfer_form' %>
     <% end %>
-  </div>
-  <div class="row">
-    <div class="col-xs-12">
-      <div class="panel panel-default">
-        <table class="table table-condensed table-bordered">
-          <thead>
-            <tr>
-              <th>
-                Bids:
-              </th>
-              <th>
-                Listings:
-              </th>
-              <th>
-                Past Sales:
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td width="30%">
-                <table class="table table-condensed" style="margin-bottom: 0px;">
-                  <thead>
-                    <tr>
-                      <th>
-                        Price
-                      </th>
-                      <th>
-                        Quantity
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <% @bids.each do |bid| %>
-                      <tr>
-                        <td>
-                          $<%= bid.price %>
-                        </td>
-                        <td>
-                          <span class="badge"><%= bid.num_bids %></span>
-                        </td>
-                      </tr>
-                    <% end %>
-                  </tbody>                  
-                </table>
-              </td>
-              <td width="30%">
-                <table class="table table-condensed" style="margin-bottom: 0px;">
-                  <thead>
-                    <tr>
-                      <th>
-                        Price
-                      </th>
-                      <th>
-                        Quantity
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <% @listings.each do |listing| %>
-                      <tr>
-                        <td>
-                          $<%= listing.price %>
-                        </td>
-                        <td>
-                          <span class="badge"><%= listing.num_listings %></span>
-                        </td>
-                      </tr>
-                    <% end %>
-                  </tbody>                  
-                </table>
-              </td>
-              <td width="40%">
-                <table class="table table-condensed" style="margin-bottom: 0px;">
-                  <thead>
-                    <tr>
-                      <th>
-                        Time
-                      </th>
-                      <th>
-                        Price
-                      </th>
-                      <th>
-                        Quantity
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <% @sales.each do |sale| %>
-                      <tr>
-                        <td>
-                          <%= sale.truncated_finish %><br>
-                        </td>
-                        <td>
-                          $<%= sale.price %>
-                        </td>
-                        <td>
-                          <span class="badge"> <%= sale.num_sales %> </span>
-                        </td>
-                      </tr>
-                    <% end %>
-                  </tbody>                  
-                </table>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-xs-12">
-      <h4 class="treamd-24 inverse">All Versions</h4>
-      <table class="table table-condensed set-table" id="versions">
-        <thead>
-          <tr>
-            <th>
-              Version
-            </th>
-            <th>
-              High Buyer
-            </th>
-            <th>
-              Low Seller
-            </th>
-            <% if @user.present? %>
-              <th>
-                <%= image_tag('DD.png', height: "20px", title: "DrawDiscard") %>
-              </th>
-              <th>
-                <%= image_tag('arrowDD.png', height: "20px", title: "Depositing") %>
-              </th>
-              <th>
-                <%= image_tag('arrowM.png', height: "20px", title: "Withdrawing") %>
-              </th>
-              <th>
-                <%= image_tag('M.png', height: "20px", title: "MTGO") %>
-              </th>
-              <th>
-                <%= image_tag('forSale.png', height: "20px", title: "Selling") %>
-              </th>
-              <th>
-                <%= image_tag('bids.png', height: "20px", title: "Buying") %>
-              </th>
-            <% end %>
-          </tr>
-        </thead>
-        <tbody>
-          <% @versions.each do |card| %>
-            <% version_string = card.name+", "+card.magic_set.name+(card.foil ? ", Foil" : "") %>
-            <%# version_string = card.name+", "+card.rarity.to_s.titleize+", "+card.magic_set.name+(card.foil ? ", Foil" : "") %>
-            <tr>
-              <td>
-                <%= link_to magic_set_magic_card_path(card.magic_set, card.mtgo_id), title: version_string do %>
-                  <%= image_tag(set_rarity_image(card.magic_set.code, card.rarity), height: "50%", alt: version_string) %>
-                  <%= (card.foil ? image_tag("foil.png", height: "30%", alt: "Foil") : "") %>
-                <% end %>
-            <td>
-              <%= ( !card.buying_price.nil? ? "$"+card.buying_price.to_s : "" ) %>
-            </td>
-            <td>
-              <%= ( !card.selling_price.nil? ? "$"+card.selling_price.to_s : "" ) %>
-            </td>
-            <% if @user.present? %>
-              <% if card.online > 0 %>
-                <td data-search="online">
-                  <%= card.online %> 
-                </td>
-              <% else %>
-                <td data-search='`'></td>
-              <% end %> 
-              <% if card.depositing > 0 %>
-                <td data-search="depositing">
-                  <%= card.depositing %> 
-                </td>
-              <% else %>
-                <td data-search='`'></td>
-              <% end %> 
-              <% if card.withdrawing > 0 %>
-                <td data-search="withdrawing">
-                  <%= card.withdrawing %> 
-                </td>
-              <% else %>
-                <td data-search='`'></td>
-              <% end %> 
-              <% if card.offline > 0 %>
-                <td data-search="offline">
-                  <%= card.offline %> 
-                </td>
-              <% else %>
-                <td data-search='`'></td>
-              <% end %> 
-              <% if card.selling > 0 %>
-                <td data-search="selling">
-                  <%= card.selling %> 
-                </td>
-              <% else %>
-                <td data-search='`'></td>
-              <% end %> 
-              <% if card.buying > 0 %>
-                <td data-search="buying">
-                  <%= card.buying %> 
-                </td>
-              <% else %>
-                <td data-search='`'></td>
-              <% end %> 
-            <% end %>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
   </div>
   <% if @user.present? %>
     <%= render 'transactions/cancel' %>
@@ -291,12 +31,12 @@
       <div class="col-xs-6">
         <div class="panel panel-default">
           <div class="panel-heading">
-            Open Bids:
+            Your Open Bids:
           </div>
           <ul class="list-group">
             <% @user_bids.each do |bid| %>
               <li class="list-group-item">
-                <%= bid.price %>
+                $<%= bid.price %>
                 <span class="badge"><%= bid.num_bids %></span>
               </li>
             <% end %>
@@ -306,12 +46,12 @@
       <div class="col-xs-6">
         <div class="panel panel-default">
           <div class="panel-heading">
-            Open Listings:
+            Your Open Listings:
           </div>
           <ul class="list-group">
             <% @user_listings.each do |listing| %>
               <li class="list-group-item">
-                <%= listing.price %>
+                $<%= listing.price %>
                 <span class="badge"><%= listing.num_listings %></span>
               </li>
             <% end %>
@@ -322,132 +62,3 @@
   </div>
 </div>
 
-<script>
-$(document).ready(function() {
-  $("#price").on('input', function() { 
-    if ($("#price").val() < 2 ){ document.getElementById("price").min = "0.01"; }
-    else if ($("#price").val() >= 10 ) { document.getElementById("price").min = "0.0"; }
-  });
-  var mousedown = false;
-  $("#price").on('mousedown', function(e) { mousedown = true; });
-  $(document).on('mouseup', function(e) { mousedown = false; });
-  var before_price = $("#price").val();
-  $("#price").on('input', function(e) {
-    if (mousedown) {
-      if ( (before_price == 2) || (before_price == 10) ) { 
-        if ( +before_price < +$("#price").val() ) {
-          document.getElementById("price").value = before_price;
-          price_increment("up");
-          document.getElementById("price").stepUp(1);
-        }
-        else if ( +before_price > +$("#price").val()) {
-          document.getElementById("price").value = before_price;
-          price_increment("down");
-          document.getElementById("price").stepDown(1);
-        }
-      }
-    }
-    before_price = $("#price").val();
-    price_increment();
-  }); 
-  $("#price").on('keydown', function(e) { 
-    if (e.which === 38) { price_increment("up"); }
-    else if (e.which === 40) { price_increment("down"); }
-  });
-  $("#price").on('mousewheel', function(e) {
-    if (e.originalEvent.wheelDelta > 0) { price_increment("up"); }
-    else if (e.originalEvent.wheelDelta < 0) { price_increment("down"); }
-  });
-  function price_increment(direction) {
-    if ($("#price").val() < 2 ){ document.getElementById("price").step = "0.001"; }
-    else if ($("#price").val() == 2 ) {
-      if (direction === "up") { document.getElementById("price").step = "0.01"; }
-      else if (direction === "down") { document.getElementById("price").step = "0.001"; }
-    }
-    else if ($("#price").val() < 10 ) { document.getElementById("price").step = "0.01"; }
-    else if ($("#price").val() == 10 ) {
-      if (direction === "up") { document.getElementById("price").step = "0.1"; }
-      else if (direction === "down") { document.getElementById("price").step = "0.01"; }
-    }
-    else if ($("#price").val() > 10 ) { document.getElementById("price").step = "0.1"; }
-  }
-
- $('#form-transaction').bootstrapValidator({
-   feedbackIcons: {
-     valid: 'glyphicon glyphicon-ok',
-     invalid: 'glyphicon glyphicon-remove',
-     validating: 'glyphicon glyphicon-refresh'
-   },
-   fields: {
-     price: {
-       validators: {
-         notEmpty: {
-           message: 'The price is required and cannot be empty'
-         },
-         callback: {
-           callback: function (value, validator, $field) {
-             value = parseFloat(value);
-             if ((value >= .01) && (value <= 2) && (value.toFixed(3) != value) ) {
-               return {
-                 valid: false,
-                 message: 'Prices under 2 tickets must be set in increments of 0.001'
-               }
-             }
-             else if ((value >= 2) && (value <= 10) && (value.toFixed(2) != value)) {
-               return {
-                 valid: false,
-                 message: 'Prices between 2 and 10 tickets must be set in increments of 0.01'
-               }
-             }
-             else if ((value >= 10) && (value.toFixed(1) != value) ) {
-               return {
-                 valid: false,
-                 message: 'Prices above 10 tickets must be set in increments of 0.1'
-               }
-             }
-             else {
-               return {
-                 valid: true
-               }
-             }
-           }
-         }
-       }
-     },
-     quantity: {
-       validators: {
-         notEmpty: {
-           message: 'The quantity is required and cannot be empty'
-         },
-         integer: {
-           message: 'The quantity must be an integer'
-         }
-       }
-     }
-   }
- });
-  <% if @user.present? %>
-   $("#price, #quantity").on("input", function() {
-     $('#form-transaction').data('bootstrapValidator').validate();
-     if (+$("#quantity").val() > <%= @versions.select {|o| o.id == @object.id}.first.online %>) {
-       document.getElementById('submit-sell').disabled = true;
-       $('#insufficient-cards').show();
-     } else if ($('#form-transaction').data('bootstrapValidator').isValid()) {
-       document.getElementById('submit-sell').disabled = false;
-       $('#insufficient-cards').hide();
-     } else {
-       $('#insufficient-cards').hide();
-     }
-     if ((+$("#quantity").val() * +$('#price').val()) > <%= @user.wallet %>) {
-       document.getElementById('submit-buy').disabled = true;
-       $('#insufficient-tickets').show();
-     } else if ($('#form-transaction').data('bootstrapValidator').isValid()) {
-       document.getElementById('submit-buy').disabled = false;
-       $('#insufficient-tickets').hide();
-     } else {
-       $('#insufficient-tickets').hide();
-     }
-   });
-  <% end %>
-});
-</script>

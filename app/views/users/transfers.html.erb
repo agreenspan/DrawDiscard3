@@ -1,8 +1,220 @@
 <% provide(:title, "Transfers") %>
 <% provide(:header, "TRANSFERS") %>
 <div class="container">
-  <div class="row">
-    <div class="col-xs-12">
+  <ul class="nav nav-pills">
+    <li role="presentation" class="active">
+      <a href="#transfers" id="transfers_tab" data-toggle="tab" aria-controls="transfers" aria-expanded="true">
+        Transfers
+      </a>
+    </li>
+    <li>
+      <a href="#history" id="transfers_tab" data-toggle="tab" aria-controls="history" aria-expanded="false">
+        History
+      </a>
+    </li>
+  </ul>
+</div>
+<div id="tabcontainer" class="tab-content container">
+  <div role="tabpanel" class="tab-pane active in" id="transfers" aria-labelledby="transfers_tab">
+    <br>
+    <div class="col-xs-12 col-md-3" >
+      <div class="panel panel-default" style="height: 500px;">
+        <div class="panel-heading">        
+          <strong>
+            Magic Account
+          </strong>
+        </div>
+        <div class="panel-body" style="height: 402px;">   
+          <div class="btn-group-vertical btn-block" data-toggle="buttons" id="account_selector">
+            <% @magic_accounts.each do |account| %>
+              <label class="btn btn-default">
+                <input type="radio" name="gender" value="<%= account.name %>" /> 
+                  <%= account.name %>
+              </label>
+            <% end %>
+          </div>
+          <div>
+            <br>
+          </div>
+        </div>
+        <div class="panel-footer" >
+          <div class="btn-group-vertical btn-block">        
+            <button class="btn btn-danger" id="clear">
+              <span>Clear</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-3">
+      <div class="panel panel-default" style="height: 500px;">
+        <div class="panel-heading">        
+          <strong>Card</strong>
+        </div>
+        <div class="panel-body" style="height:403px;">
+          <input type="text" class="form-control" id="card_name" placeholder="Name">
+          <br>
+          <div id="results">
+            <selector id="card_selector"> </selector>
+          </div>
+        </div>
+        <div class="panel-footer">
+          <div class="btn-group btn-group-justified">
+            <div class="btn-group">       
+              <button class="btn btn-primary disabled" id="deposit_button">
+                <span>Deposit</span>
+              </button>
+            </div>
+            <div class="btn-group">       
+              <button class="btn btn-warning disabled" id="withdraw_button">
+                <span>Withdraw</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-3">
+      <div class="panel panel-default" style="height: 500px;">
+        <div class="panel-heading">        
+            <%= image_tag('arrowDD.png', height: "20px", title: "Depositing") %>
+            <strong style="margin-left: 5px;"> Depositing</strong>
+            <span class="pull-right" id="depositing_count_data"></span>
+        </div>
+        <div id="depositing_data">
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-3">
+      <div class="panel panel-default" style="height: 500px;">
+        <div class="panel-heading">        
+          <%= image_tag('arrowM.png', height: "20px", title: "Withdrawing") %>
+          <strong style="margin-left: 5px;"> Withdrawing</strong>
+          <span class="pull-right" id="withdrawing_count_data"></span>
+        </div>
+        <div id="withdrawing_data">
+        </div>
+      </div>
     </div>
   </div>
+  <div role="tabpanel" class="tab-pane" id="history" aria-labelledby="history_tab">
+  </div>
 </div>
+
+
+<script>
+var card_selection_complete = false;
+var account;
+var selected_card;
+var selected_set;
+var selected_foil;
+
+function update_transfer() {
+  if (card_selection_complete == true) {
+    account = $("#account_selector :checked").val();
+    selected_card = $("#card_selector option:selected").text().trim();
+    selected_set = $("#set_selector option:selected").text().trim();
+    var deposit_count = parseInt($("#depositing_count_data").text());
+    var withdraw_count = parseInt($("#withdrawing_count_data").text());
+    if (deposit_count < 400) {
+      $("#deposit_button").removeClass("disabled");
+    }
+    if (withdraw_count < 400) {
+      $("#withdraw_button").removeClass("disabled");
+    }
+  };
+}
+
+  var card_search = "";
+  var timeout;
+
+  $("#card_name").on('keydown keyup keypress change input', function(){
+    window.clearTimeout(timeout);
+    timeout = window.setTimeout( function () {
+      livesearch();
+    }, 250)
+  });
+
+  function livesearch() {
+    search = $("#card_name").val().trim();
+    if ( (search.length >= 3) && (search != card_search) ) {
+      $.ajax({
+        url: "/livesearch?search="+search,
+        dataType: "html",
+        type: "GET",
+        success: function (data) {
+          var html = $('<div />').append(data)
+          $("#results").html(html);
+        }
+      })
+      card_search = search;
+    } else { 
+      if (search.length < 3) {
+        $("#results").empty();
+        card_search = "";
+      }
+    } 
+  }
+
+  $("#account_selector").change( function() {
+    var account = $("#account_selector :checked").val();
+    $.ajax({
+      url: "/users/"+<%=@user.id%>+"/get_transfer_data?magic_account="+account,
+      dataType: "html",
+      type: "GET",
+      success: function( data ) {
+        var html = $('<div />').append(data)
+        $("#depositing_count_data").empty();
+        $("#depositing_count_data").replaceWith( html.find('#depositing_count').html() );
+        $("#depositing_data").empty();
+        $("#depositing_data").replaceWith( html.find('#depositing_list').html() );
+        $("#withdrawing_count_data").empty();
+        $("#withdrawing_count_data").replaceWith( html.find('#withdrawing_count').html() );
+        $("#withdrawing_data").empty();
+        $("#withdrawing_data").replaceWith( html.find('#withdrawing_list').html() );
+        update_transfer();
+      }      
+    });
+  });
+
+  $("#deposit_button").on("click submit", function(e){
+    e.stopPropagation();
+    $.ajax({
+      url: "/users/"+<%=@user.id%>+"/post_transfer_data?direction=deposit;magic_account="+account+";card="+selected_card+";set="+selected_set+";foil="+selected_foil,
+      dataType: "html",
+      type: "GET",
+      success: function( data ) {
+        var html = $('<div />').append(data)
+        $("#depositing_count_data").empty();
+        $("#depositing_count_data").replaceWith( html.find('#depositing_count').html() );
+        $("#depositing_data").empty();
+        $("#depositing_data").replaceWith( html.find('#depositing_list').html() );
+        update_transfer();
+      }
+    })
+  });
+
+  $("#withdraw_button").on("click submit", function(e){
+    e.stopPropagation();
+    $.ajax({
+      url: "/users/"+<%=@user.id%>+"/post_transfer_data?direction=withdraw;magic_account="+account+";card="+selected_card+";set="+selected_set+";foil="+selected_foil,
+      dataType: "html",
+      type: "GET",
+      success: function( data ) {
+        var html = $('<div />').append(data)
+        $("#withdrawing_count_data").empty();
+        $("#withdrawing_count_data").replaceWith( html.find('#withdrawing_count').html() );
+        $("#withdrawing_data").empty();
+        $("#withdrawing_data").replaceWith( html.find('#withdrawing_list').html() );
+        update_transfer();
+      }
+    })
+  });
+
+  $("#account_selector input:radio:first").trigger('click');
+  $("#card_name").trigger("change");
+
+
+</script>
+
+<div id="transfer_script"></div>

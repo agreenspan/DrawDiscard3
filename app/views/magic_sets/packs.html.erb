@@ -32,9 +32,6 @@
                 <%= image_tag('arrowM.png', height: "20px", title: "Withdrawing") %>
               </th>
               <th>
-                <%= image_tag('M.png', height: "20px", title: "MTGO") %>
-              </th>
-              <th>
                 <%= image_tag('forSale.png', height: "20px", title: "Selling") %>
               </th>
               <th>
@@ -80,13 +77,6 @@
                 <% else %>
                   <td data-search=''></td>
                 <% end %> 
-                <% if pack.offline > 0 %>
-                  <td data-search="offline">
-                    <%= pack.offline %> 
-                  </td>
-                <% else %>
-                  <td data-search=''></td>
-                <% end %> 
                 <% if pack.selling > 0 %>
                   <td data-search="selling">
                     <%= pack.selling %> 
@@ -109,7 +99,6 @@
     </div>
   </div>
 </div>
-<br>
 
 <script>
 $(window).on("load", function() {
@@ -121,11 +110,11 @@ $(window).on("load", function() {
     "columnDefs": [
       { "targets": [2,3], "searchable": false, "orderSequence": ["desc", "asc"]},
       { "targets": [0], "width": "215px"} 
-      <%= ", { 'targets': [4,5,6,7,8,9], 'width': '20px', 'orderSequence': ['desc', 'asc'], 'visible': #{session[:collection_filter]} }".html_safe if @filters[:on][:collection] %>
+      <%= ", { 'targets': [4,5,6,7,8], 'width': '20px', 'orderSequence': ['desc', 'asc'], 'visible': #{session[:collection_filter]} }".html_safe if @filters[:on][:collection] %>
     ]
   });
   $('#collection-button').click(function(){
-    pack_table.columns([4,5,6,7,8,9]).visible( !(pack_table.column(4).visible()) );
+    pack_table.columns([4,5,6,7,8]).visible( !(pack_table.column(4).visible()) );
   });
   $("#filters-search").keyup(function() {
     pack_table.search(this.value).draw();
@@ -153,9 +142,8 @@ $(window).on("load", function() {
           if ((($.inArray("online", selected_collections))!==-1) && (data[4]=="online")) { return true;}
           if ((($.inArray("depositing", selected_collections))!==-1) && (data[5]=="depositing")) { return true;}
           if ((($.inArray("withdrawing", selected_collections))!==-1) && (data[6]=="withdrawing")) { return true;}
-          if ((($.inArray("offline", selected_collections))!==-1) && (data[7]=="offline")) { return true;}
-          if ((($.inArray("selling", selected_collections))!==-1) && (data[8]=="selling")) { return true;}
-          if ((($.inArray("buying", selected_collections))!==-1) && (data[9]=="buying")) { return true;}
+          if ((($.inArray("selling", selected_collections))!==-1) && (data[7]=="selling")) { return true;}
+          if ((($.inArray("buying", selected_collections))!==-1) && (data[8]=="buying")) { return true;}
           return false;
         }
       <% end %>

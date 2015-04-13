@@ -19,7 +19,9 @@
 //= require bootstrap
 //= require bootstrap-sprockets
 //= require bootstrapValidator
-
+//= require highstocks
+//= require highcharts-more
+//= require dark-unica
 
 function sleep(milliseconds) {
   var start = new Date().getTime();

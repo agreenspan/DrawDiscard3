@@ -7,7 +7,7 @@ class StaticPagesController < ApplicationController
   end
 
   def disabled
-    @cards = MagicCard.where(disabled: true, object_type: "card")
+    @cards = MagicCard.where(disabled: true, object_type: "card").where.not(rarity: "basic")
     @packs = MagicCard.where(disabled: true, object_type: "pack")
   end
 

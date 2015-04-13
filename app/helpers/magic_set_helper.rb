@@ -96,7 +96,6 @@ module MagicSetHelper
     @filters[:collection][:online] = [0, "DrawDiscard", "DD.png"]
     @filters[:collection][:depositing] = [0, "Depositing", "arrowDD.png"]
     @filters[:collection][:withdrawing] = [0, "Withdrawing", "arrowM.png"]
-    @filters[:collection][:offline] = [0, "MTGO", "M.png"]
     @filters[:collection][:selling] = [0, "Selling", "forSale.png"]
     @filters[:collection][:buying] = [0, "Buying", "bids.png"]
 
@@ -117,7 +116,6 @@ module MagicSetHelper
             @filters[:collection][:online][0] += object.online
             @filters[:collection][:depositing][0] += object.depositing
             @filters[:collection][:withdrawing][0] += object.withdrawing
-            @filters[:collection][:offline][0] += object.offline
             @filters[:collection][:selling][0] += object.selling
             @filters[:collection][:buying][0] += object.buying
           when 'pack'
@@ -126,7 +124,6 @@ module MagicSetHelper
               @filters[:collection][:online][0] += object.online
               @filters[:collection][:depositing][0] += object.depositing
               @filters[:collection][:withdrawing][0] += object.withdrawing
-              @filters[:collection][:offline][0] += object.offline
               @filters[:collection][:selling][0] += object.selling
               @filters[:collection][:buying][0] += object.buying
             end
@@ -137,7 +134,6 @@ module MagicSetHelper
             @filters[:collection][:online][0] += object.online
             @filters[:collection][:depositing][0] += object.depositing
             @filters[:collection][:withdrawing][0] += object.withdrawing
-            @filters[:collection][:offline][0] += object.offline
             @filters[:collection][:selling][0] += object.selling
             @filters[:collection][:buying][0] += object.buying
           when 'vanguard'
@@ -145,7 +141,6 @@ module MagicSetHelper
             @filters[:collection][:online][0] += object.online
             @filters[:collection][:depositing][0] += object.depositing
             @filters[:collection][:withdrawing][0] += object.withdrawing
-            @filters[:collection][:offline][0] += object.offline
             @filters[:collection][:selling][0] += object.selling
             @filters[:collection][:buying][0] += object.buying
         end
