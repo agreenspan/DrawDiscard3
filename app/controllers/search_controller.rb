@@ -8,7 +8,7 @@ class SearchController < ApplicationController
       flash_message :danger, "Search query too short."
       redirect_to :back and return
     end
-    @sets = MagicSet.where('name ILIKE ? OR code ILIKE ?', "%#{params[:search]}%", "%#{params[:search]}%")
+    @sets = MagicSet.where('name ILIKE ? OR code ILIKE ?', "%#{searchable(params[:search])}%", "%#{searchable(params[:search])}%")
     objects_sql = "SELECT 
       Magic_Cards.id, Magic_Cards.mtgo_id, Magic_Cards.name, Magic_Cards.plain_name, Magic_Cards.foil, Magic_Cards.rarity, Magic_Cards.object_type, Magic_Cards.magic_set_id, (Magic_Sets.name) AS set_name, Magic_Sets.code, 
       (SELECT MAX(Transactions.price) FROM Transactions WHERE (Transactions.magic_card_id = Magic_Cards.id AND Transactions.status = 'buying')) AS buying_price, 
@@ -21,7 +21,7 @@ class SearchController < ApplicationController
       , (SELECT COUNT(*) FROM Transactions WHERE (Transactions.magic_card_id = Magic_Cards.id AND Transactions.status = 'buying' AND Transactions.buyer_id = #{@user.id})) AS buying
       " if @user.present?
     objects_sql += " FROM Magic_Cards JOIN Magic_sets ON Magic_Cards.magic_set_id = Magic_Sets.id WHERE (Magic_Cards.name ILIKE ? OR Magic_Cards.plain_name ILIKE ?) AND disabled = false ORDER BY Magic_Cards.id ASC"
-    @objects = MagicCard.find_by_sql([objects_sql, "%#{params[:search]}%", "%#{params[:search]}%"])
+    @objects = MagicCard.find_by_sql([objects_sql, "%#{searchable(params[:search])}%", "%#{searchable(params[:search])}%"])
 
     @cards = [] 
     @packs = [] 
@@ -43,8 +43,8 @@ class SearchController < ApplicationController
     @results = MagicCard.find_by_sql(['SELECT Magic_Cards.name, Magic_Cards.plain_name
       FROM Magic_Cards
       WHERE (Magic_Cards.name ILIKE ? OR Magic_Cards.plain_name ILIKE ?) AND disabled = false
-      GROUP BY Magic_Cards.name, Magic_Cards.plain_name', "%#{params[:search]}%", "%#{params[:search]}%"])
-    @regexp = /#{params[:search].replace_special_characters}/i;
+      GROUP BY Magic_Cards.name, Magic_Cards.plain_name', "%#{searchable(params[:search])}%", "%#{searchable(params[:search])}%"])
+    @regexp = /#{searchable(params[:search]).replace_special_characters}/i;
     @objects =  @results.sort_by { |x| [(x.plain_name =~ @regexp), x.name.downcase] }.first(10)
     render partial: 'search/live_search'
   end
@@ -57,7 +57,7 @@ class SearchController < ApplicationController
       FROM Magic_Sets JOIN Magic_Cards ON Magic_Cards.magic_set_id = Magic_Sets.id
       WHERE Magic_Cards.name LIKE ? AND disabled = false
       GROUP BY Magic_Sets.name, Magic_Sets.code, Magic_Cards.object_type
-      ORDER BY Magic_Sets.name', "#{params[:search]}",])
+      ORDER BY Magic_Sets.name', "%#{searchable(params[:search])}%",])
     render partial: 'search/set_search' and return if @sets.empty?
     (["card", "planar"].include?(@sets.first.object_type) ? @foil = "on" : @foil = "off" )
     render partial: 'search/set_search'

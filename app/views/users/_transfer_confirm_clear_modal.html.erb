@@ -1,0 +1,79 @@
+<div id="transfer_confirm_clear_modal" class="modal fade">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content panel-danger">
+      <div class="modal-heading panel-heading">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title"> Clear Account </h4>        
+      </div>
+      <div class="modal-body panel-body">
+        Are you sure you wish to clear the transfers for your account <strong id="clear_account"></strong>?
+      </div>
+      <div class="modal-footer panel-footer ">
+        <button class="btn btn-danger" id="confirmed_clear">
+          <span>Clear</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $("#clear").on("click submit", function() {
+    $("#transfer_confirm_clear_modal").modal("show");
+    $("#clear_account").html(account);
+  })
+  $("#confirmed_clear").on("click submit", function() {
+    $.ajax({
+      url: "/users/"+<%=@user.id%>+"/transfer_clear_account?magic_account="+account,
+      dataType: "html",
+      type: "GET",
+      success: function(data) {
+        var html = $('<div />').append(data);
+        $("#transfer_confirm_clear_modal").modal("hide");
+        if ( html.find("#transfer_data_success_key").text().trim() !== "success" ) {
+          $("#transfer_error_modal").modal("show");
+        }
+        $("#depositing_count_data").empty();
+        $("#depositing_count_data").replaceWith( html.find('#depositing_count').html() );
+        $("#depositing_data").empty();
+        $("#depositing_data").replaceWith( html.find('#depositing_list').html() );
+        $("#withdrawing_count_data").empty();
+        $("#withdrawing_count_data").replaceWith( html.find('#withdrawing_count').html() );
+        $("#withdrawing_data").empty();
+        $("#withdrawing_data").replaceWith( html.find('#withdrawing_list').html() );
+        $("#ticket_depositing_icon").addClass("hidden");
+        $("#ticket_withdrawing_icon").addClass("hidden");
+        $("#ticket_direction").html('');
+        if ( html.find("#ticket_transfer_direction").text().trim() === "deposit" ) {
+          $("#ticket_direction").html('depositing_tickets');
+          $("#ticket_depositing_icon").removeClass("hidden");
+        } 
+        if ( html.find("#ticket_transfer_direction").text().trim() === "withdraw" ) {
+          $("#ticket_direction").html('withdrawing_tickets');
+          $("#ticket_withdrawing_icon").removeClass("hidden");
+        }
+        $("#ticket_transfer_quantity").empty();
+        $("#ticket_transfer_quantity").html( html.find('#ticket_transfer_quantity').html() );
+        $("#transfer_data_script").html( html.find("#transfer_data_script").html() );
+        $("#edit_selected_quantity").addClass("hidden");
+        $("#edit_deposit").addClass("hidden");
+        $("#edit_withdraw").addClass("hidden");
+        $("#edit_ok").addClass("hidden");
+        $("#edit_remove").addClass("hidden");
+        $("#edit_selected_details").html("");
+        $("#edit_dd_icon").addClass("hidden");
+        $("#edit_online_count").html("");
+        $("span.wallet").html( html.find("#wallet_update").text().trim() )
+
+        update_transfer();
+      },
+      error: function ( ) {
+        console.log("ajax error");
+        $("#transfer_confirm_clear_modal").modal("hide");
+        $("#transfer_error_modal").modal("show");
+      }
+
+
+    })
+  })
+</script>

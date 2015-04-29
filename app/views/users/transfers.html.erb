@@ -17,7 +17,7 @@
 <div id="tabcontainer" class="tab-content container">
   <div role="tabpanel" class="tab-pane active in" id="transfers" aria-labelledby="transfers_tab">
     <br>
-    <div class="col-xs-12 col-md-3" >
+    <div class="col-xs-6 col-md-3" >
       <div class="panel panel-default" style="height: 500px;">
         <div class="panel-heading">        
           <strong>
@@ -46,10 +46,10 @@
         </div>
       </div>
     </div>
-    <div class="col-xs-12 col-md-3">
+    <div class="col-xs-6 col-md-3">
       <div class="panel panel-default" style="height: 500px;">
         <div class="panel-heading">        
-          <strong>Card</strong>
+          <strong>Card Search</strong>
         </div>
         <div class="panel-body" style="height:403px;">
           <input type="text" class="form-control" id="card_name" placeholder="Name">
@@ -74,25 +74,99 @@
         </div>
       </div>
     </div>
-    <div class="col-xs-12 col-md-3">
+    <div class="col-xs-12 col-md-6">
       <div class="panel panel-default" style="height: 500px;">
-        <div class="panel-heading">        
-            <%= image_tag('arrowDD.png', height: "20px", title: "Depositing") %>
-            <strong style="margin-left: 5px;"> Depositing</strong>
-            <span class="pull-right" id="depositing_count_data"></span>
+        <div class="panel-heading">    
+          <div class="row">
+            <div class="col-xs-6">
+              <%= image_tag('arrowDD.png', height: "20px", title: "Depositing") %>
+              <strong style="margin-left: 5px;"> Depositing</strong>
+              <span class="pull-right">/400</span>
+              <span class="pull-right" id="depositing_count_data"></span>
+            </div>
+            <div class="col-xs-6">
+              <%= image_tag('arrowM.png', height: "20px", title: "Withdrawing") %>
+              <strong style="margin-left: 5px;"> Withdrawing</strong>
+              <span class="pull-right">/400</span>
+              <span class="pull-right" id="withdrawing_count_data"></span>
+            </div>
+          </div>
         </div>
-        <div id="depositing_data">
+        <div class="panel-body" id="tickets" style="padding-top: 5px; padding-bottom: 5px; border-bottom: 1px; height: 31px;">
+          <div class="hidden" id="ticket_direction"></div>
+          <div class="row">
+            <div class="col-xs-2">
+              <strong>Tickets</strong>
+            </div>
+            <div class="col-xs-8">
+              <p class="text-center" style="margin-bottom: 0px">
+                <%= image_tag('arrowDD.png', height: "20px", title: "Depositing", class: "hidden", id: "ticket_depositing_icon") %>
+                <%= image_tag('arrowM.png', height: "20px", title: "Withdrawing", class: "hidden", id: "ticket_withdrawing_icon") %>
+              </p>
+            </div>
+            <div class="col-xs-2">
+              <span class="pull-right" id="ticket_transfer_quantity"></span>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-    <div class="col-xs-12 col-md-3">
-      <div class="panel panel-default" style="height: 500px;">
-        <div class="panel-heading">        
-          <%= image_tag('arrowM.png', height: "20px", title: "Withdrawing") %>
-          <strong style="margin-left: 5px;"> Withdrawing</strong>
-          <span class="pull-right" id="withdrawing_count_data"></span>
+        <div class="row" style="height: 371px !important;">
+          <div class="col-xs-6" style="padding-right: 0px;">
+            <div id="depositing_data" style="height: 371px !important;"> </div>
+          </div>
+          <div class="col-xs-6" style="padding-left: 0px;">
+            <div id="withdrawing_data" style="height: 371px !important;"> </div>
+          </div>
         </div>
-        <div id="withdrawing_data">
+        <div class="panel-footer" style="height: 55px; padding: 3px;">
+        
+            <div class="col-xs-6" id="edit_selected_details" style="padding: 3px;">
+            </div>
+            
+            <div class="col-xs-1" style="padding: 3px;">
+              <div class="row">
+                <div class="col-xs-12">
+                  <img height='20px' src='/assets/DD.png' title='DrawDiscard' class="hidden" id="edit_dd_icon">
+                </div>
+              </div>
+              <div class="row">
+                <div id="edit_online_count" class="col-xs-12">
+                </div>
+              </div>
+            </div>
+
+            <form class="form-inline" id="edit_transfer" style="width: 100%;">
+              <div class="col-xs-2" style="padding-left: 3px; padding-right: 3px; padding-top: 5px">
+                  <div class="form-group form-group-sm pull-right" style="width: 68px; margin: 0px;">
+                    <input type="number" name="edit_selected_quantity" id="edit_selected_quantity" class="form-control hidden" min="1" max="400" style="width: 68px;">
+                  </div>
+              </div>
+
+              <div class="col-xs-1 hidden edit_button" id="edit_ok" style="padding-left: 3px; padding-right: 3px; padding-top: 5px">
+                <button class="btn btn-xs btn-success hidden" type="submit" id="edit_ok" style="width: 100%; height: 34px;" title="Update Quantity">
+                  <span class="glyphicon glyphicon-ok"></span>
+                </button>
+              </div>
+              <div class="col-xs-1 hidden edit_button" id="edit_deposit" style="padding-left: 3px; padding-right: 3px; padding-top: 5px">
+                <button class="btn btn-xs btn-primary hidden" type="button" id="edit_deposit" style="width: 100%; height: 34px;" title="Deposit">
+                  <span>
+                    <%= image_tag('arrowDD.png', height: "15px") %>
+                  </span>
+                </button>
+              </div>
+              <div class="col-xs-1 hidden edit_button" id="edit_withdraw" style="padding-left: 3px; padding-right: 3px; padding-top: 5px">
+                <button class="btn btn-xs btn-warning hidden" type="button" id="edit_withdraw" style="width: 100%; height: 34px;" title="Withdraw">
+                  <span >
+                    <%= image_tag('arrowM.png', height: "15px") %>
+                  </span>
+                </button>
+              </div>
+              <div class="col-xs-1 hidden edit_button" id="edit_remove" style="padding-left: 3px; padding-right: 3px; padding-top: 5px" >
+                <button class="btn btn-xs btn-danger hidden" type="button" id="edit_remove" style="width: 100%; height: 34px;" title="Clear">
+                  <span class="glyphicon glyphicon-remove"></span>
+                </button>
+              </div>
+            </form>
+
         </div>
       </div>
     </div>
@@ -100,7 +174,7 @@
   <div role="tabpanel" class="tab-pane" id="history" aria-labelledby="history_tab">
   </div>
 </div>
-
+<div id="transfer_data_script" class="hidden"></div>
 
 <script>
 var card_selection_complete = false;
@@ -108,21 +182,54 @@ var account;
 var selected_card;
 var selected_set;
 var selected_foil;
+var online_count;
+var deposit_count;
+var withdraw_count;
 
 function update_transfer() {
+  $("#deposit_button").addClass("disabled");
+  $("#withdraw_button").addClass("disabled");
+  account = $("#account_selector :checked").val();
+  deposit_count = parseInt($("#depositing_count_data").text());
+  withdraw_count = parseInt($("#withdrawing_count_data").text());
   if (card_selection_complete == true) {
-    account = $("#account_selector :checked").val();
     selected_card = $("#card_selector option:selected").text().trim();
     selected_set = $("#set_selector option:selected").text().trim();
-    var deposit_count = parseInt($("#depositing_count_data").text());
-    var withdraw_count = parseInt($("#withdrawing_count_data").text());
-    if (deposit_count < 400) {
-      $("#deposit_button").removeClass("disabled");
-    }
-    if (withdraw_count < 400) {
-      $("#withdraw_button").removeClass("disabled");
-    }
-  };
+    $.ajax({
+      url: "/users/"+<%=@user.id%>+"/transfer_check_card?magic_account="+account+";card="+selected_card+";set="+selected_set+";foil="+selected_foil,
+      dataType: "html",
+      type: "GET",
+      success: function(data) {
+        var html = $('<div />').append(data);
+        var already_transfering = html.find("#transfering").text().trim();
+        var online_copy = html.find("#online").text().trim();
+        if ( (deposit_count < 400) && (already_transfering == "no") ) {
+          $("#deposit_button").removeClass("disabled");
+        }
+        if ( (withdraw_count < 400) && (already_transfering == "no") && (online_copy == "yes") ) {
+          $("#withdraw_button").removeClass("disabled");
+        }
+        if (already_transfering == "yes") {
+          var link = html.find("#link a")[0].pathname;
+          var row = $("a[href='"+link+"']").closest("tr");
+          row.trigger("click");
+          var table = row.closest("div");
+          var pos = row.position().top;
+          $(table).animate({
+            scrollTop: $(table).scrollTop()+pos
+          })
+          card_selection_complete = true;
+        }
+      },
+      error: function ( ) {
+        console.log("ajax error");
+        $("#transfer_error_modal").modal("show");
+      }
+    })
+  }
+  if ($("#tickets").css('background-color') == "rgb(217, 237, 247)" ) {
+    $("#tickets").trigger("click");
+  }
 }
 
   var card_search = "";
@@ -143,8 +250,15 @@ function update_transfer() {
         dataType: "html",
         type: "GET",
         success: function (data) {
-          var html = $('<div />').append(data)
+          var html = $('<div />').append(data);
+          if ( html.find("#live_search_success_key").text().trim() !== "success" ) {
+            $("#transfer_error_modal").modal("show");
+          }
           $("#results").html(html);
+        },      
+        error: function ( ) {
+          console.log("ajax error");
+          $("#transfer_error_modal").modal("show");
         }
       })
       card_search = search;
@@ -163,7 +277,10 @@ function update_transfer() {
       dataType: "html",
       type: "GET",
       success: function( data ) {
-        var html = $('<div />').append(data)
+        var html = $('<div />').append(data);
+        if ( html.find("#transfer_data_success_key").text().trim() !== "success" ) {
+          $("#transfer_error_modal").modal("show");
+        }
         $("#depositing_count_data").empty();
         $("#depositing_count_data").replaceWith( html.find('#depositing_count').html() );
         $("#depositing_data").empty();
@@ -172,8 +289,35 @@ function update_transfer() {
         $("#withdrawing_count_data").replaceWith( html.find('#withdrawing_count').html() );
         $("#withdrawing_data").empty();
         $("#withdrawing_data").replaceWith( html.find('#withdrawing_list').html() );
+        $("#ticket_depositing_icon").addClass("hidden");
+        $("#ticket_withdrawing_icon").addClass("hidden");
+        $("#ticket_direction").html('');
+        if ( html.find("#ticket_transfer_direction").text().trim() === "deposit" ) {
+          $("#ticket_direction").html('depositing_tickets');
+          $("#ticket_depositing_icon").removeClass("hidden");
+        } 
+        if ( html.find("#ticket_transfer_direction").text().trim() === "withdraw" ) {
+          $("#ticket_direction").html('withdrawing_tickets');
+          $("#ticket_withdrawing_icon").removeClass("hidden");
+        }
+        $("#ticket_transfer_quantity").empty();
+        $("#ticket_transfer_quantity").html( html.find('#ticket_transfer_quantity').html() );
+        $("#edit_selected_quantity").addClass("hidden");
+        $("#edit_deposit").addClass("hidden");
+        $("#edit_withdraw").addClass("hidden");
+        $("#edit_ok").addClass("hidden");
+        $("#edit_remove").addClass("hidden");
+        $("#edit_selected_details").html("");
+        $("#edit_dd_icon").addClass("hidden");
+        $("#edit_online_count").html("");
+        $("#transfer_data_script").html( html.find("#transfer_data_script").html() );
         update_transfer();
-      }      
+
+      },      
+      error: function ( ) {
+        console.log("ajax error");
+        $("#transfer_error_modal").modal("show");
+      }
     });
   });
 
@@ -184,12 +328,20 @@ function update_transfer() {
       dataType: "html",
       type: "GET",
       success: function( data ) {
-        var html = $('<div />').append(data)
+        var html = $('<div />').append(data);
+        if ( html.find("#transfer_data_success_key").text().trim() !== "success" ) {
+          $("#transfer_error_modal").modal("show");
+        }
         $("#depositing_count_data").empty();
         $("#depositing_count_data").replaceWith( html.find('#depositing_count').html() );
         $("#depositing_data").empty();
         $("#depositing_data").replaceWith( html.find('#depositing_list').html() );
+        $("#transfer_data_script").html( html.find("#transfer_data_script").html() );
         update_transfer();
+      },
+      error: function ( ) {
+        console.log("ajax error");
+        $("#transfer_error_modal").modal("show");
       }
     })
   });
@@ -202,19 +354,246 @@ function update_transfer() {
       type: "GET",
       success: function( data ) {
         var html = $('<div />').append(data)
+        if ( html.find("#transfer_data_success_key").text().trim() !== "success" ) {
+          $("#transfer_error_modal").modal("show");
+        }
         $("#withdrawing_count_data").empty();
         $("#withdrawing_count_data").replaceWith( html.find('#withdrawing_count').html() );
         $("#withdrawing_data").empty();
         $("#withdrawing_data").replaceWith( html.find('#withdrawing_list').html() );
+        $("#transfer_data_script").html( html.find("#transfer_data_script").html() );
         update_transfer();
+      },
+      error: function ( ) {
+        console.log("ajax error");
+        $("#transfer_error_modal").modal("show");
       }
     })
   });
 
+  $('#edit_transfer').bootstrapValidator({
+    framework: 'bootstrap',
+    fields: {
+      edit_selected_quantity: {
+        validators: {
+          notEmpty: {
+            message: 'Quantity cannot be empty.'
+          },
+          integer: {
+            message: "Quantity is not a valid integer"
+          },
+          between: {
+            min: 1,
+            max: 400,
+            message: "Quantity must be between 1 and 400"
+          },
+          callback: {
+            callback: function (value, validator, $field) {
+              value = parseInt(value);
+              online_count = parseInt(online_count);
+              var prev_value;
+              var direction;
+              if ($("#edit_selected_details").text().trim() === "Tickets") {
+                prev_value = parseInt($("#ticket_transfer_quantity").text().trim());
+                if ( $("#ticket_direction").text().trim() === "depositing_tickets" ) {
+                  direction = "depositing_data";
+                } else {
+                  if ( $("#ticket_direction").text().trim() === "withdrawing_tickets" ) {
+                    direction = "withdrawing_data";
+                  } else {
+                    direction = "";
+                  }
+                }
+              } else {
+                prev_value = parseInt($("tr.info").find('#edit_quantity').text().trim());
+                direction = $("tr.info").closest('div').attr("id");
+              }
+              if ( direction === "depositing_data" ) {
+                // ok button
+                if ((value - prev_value + deposit_count) > 400) {
+                  $("button#edit_ok").addClass("disabled");
+                } else {
+                  $("button#edit_ok").removeClass("disabled");
+                }
+                //withdraw button
+                if ( ((value + withdraw_count) > 400) || (online_count < value) ) {
+                  $("button#edit_withdraw").addClass("disabled");
+                } else {
+                  $("button#edit_withdraw").removeClass("disabled");
+                }
+              } else { 
+                if ( direction === "withdrawing_data" ) { 
+                  // ok button
+                  if ( ((value - prev_value + withdraw_count) > 400) || (online_count + prev_value < value) ) {
+                    $("button#edit_ok").addClass("disabled");
+                  } else {
+                    $("button#edit_ok").removeClass("disabled");
+                  }
+                  //deposit button
+                  if ((value + deposit_count) > 400) {
+                    $("button#edit_deposit").addClass("disabled");
+                  } else {
+                    $("button#edit_deposit").removeClass("disabled");
+                  }
+                } else {
+                  //deposit button
+                  if ((value + deposit_count) > 400) {
+                    $("button#edit_deposit").addClass("disabled");
+                  } else {
+                    $("button#edit_deposit").removeClass("disabled");
+                  }
+                  //withdraw button
+                  if ( ((value + withdraw_count) > 400) || (online_count < value) ) {
+                    $("button#edit_withdraw").addClass("disabled");
+                  } else {
+                    $("button#edit_withdraw").removeClass("disabled");
+                  }
+                }
+              }
+              return {
+                message: "Callback",
+                valid: true
+              }
+            }
+          }
+        },
+        onSuccess: function(e, data) {
+          $(".form-group.has-success").removeClass("has-success");
+          $("button#edit_remove").removeClass("disabled");
+        },
+        onError: function(e, data) {
+          $("button#edit_deposit").addClass("disabled");
+          $("button#edit_withdraw").addClass("disabled");
+          $("button#edit_remove").removeClass("disabled");
+        }
+      }
+    }
+  })
+  .on('success.form.bv', function(e) {
+    e.preventDefault();
+  });
+
+  $(".edit_button button").on("click submit", function(e) {
+
+    $("button").addClass("disabled");
+    $("button.email").removeClass("disabled");
+
+    var edit_type = this.id;
+    var edit_quantity = $("#edit_selected_quantity").val();
+    var edit_foil = "";
+    if ( $("#edit_selected_details strong").text().trim() === "F" ) {
+      edit_foil = "foil" ;
+    }
+    var edit_card = $("#edit_selected_details").html().split('<br>')[0].replace(" <strong></strong>", "").replace(" <strong>F</strong>", "");
+    var edit_set = $("#edit_selected_details").html().split('<br>')[1];
+    var edit_link = "";
+    if ( edit_card !== "Tickets" ) {
+      edit_link = $("tr.info a")[0].pathname;
+    }
+    $.ajax({
+      url: "/users/"+<%=@user.id%>+"/transfer_edit?magic_account="+account+";edit_type="+edit_type+";quantity="+edit_quantity+";card="+edit_card+";set="+edit_set+";foil="+edit_foil,
+      dataType: "html",
+      type: "GET",
+      success: function( data ) {
+        var html = $('<div />').append(data)
+        if ( html.find("#transfer_data_success_key").text().trim() !== "success" ) {
+          $("#transfer_error_modal").modal("show");
+        }
+        $("#depositing_count_data").empty();
+        $("#depositing_count_data").replaceWith( html.find('#depositing_count').html() );
+        $("#depositing_data").empty();
+        $("#depositing_data").replaceWith( html.find('#depositing_list').html() );
+        $("#withdrawing_count_data").empty();
+        $("#withdrawing_count_data").replaceWith( html.find('#withdrawing_count').html() );
+        $("#withdrawing_data").empty();
+        $("#withdrawing_data").replaceWith( html.find('#withdrawing_list').html() );
+        $("#ticket_depositing_icon").addClass("hidden");
+        $("#ticket_withdrawing_icon").addClass("hidden");
+        $("#ticket_direction").html('');
+        if ( html.find("#ticket_transfer_direction").text().trim() === "deposit" ) {
+          $("#ticket_direction").html('depositing_tickets');
+          $("#ticket_depositing_icon").removeClass("hidden");
+        } 
+        if ( html.find("#ticket_transfer_direction").text().trim() === "withdraw" ) {
+          $("#ticket_direction").html('withdrawing_tickets');
+          $("#ticket_withdrawing_icon").removeClass("hidden");
+        }
+        $("#ticket_transfer_quantity").empty();
+        $("#ticket_transfer_quantity").html( html.find('#ticket_transfer_quantity').html() );
+        $("#edit_selected_quantity").addClass("hidden");
+        $("#edit_deposit").addClass("hidden");
+        $("#edit_withdraw").addClass("hidden");
+        $("#edit_ok").addClass("hidden");
+        $("#edit_remove").addClass("hidden");
+        $("#edit_selected_details").html("");
+        $("#edit_dd_icon").addClass("hidden");
+        $("#edit_online_count").html("");
+        $("span.wallet").html( html.find("#wallet_update").text().trim() )
+        $("#transfer_data_script").html( html.find("#transfer_data_script").html() );
+        if (edit_card !== "Tickets") {
+          if (edit_type === "edit_remove") {
+            $("#set_selector").trigger("change");
+            $("#foil_button").removeClass("disabled");
+            $("#normal_button").removeClass("disabled");
+          } else {
+            var row = $("a[href='"+edit_link+"']").closest("tr");
+            row.trigger("click");
+            var table = row.closest("div");
+            var pos = row.position().top;
+            $(table).animate({
+              scrollTop: $(table).scrollTop()+pos
+            })
+          }
+        } else {
+          $("#tickets").trigger("click");
+        }
+        $("button#clear").removeClass("disabled");
+        $("button#confirmed_clear").removeClass("disabled");
+        update_transfer();
+      },
+      error: function ( ) {
+        console.log("ajax error");
+        $("#transfer_error_modal").modal("show");
+      }
+    })
+    $("button#edit_remove").removeClass("disabled");
+
+  })
+
+  $("#tickets").on("click", function() {
+    card_selection_complete = false;
+    $("tr").removeClass("info");
+    $(this).css('background-color', '#d9edf7');
+    var ticket_direction = $("#ticket_direction").text().trim();
+    $(".edit_button").removeClass("hidden");
+    $("button").removeClass("hidden");
+    if ( ticket_direction === "depositing_tickets" ) {
+      $("#edit_deposit").addClass("hidden");
+    } else {
+      if ( ticket_direction === "withdrawing_tickets" ) {
+        $("#edit_withdraw").addClass("hidden");
+      } else {
+        $("#edit_ok").addClass("hidden");
+      }
+    }
+    $("#edit_dd_icon").addClass("hidden");
+    $("#edit_online_count").addClass("hidden");
+ 
+    online_count = $("span.wallet:first").text().trim().split(".")[0].slice(1)
+    $("#edit_online_count").html(online_count);
+
+    $("#edit_selected_details").html("Tickets<br>");
+    $("#edit_selected_quantity").val( $("#ticket_transfer_quantity").text().trim() );
+    $("#edit_selected_quantity").removeClass("hidden");
+    $('#edit_selected_quantity').trigger("input");
+
+  })
+
+  $('.help-block').addClass("hidden");
   $("#account_selector input:radio:first").trigger('click');
   $("#card_name").trigger("change");
 
-
 </script>
 
-<div id="transfer_script"></div>
+<%= render 'transfer_error_modal' %>
+<%= render 'transfer_confirm_clear_modal' %>

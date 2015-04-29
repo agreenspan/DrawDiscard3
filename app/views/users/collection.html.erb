@@ -2,7 +2,116 @@
 <% provide(:header, "COLLECTION") %>
 <div class="container">
   <div class="row">
-    <div class="col-xs-12">
+    <div class="col-md-2">
+      <%= render 'layouts/filters' %>
+    </div>
+    <div class="col-md-10 inverse">
+      <table class="table table-condensed set-table" id="collection_table" style="display: none;">
+        <thead>
+          <tr>
+              <th>
+                Card Name
+              </th>
+              <th>
+                Set
+              </th>
+              <th>
+                Rarity
+              </th>
+              <th>
+                High Buy
+              </th>
+              <th>
+                Low Sell
+              </th>
+              <th>
+                <%= image_tag('DD.png', height: "20px", title: "DrawDiscard") %>
+              </th>
+              <th>
+                <%= image_tag('arrowDD.png', height: "20px", title: "Depositing") %>
+              </th>
+              <th>
+                <%= image_tag('arrowM.png', height: "20px", title: "Withdrawing") %>
+              </th>
+              <th>
+                <%= image_tag('forSale.png', height: "20px", title: "Selling") %>
+              </th>
+              <th>
+                <%= image_tag('bids.png', height: "20px", title: "Buying") %>
+              </th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
+
+
+
+<script>
+$(document).ready(function() {
+
+  // $(".panel-heading").on("click", function() {
+  // })
+
+  var selected_foils = [];
+  var selected_rarities = [];
+  var selected_collections = [];
+  var selected_sets = [];
+
+  function parse_filter() { 
+    selected_foils = $("#foil_filters :checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { return (this.id); } }).get();
+    selected_rarities = $("#rarity_filters :checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { return (this.id); } }).get();
+    selected_collections = $("#collection_filters :checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { return (this.id); } }).get();
+    selected_sets = $('option:selected').map(function() { return $(this).val(); }).get();
+    collection_table.search( $("#filters-search").val() );
+  }
+
+  $("#apply_filters").on("click submit", function() {
+    parse_filter();
+    collection_table.draw();
+  })
+
+  var collection_table = $('#collection_table').DataTable({
+    "columnDefs": [
+      { "searchable": false, "targets": [3,4] },
+    ],
+    "dom": 'tipr',
+    "paging": true,
+    "pagingType": "full_numbers",
+    "stateSave": false,
+    "processing": true,
+    "serverSide": true,
+    "autoWidth": false,
+    "orderCellsTop": true,
+    "pageLength": 20,
+    "lengthChange": false,
+    "searching": true,
+    "language": {
+      "processing": "<img alt='Loading...' src='/assets/table_loading.gif' class='spinner' />"
+    },
+      "ajax": {
+      "url": "<%= user_collection_url(@user, format: "json") %>",
+      "type": 'POST',
+      "data": function ( d ) {
+        d.foil = selected_foils;
+        d.rarity = selected_rarities;
+        d.collection = selected_collections;
+        d.set = selected_sets;
+      }      
+    },
+    "initComplete": function (settings, json) {
+      $('#collection_table').show();
+      $(".dataTables_info").show();
+      $(".dataTables_info").parent('div').eq(1).removeClass("col-xs-6");
+      $(".dataTables_info").parent('div').eq(1).addClass("col-sm-12 col-md-6 sm-center");
+      $(".dataTables_paginate").parent('div').eq(1).removeClass("col-xs-6");
+      $(".dataTables_paginate").parent('div').eq(1).addClass("col-sm-12 col-md-6 sm-center");
+    } 
+  });
+
+});
+
+</script>

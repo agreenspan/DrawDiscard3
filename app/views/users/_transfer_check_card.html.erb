@@ -1,0 +1,15 @@
+<div id="transfering">
+  <%= @transfering %>
+</div>
+
+<div id="online">
+  <%= @online %>
+</div>
+
+<div id="online_count">
+  <%= @online_count %>
+</div>
+
+<div id="link">
+  <%= link_to @card.name, magic_set_magic_card_path(@set.code, @card.mtgo_id) %>
+</div>

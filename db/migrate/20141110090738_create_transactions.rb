@@ -13,8 +13,8 @@ class CreateTransactions < ActiveRecord::Migration
       t.timestamps
     end
 
-    add_index :transactions, :buyer_id
-    add_index :transactions, :seller_id 
+    add_index :transactions, [:buyer_id, :status]
+    add_index :transactions, [:seller_id , :status]
     add_index :transactions, [:magic_card_id, :status, :price]
     
   end

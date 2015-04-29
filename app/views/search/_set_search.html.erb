@@ -1,3 +1,5 @@
+<div id="set_search_success_key" class="hidden">success</div>
+
 <br>
 <% if @sets.count > 0 %>
   <select class="form-control" id="set_selector">
@@ -47,12 +49,16 @@
     $("#normal_button").removeClass("active");
     $(this).addClass("active");
     selected_foil = "foil";
+    card_selection_complete = true;
+    update_transfer();
   })
 
   $("#normal_button").on("select click", function() {
     $("#foil_button").removeClass("active");
     $(this).addClass("active");
     selected_foil = "normal";
+    card_selection_complete = true;
+    update_transfer();
   })
 
   <% if @sets.count == 1 %>

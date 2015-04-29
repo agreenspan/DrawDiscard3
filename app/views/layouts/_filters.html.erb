@@ -19,13 +19,15 @@
             <li class="list-group-item">
               <dl style="margin-bottom: 0px;">
                 <dt style="margin-bottom: 5px;">
-                  <button type="button" class="btn <%= (session[:collection_filter] ? 'btn-success' : 'btn-danger') %> btn-xs pull-right" data-toggle="collapse" data-target="#collection-collapse" id="collection-button" style="margin-top: -2px;">
-                    <span class="glyphicon glyphicon-align-justify"></span>
-                    <span class="sr-only">Toggle filter</span>
-                  </button>
+                  <% unless @collection_page_override %>
+                    <button type="button" class="btn <%= (session[:collection_filter] ? 'btn-success' : 'btn-danger') %> btn-xs pull-right" data-toggle="collapse" data-target="#collection-collapse" id="collection-button" style="margin-top: -2px;" title="<%= (session[:collection_filter] ? 'Collapse Collection' : 'Expand Collection') %>">
+                      <span class="glyphicon glyphicon-align-justify"></span>
+                      <span class="sr-only">Toggle filter</span>
+                    </button>
+                  <% end %>
                   <%= filter_key.to_s.titleize %>
                 </dt>
-                <div class="row collapse panel-collapse <%= (session[:collection_filter] ? 'in' : '') %>" id="<%= filter_key %>_filters">
+                <div class="row collapse panel-collapse <%= ( session[:collection_filter] || @collection_page_override ? 'in' : '') %>" id="<%= filter_key %>_filters">
                   <% filter_labels.each do |label_key, value| %>
                     <% unless value[0] == 0 %>
                       <dd class="col-md-12 col-xs-6 col-sm-3">
@@ -50,7 +52,7 @@
                 </dt>
                 <div class="row" id="<%= filter_key %>_filters">
                   <% filter_labels.sort_by {|code, count| set_filter_index.index code.to_s }.each do |label_key, value| %>
-                    <% unless  value[0] == 0 %>
+                    <% unless value[0] == 0 %>
                       <dd class="col-md-12 col-xs-6 col-sm-3">
                         <%= check_box_tag label_key.to_s.gsub(/_/, "") %>
                         <%= label_tag label_key.to_s.gsub(/_/, ""), label_key.to_s.gsub(/_/, ""), class: "small not-bold", title: value[1] %>
@@ -91,6 +93,48 @@
           <% end %>
         <% end %>
       <% end %>
+      <% if @collection_page_override %>
+        <% if @collection_sets.count > 1 %>
+          <li class="list-group-item">
+            <dl style="margin-bottom: 0px;">
+              <dt style="margin-bottom: 5px;">
+                Set
+              </dt>
+              <div class="row" id="set_filters_container">
+                <dd class="col-md-12 col-xs-6 col-sm-3 hidden" id="set_filter_template" style="padding-bottom: 6px;">
+                  <form class="form-inline">
+                    <div class="form-group" style="width: 100%;">
+                      <%= select_tag "set_select0", options_for_select( @collection_sets
+                      .sort_by{|set| set_filter_index.index set["code"] }
+                      .map{|set| [set["code"].gsub(/_/, ""), title: set["name"]] } ),
+                      class: "set_select form-control", style: "width: 100%;", prompt: "-Select-" %>
+                      <button type="button" class="btn btn-danger btn-xs pull-right hidden remove_set_selector" style="width: 21%; height: 34px;">
+                        <span class="glyphicon glyphicon-remove"> </span>
+                      </button>
+                    </div>
+                  </form>
+                </dd>
+              </div>
+              <div class="row">
+                <dd class="col-xs-12">
+                  <button class="btn btn-block btn-xs btn-default disabled" id="add_set_selector" >
+                   <span class="glyphicon glyphicon-plus"> </span>
+                  </button>
+                </dd>
+              </div>
+            </dl>
+          </li>
+        <% end %>
+        <li class="list-group-item">
+          <dl style="margin-bottom: 0px;">
+            <div class="row">
+              <dd class="col-xs-12">
+                <button class="btn btn-block btn-success" id="apply_filters">Apply</button>
+              </dd>
+            </div>
+          </dl>
+        </li>
+      <% end %>
     </div>
   </ul>
 </div>
@@ -106,6 +150,7 @@ $(window).load(function() {
     $('#filter-collapse').addClass('in');
   };
 });
+
 $(window).resize(function(){
   if ($(window).width() >= (($(document).height() > $(window).height()) ? 975 : 992)){  
     $('#filter-collapse').addClass('in');
@@ -114,25 +159,72 @@ $(window).resize(function(){
     $('#filter-collapse').removeClass('in');
   };
 });
-$('#collection-button').click(function(){
-  if ($('#collection-button').hasClass('btn-danger')) {
-    $('#collection-button').removeClass('btn-danger');
-    $('#collection-button').addClass('btn-success');
-    $('#collection_filters').addClass('in');
-    $.ajax({
-      url: '/session_update',
-      type: 'put',
-      data: { collection_filter: true }
-    })
-  } else {
-    $('#collection-button').removeClass('btn-success');
-    $('#collection-button').addClass('btn-danger');
-    $('#collection_filters').removeClass('in');
-    $.ajax({
-      url: '/session_update',
-      type: 'put',
-      data: { collection_filter: false }
-    })
+
+<% unless @collection_page_override %>
+  $('#collection-button').click(function(){
+    if ($('#collection-button').hasClass('btn-danger')) {
+      $('#collection-button').removeClass('btn-danger');
+      $('#collection-button').addClass('btn-success');
+      $('#collection_filters').addClass('in');
+      $('#collection-button').prop('title', 'Collapse Collection');
+
+      $.ajax({
+        url: '/session_update',
+        type: 'put',
+        data: { collection_filter: true }
+      })
+    } else {
+      $('#collection-button').removeClass('btn-success');
+      $('#collection-button').addClass('btn-danger');
+      $('#collection_filters').removeClass('in');
+      $('#collection-button').prop('title', 'Expand Collection');
+      $.ajax({
+        url: '/session_update',
+        type: 'put',
+        data: { collection_filter: false }
+      })
+    }
+  });
+<% end %>
+<% if @collection_page_override %>
+  $( "dd div:contains('()')").each( function() { $(this).html(""); });
+  var clone = $("#set_filter_template").clone().prop("id", "").removeClass("hidden").addClass("clone");
+  $("#set_filter_template").remove();
+  add_new_set_filter();
+
+  $('#set_filters_container').on("change", '.set_select', function(){
+    $(this).next("button").removeClass("hidden");
+    $(this).css("width", "76%");
+    disable_options();
+    $("#add_set_selector").removeClass("disabled");
+  });
+
+  $("#add_set_selector").on("click", function(){ add_new_set_filter() });
+
+  $('#set_filters_container').on("click", ".remove_set_selector", function() {
+    $(this).closest(".clone").remove();
+    disable_options();
+    if ($('.clone').length === 0 ) { add_new_set_filter() }
+  });
+
+  function add_new_set_filter() {
+    $("#set_filters_container").append( clone.clone() );
+    $("#add_set_selector").addClass("disabled");
+    disable_options();
   }
-});
+
+  function disable_options() {
+    $('.set_select option').prop("disabled", false);
+    var selected_sets = $('option:selected').map(function() {return $(this).val();}).get();
+    $(".set_select").each(function() {
+      var selected_set = $(this).val();
+      $.each(selected_sets, function( index, value ) {
+        if (value !== "") {
+          $('.set_select option:contains("'+this+'")').prop("disabled", true);
+        }
+      })
+    });
+    $('.set_select option:contains("-Select-")').prop("disabled", true);
+  }
+<% end %>
 </script>

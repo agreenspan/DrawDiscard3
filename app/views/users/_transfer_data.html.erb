@@ -1,34 +1,41 @@
+<div id="transfer_data_success_key" class="hidden">success</div>
+
+<div id="wallet_update">$<%= @user.wallet %></div>
+
 <div id="depositing_count">
   <span class="pull-right" id="depositing_count_data" >
     <%= @account.tickets_depositing.to_i + @depositing.map{|x| x.quantity}.sum %>
   </span>
 </div>
 
+<% if @account.tickets_depositing.to_i > 0 %>
+  <div id="ticket_transfer_direction" class="hidden">deposit</div>
+  <div id="ticket_transfer_quantity" class="hidden"><%= @account.tickets_depositing.to_i %></div>
+<% elsif @account.tickets_withdrawing.to_i > 0 %>
+  <div id="ticket_transfer_direction" class="hidden">withdraw</div>
+  <div id="ticket_transfer_quantity" class="hidden"><%= @account.tickets_withdrawing.to_i %></div>
+<% else %>
+  <div id="ticket_transfer_direction" class="hidden">none</div>
+  <div id="ticket_transfer_quantity" class="hidden">0</div>
+<% end %>
+
 <div id="depositing_list">
-  <div id="depositing_data" class="table-responsive" style="height: 456px !important;">
+  <div id="depositing_data" class="table-responsive" style="height: 371px !important; margin-bottom: 0px;">
     <table class="table table-condensed" >
-      <tr>
-        <th colspan="3">
-          Tickets 
-        </th>
-        <th width="30px">
-          <%= @account.tickets_depositing.to_i %>
-        </th>
-      </tr>
       <% @depositing.each do |stock| %>
         <tr>
-          <td>
-            <%= link_to stock.name, magic_set_magic_card_path(stock.code, stock.mtgo_id) %>
+          <td id="edit_name">
+            <%= link_to stock.name, magic_set_magic_card_path(stock.code, stock.mtgo_id), :target => "_blank"  %>
           </td>
-          <td width="30px">
+          <td width="30px" id="edit_foil">
             <strong>
               <%= (stock.foil ? "F" : "") %>
             </strong>
           </td>
-          <td width="30px">
+          <td width="30px" id="edit_code">
             <%= stock.code %>
           </td>
-          <td>
+          <td width="30px" id="edit_quantity">
             <%= stock.quantity %>
           </td>
         </tr>
@@ -44,36 +51,76 @@
 </div>
 
 <div id="withdrawing_list">
-  <div id="withdrawing_data" class="table-responsive" height="456px">
+  <div id="withdrawing_data" class="table-responsive" style="height: 371px !important; margin-bottom: 0px;">
     <table class="table table-condensed">
-      <tr>
-        <th colspan="3">
-          Tickets 
-        </th>
-        <th width="30px">
-          <%= @account.tickets_withdrawing.to_i %>
-        </th>
-      </tr>
       <% @withdrawing.each do |stock| %>
         <tr>
-          <td>
-            <%= stock.name %>
+          <td id="edit_name">
+            <%= link_to stock.name, magic_set_magic_card_path(stock.code, stock.mtgo_id), :target => "_blank"  %>
           </td>
-          <td width="30px">
+          <td width="30px" id="edit_foil">
             <strong>
-              <%= (stock.magic_card.foil ? "F" : "") %>
+              <%= (stock.foil ? "F" : "") %>
             </strong>
           </td>
-          <td width="30px">
+          <td width="30px" id="edit_code">
             <%= stock.code %>
           </td>
-          <td>
+          <td width="30px" id="edit_quantity">
             <%= stock.quantity %>
           </td>
         </tr>
       <% end %>
     </table>
   </div>
+</div>
+
+<div id="transfer_data_script">
+  <script>
+    $("tr").on("click", function() {
+      card_selection_complete = false;
+      $("tr").removeClass("info");
+      $("#tickets").css('background-color', '#f0f0f0');
+      $(this).addClass('info');
+      var direction = $(this).closest('div').attr("id");
+      $(".edit_button").removeClass("hidden");
+      $("button").removeClass("hidden");
+      if ( direction === "depositing_data" ) {
+        $("#edit_deposit").addClass("hidden");
+      } else {
+        $("#edit_withdraw").addClass("hidden");
+      }
+
+      var name = $(this).find('#edit_name').text().trim();
+      var foil = $(this).find('#edit_foil').text().trim();
+      var code = $(this).find('#edit_code').text().trim();
+      var quantity = $(this).find('#edit_quantity').text().trim();
+
+      $("#edit_dd_icon").removeClass("hidden");
+      $("#edit_online_count").html("<img src='/assets/ajax-loader.gif' >");
+      $("#edit_online_count").removeClass("hidden");
+
+      $("#edit_selected_details").html(name+" <strong>"+foil+"</strong>"+"<br>"+code);
+      $("#edit_selected_quantity").val(quantity);
+      $("#edit_selected_quantity").removeClass("hidden");
+
+      $.ajax({
+        url: "/users/"+<%=@user.id%>+"/transfer_check_card?magic_account="+account+";card="+name+";set="+code+";foil="+foil,
+        dataType: "html",
+        type: "GET",
+        success: function(data) {
+          var html = $('<div />').append(data);
+          online_count = html.find("#online_count").text().trim();
+          $("#edit_online_count").html(online_count);
+          $("#edit_selected_quantity").trigger("input");
+        },
+        error: function ( ) {
+          console.log("ajax error");
+          $("#transfer_error_modal").modal("show");
+        }
+      })
+    })
+  </script>
 </div>
 
 

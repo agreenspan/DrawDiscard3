@@ -14,8 +14,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
 
   rescue_from ActionController::InvalidAuthenticityToken do 
-    flash_message :warning, "Session timed out due to inactivity."
-    redirect_to '/'
+    redirect_to "/"
   end
 
   def instance_user

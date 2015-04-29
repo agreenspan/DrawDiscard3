@@ -7,13 +7,18 @@ class MagicCardsController < ApplicationController
     redirect_to magic_set_path(@set) and return if @object.disabled
 
     versions_sql = "SELECT 
-      Magic_Cards.id, Magic_Cards.mtgo_id, Magic_Cards.name, Magic_Cards.plain_name, Magic_Cards.foil, Magic_Cards.rarity, Magic_Cards.object_type, Magic_Cards.magic_set_id 
+      Magic_Cards.id, Magic_Cards.mtgo_id, Magic_Cards.name, Magic_Cards.plain_name, Magic_Cards.foil, Magic_Cards.rarity, Magic_Cards.object_type, Magic_Sets.name as set_name, Magic_Sets.code
       , (SELECT MAX(Transactions.price) FROM Transactions WHERE (Transactions.magic_card_id = Magic_Cards.id AND Transactions.status = 'buying')) AS buying_price 
       , (SELECT MIN(Transactions.price) FROM Transactions WHERE (Transactions.magic_card_id = Magic_Cards.id AND Transactions.status = 'selling')) AS selling_price" 
     versions_sql += "
       , (SELECT COUNT(*) FROM Stocks WHERE (Stocks.magic_card_id = Magic_Cards.id AND Stocks.status = 'online' AND Stocks.user_id = #{@user.id})) AS online
+      , (SELECT COUNT(*) FROM Stocks WHERE (Stocks.magic_card_id = Magic_Cards.id AND Stocks.status = 'depositing' AND Stocks.user_id = #{@user.id})) AS depositing
+      , (SELECT COUNT(*) FROM Stocks WHERE (Stocks.magic_card_id = Magic_Cards.id AND Stocks.status = 'withdrawing' AND Stocks.user_id = #{@user.id})) AS withdrawing
+      , (SELECT COUNT(*) FROM Stocks WHERE (Stocks.magic_card_id = Magic_Cards.id AND Stocks.status = 'selling' AND Stocks.user_id = #{@user.id})) AS selling
+      , (SELECT COUNT(*) FROM Transactions WHERE (Transactions.magic_card_id = Magic_Cards.id AND Transactions.status = 'buying' AND Transactions.buyer_id = #{@user.id})) AS buying
       " if @user.present?
-      versions_sql += " FROM Magic_Cards WHERE (Magic_Cards.disabled = false AND 
+    versions_sql += " FROM Magic_Cards JOIN Magic_Sets ON Magic_Cards.magic_set_id = Magic_Sets.id
+      WHERE (Magic_Cards.disabled = false AND 
       Magic_Cards.name = $$"+@object.name.chomp(" (Alt.)")+"$$ OR
       Magic_Cards.name = $$"+@object.name+" (Alt.)$$ OR
       Magic_Cards.name = $$"+@object.name+"$$
@@ -29,15 +34,6 @@ class MagicCardsController < ApplicationController
     @sales = Transaction.find_by_sql("SELECT t.price, t.magic_card_id, t.status, DATE_TRUNC('second', t.finish) AS truncated_finish,
       (SELECT COUNT(*) FROM Transactions WHERE Transactions.magic_card_id = #{@object.id} AND Transactions.price = t.price AND Transactions.status = 'finished') AS num_sales
       FROM Transactions AS t WHERE t.magic_card_id = #{@object.id} AND t.status = 'finished' GROUP BY t.price, t.magic_card_id, t.status, truncated_finish ORDER BY truncated_finish DESC").first(10)
-
-    if @user.present?
-      @user_bids = Transaction.find_by_sql("SELECT t.price, t.magic_card_id, t.status,
-        (SELECT COUNT(*) FROM Transactions WHERE Transactions.magic_card_id = #{@object.id} AND Transactions.price = t.price AND Transactions.status = 'buying') AS num_bids
-        FROM Transactions AS t WHERE t.magic_card_id = #{@object.id} AND t.status = 'buying' AND t.buyer_id = #{@user.id} GROUP BY t.price, t.magic_card_id, t.status ORDER BY t.price DESC")
-      @user_listings = Transaction.find_by_sql("SELECT t.price, t.magic_card_id, t.status,
-        (SELECT COUNT(*) FROM Transactions WHERE Transactions.magic_card_id = #{@object.id} AND Transactions.price = t.price AND Transactions.status = 'selling') AS num_listings
-        FROM Transactions AS t WHERE t.magic_card_id = #{@object.id} AND t.status = 'selling' AND t.seller_id = #{@user.id} GROUP BY t.price, t.magic_card_id, t.status ORDER BY t.price ASC")
-    end
 
     @graph_data_sql = Transaction.find_by_sql("SELECT DATE_TRUNC('day', t.finish) AS finish_date, 
     MAX(price) AS high, MIN(price) AS low, AVG(price) AS avg, COUNT(*) AS volume

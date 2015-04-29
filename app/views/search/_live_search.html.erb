@@ -1,3 +1,5 @@
+<div id="live_search_success_key" class="hidden">success</div>
+
 <select size="10" class="form-control" id="card_selector" style="height: 185px; overflow-y:hidden;">
   <% @objects.each do |object| %>
     <option value="<%= object.name %>" title="<%= object.name %>"> 
@@ -15,8 +17,6 @@
 <div id="set_results">
 </div>
  
-
-
 <script>
   $("#deposit_button").addClass("disabled");
   $("#withdraw_button").addClass("disabled");
@@ -30,9 +30,16 @@
       type: "GET",
       success: function (data) {
         var html = $('<div />').append(data);
+        if ( html.find("#set_search_success_key").text().trim() !== "success" ) {
+          $("#transfer_error_modal").modal("show");
+        }
         $("#set_results").html(html);
-      }
+      },
+      error: function ( ) {
+        $("#transfer_error_modal").modal("show");      }
     })
   });
 
 </script>
+
+

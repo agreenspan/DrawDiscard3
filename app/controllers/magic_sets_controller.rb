@@ -4,7 +4,7 @@ class MagicSetsController < ApplicationController
     redirect_to '/' and return if @set.nil?
     @disabled = @set.magic_cards.where(disabled: true)
     if @disabled.present?
-      @disabled_cards = @disabled.where(object_type: 'card').present? 
+      @disabled_cards = @disabled.where(object_type: 'card').where.not(rarity: "basic").present? 
       @disabled_packs = @disabled.where(object_type: 'pack').present?
       #@disabled_vanguards = @disabled.where(object_type: 'planar').present?
       #@disabled_planars = @disabled.where(object_type: 'vanguard').present?

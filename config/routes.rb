@@ -20,11 +20,15 @@ Rails.application.routes.draw do
 
 
   resources :users, only: [:create, :update] do
-    get 'collection'
+    match 'collection', to: 'users#collection', via: [:get, :post]
     get 'transactions'
     get 'transfers'
     get 'get_transfer_data', constraints: -> (req) { req.xhr? }
     get 'post_transfer_data', constraints: -> (req) { req.xhr? }
+    get 'transfer_check_card', constraints: -> (req) { req.xhr? }
+    get 'transfer_edit', constraints: -> (req) { req.xhr? }
+    get 'transfer_clear_account', constraints: -> (req) { req.xhr? }
+    get 'transfer_error'
     match 'change_password', to: 'users#change_password', via: [:get]
     match 'mtgo_accounts', to: 'users#mtgo_accounts', via: [:get]
     match 'mtgo_codes', to: 'users#mtgo_codes', via: [:get, :post]

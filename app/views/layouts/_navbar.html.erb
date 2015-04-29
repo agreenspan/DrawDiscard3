@@ -33,7 +33,9 @@
           <li >
             <%= link_to user_collection_path(@user) do %>
               Collection
-              <span class="text-success visible-xs pull-right">$<%= @user.wallet %></span>
+              <span class="text-success visible-xs pull-right wallet">
+                $<%= @user.wallet %>
+              </span>
             <% end %>
           </li>
           <li>
@@ -79,8 +81,8 @@
       <% else %>
         <ul class="nav navbar-nav navbar-right hidden-xs">
           <li class="dropdown btn-group navbar-btn navbar-right">
-            <%= button_tag(class: "btn btn-success btn-sm email dropdown-toggle", :'data-toggle' => 'dropdown') do %>
-              $<%= @user.wallet %>
+            <%= button_tag(class: "btn btn-success btn-sm email dropdown-toggle ", :'data-toggle' => 'dropdown') do %>
+              <span class="wallet">$<%= @user.wallet %></span>
               <span class="caret"/>
             <% end %>
             <ul class="dropdown-menu inverse-dropdown" role="menu">

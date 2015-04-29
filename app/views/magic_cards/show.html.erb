@@ -1,63 +1,49 @@
-
 <% provide(:title, @object.name ) %>
 <% provide(:header, ((link_to image_tag(set_rarity_image(@set.code, @object.rarity), title: @set.name), magic_set_path(@set.code)) + " " + @object.name + " " + (@object.foil ? image_tag("foil.png", height: "30px", title: "Foil") : "")).html_safe ) %>
 <div class="container">
   <div class="row">
-    <div class="col-xs-12 col-sm-4 col-md-3 inverse card-holder">
-      <%= image_tag(card_image(@object), width: "100%", class: "card-holder card-image") %>
-      <br>
-      <strong>MTGO ID</strong>: <%= @object.mtgo_id %><br>
-      <%= "<strong>Collector #</strong>:  #{@object.collector_number}".html_safe if @object.collector_number.present? %>
-    </div>
-    <div class="col-xs-12 col-sm-8 col-md-9">
-      <%= render 'magic_cards/price_graph' %>
-    </div>
-    <div class="col-xs-12 col-sm-8">
-      <%= render 'magic_cards/price_table' %>
-    </div>
-    <div class="col-xs-4 col-md-3">
-      <%= render 'magic_cards/versions' %>
-    </div>
-  </div>
-  <div class="row">
-    <% if @user.present? %>
-      <%= render 'magic_cards/transaction_form' %>
-      <%= render 'magic_cards/transfer_form' %>
+    <% if @object.object_type != "planar" %>
+      <div class="col-xs-12 col-sm-4 col-md-3 inverse card-holder">
+        <%= image_tag(card_image(@object), width: "100%", class: "card-holder card-image") %>
+        <br>
+        <strong>MTGO ID</strong>: <%= @object.mtgo_id %><br>
+        <%= "<strong>Collector #</strong>:  #{@object.collector_number}".html_safe if @object.collector_number.present? %>
+      </div>
+      <div class="col-xs-12 col-sm-8 col-md-9">
+        <%= render 'magic_cards/price_graph' %>
+      </div>
+    <% else %>
+      <div class="col-xs-12 col-sm-5 inverse ">
+        <%= image_tag(card_image(@object), width: "100%", class: "") %>
+        <br>
+        <strong>MTGO ID</strong>: <%= @object.mtgo_id %><br>
+        <%= "<strong>Collector #</strong>:  #{@object.collector_number}".html_safe if @object.collector_number.present? %>
+      </div>
+      <div class="col-xs-12 col-sm-7">
+        <%= render 'magic_cards/price_graph' %>
+      </div>
     <% end %>
-  </div>
-  <% if @user.present? %>
-    <%= render 'transactions/cancel' %>
-    <div class="row">
-      <div class="col-xs-6">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            Your Open Bids:
-          </div>
-          <ul class="list-group">
-            <% @user_bids.each do |bid| %>
-              <li class="list-group-item">
-                $<%= bid.price %>
-                <span class="badge"><%= bid.num_bids %></span>
-              </li>
-            <% end %>
-          </ul>
-        </div>
+    <% if @user.present? %>
+      <div class="col-xs-12 col-sm-4 col-md-3">
+        <%= render 'magic_cards/transaction_form' %>
       </div>
-      <div class="col-xs-6">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            Your Open Listings:
-          </div>
-          <ul class="list-group">
-            <% @user_listings.each do |listing| %>
-              <li class="list-group-item">
-                $<%= listing.price %>
-                <span class="badge"><%= listing.num_listings %></span>
-              </li>
-            <% end %>
-          </ul>
-        </div>
+      <div class="col-xs-12 col-sm-8 col-md-9">
+        <%= render 'magic_cards/price_table' %>
+        <%= render 'magic_cards/versions' %>
       </div>
+    <% else %>
+      <% if @versions.count > 1 %>
+        <div class="col-xs-12 col-sm-8 col-md-9">
+          <%= render 'magic_cards/price_table' %>
+        </div>
+        <div class="col-xs-12 col-sm-4 col-md-3">
+          <%= render 'magic_cards/versions' %>
+        </div>
+      <% else %>
+        <div class="col-xs-12">
+          <%= render 'magic_cards/price_table' %>
+        </div>
+      <% end %>
     <% end %>
   </div>
 </div>
