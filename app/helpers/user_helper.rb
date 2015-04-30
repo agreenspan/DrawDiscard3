@@ -112,39 +112,40 @@ module UserHelper
       end
     end
 
-    def collection_column_key(col_num)
+    def collection_column_key(col_num, dir)
       case col_num
         when "0"
-          return "plain_name"
+          return "Magic_Cards.name "+( dir == "desc" ? "DESC" : "ASC" )
         when "1"
-          return "foil"
+          return "Magic_Sets.code "+( dir == "desc" ? "DESC" : "ASC" )
         when "2"
-          return "rarity"
+          return "object_type "+( dir == "desc" ? "DESC" : "ASC" )+", CASE "+
+          rarity_filter_index.map.with_index { |value, index| "WHEN rarity = '"+value.to_s+"' THEN "+index.to_s+" "}.join("")+
+          " END "+
+          ( dir == "desc" ? "DESC NULLS LAST" : "ASC NULLS LAST" )
         when "3"
-          return "buying_price"
+          return "buying_price "+( dir == "desc" ? "DESC NULLS LAST" : "ASC NULLS FIRST" )
         when "4"
-          return "selling_price"
+          return "selling_price "+( dir == "desc" ? "DESC NULLS LAST" : "ASC NULLS FIRST" )
         when "5"
-          return "online"
+          return "online "+( dir == "desc" ? "DESC NULLS LAST" : "ASC NULLS FIRST" )
         when "6"
-          return "depositing"
+          return "depositing "+( dir == "desc" ? "DESC NULLS LAST" : "ASC NULLS FIRST" )
         when "7"
-          return "withdrawing"
+          return "withdrawing "+( dir == "desc" ? "DESC NULLS LAST" : "ASC NULLS FIRST" )
         when "8"
-          return "selling"
+          return "selling "+( dir == "desc" ? "DESC NULLS LAST" : "ASC NULLS FIRST" )
         when "9"
-          return "buying"
+          return "buying "+( dir == "desc" ? "DESC NULLS LAST" : "ASC NULLS FIRST" )
         else
-          return "plain_name"
+          return "Magic_Cards.name "+( dir == "desc" ? "DESC" : "ASC" )
       end
     end
 
     def compile_filter_sql
-      order = []
       params[:order] ||= { default: { column: "default", dir: "asc" } } 
-      params[:order].each do |k,v|
-        order << collection_column_key(v[:column])+" "+( v[:dir] == "desc" ? "DESC" : "ASC" )
-      end
+      @order = [ params[:order]["0"][:column] , collection_column_key( params[:order]["0"][:column], params[:order]["0"][:dir] ) ]
+      # @order = params[:order].map { |k,v| [ v[:column] , collection_column_key( v[:column], v[:dir] ) ] }[0]
 
       params[:foil] ||= []
       params[:rarity] ||= []
@@ -165,7 +166,7 @@ module UserHelper
         contains_any = true if params[:rarity].include? (e)
       end
       all_rarities = contains_all
-      params[:rarity] << "card" if contains_any
+      params[:rarity] << "card" if contains_any or contains_all
       object_filter_index.each do |e|
         contains_all = false unless params[:rarity].include? (e)
         contains_any = true if params[:rarity].include? (e)
@@ -195,7 +196,7 @@ module UserHelper
       end
 
       set_filter = []
-      sparams[:set] << "VAN" if (params[:rarity].include? ("vanguard")) && (!params[:set].include? ("vanguard"))
+      params[:set] << "VAN" if ( ( params[:rarity].include? ("vanguard") ) && ( !params[:set].include? ("vanguard") ) && ( params[:set].reject(&:blank?).any? ) )
       contains_all = true
       contains_any = false
       set_filter_index.each do |e|
@@ -208,42 +209,54 @@ module UserHelper
         end
       end
 
-      sql_string =  "SELECT Magic_Cards.id FROM Magic_Cards "
-      sql_string += "JOIN Magic_Sets ON Magic_Cards.magic_set_id = Magic_Sets.id " unless set_filter.empty?
-      sql_string += "WHERE ( Magic_Cards.disabled = false ) AND ( Magic_Cards.id IN ( " 
-      unless collection_filter == ["buying"]
-        sql_string += "SELECT Stocks.magic_card_id FROM Stocks WHERE ( Stocks.user_id = #{@user.id} ) "
-        sql_string += "AND ( Stocks.status IN ( #{ collection_filter.map { |s| "'"+s+"'" }.join(', ') } ) ) " unless collection_filter.empty?
-        sql_string += "GROUP BY Stocks.magic_card_id "
-      end
-      if collection_filter.empty? || ( collection_filter.include? ("buying") )
-        sql_string += "UNION " unless collection_filter == ["buying"]
-        sql_string += "SELECT Transactions.magic_card_id
-          FROM Transactions
-          WHERE ( Transactions.buyer_id = #{@user.id} ) AND ( status = 'buying' )
-          GROUP BY Transactions.magic_card_id "
-      end
-      sql_string += ") ) "
-      unless ( foil_filter == "" && rarity_filter.empty? && object_type_filter.empty? && set_filter.empty? )
+      filters = []
+      unless ( foil_filter == "" && rarity_filter.empty? && object_type_filter.empty? && set_filter.empty? && searchable(params[:search][:value]).length == 0)
         filters = []
         foil_object_types = object_type_filter & ["card", "planar"]
-        non_foil_object_types = object_type_filter & ["pack", "avatar"]
-        if foil_object_types.any? && foil_filter != ""  #if object_types with foil attribute and foil filter on
+        non_foil_object_types = object_type_filter & ["pack", "vanguard"]
+        if foil_filter != ""
           filter_string = ( non_foil_object_types.any? ? "( " : "" )
-          filter_string += "( ( Magic_Cards.foil = #{ ( foil_filter == 'foil' ? true : false ) } )
-            AND ( Magic_Cards.object_type IN ( #{foil_object_types.map { |s| "'"+s+"'" }.join(', ') } ) ) "
+          filter_string += "( ( Magic_Cards.foil = #{ ( foil_filter == 'foil' ? true : false ) } ) "
+          filter_string += ( foil_object_types.any? ? "AND ( Magic_Cards.object_type IN ( #{ foil_object_types.map { |s| "'"+s+"'" }.join(', ') } ) ) ) " : ") " ) 
           filter_string += " OR ( Magic_Cards.object_type IN ( #{ non_foil_object_types.map { |s| "'"+s+"'" }.join(', ') } ) ) ) " if non_foil_object_types.any? 
           filters << filter_string
         else
           filters << "( Magic_Cards.object_type IN ( #{ object_type_filter.map { |s| "'"+s+"'" }.join(', ') } ) ) " unless object_type_filter.empty?
         end
-        filters << " ( Magic_Cards.rarity IN ( #{ rarity_filter.map { |s| "'"+s+"'" }.join(', ') } ) ) "+
-          ( (object_type_filter & ["planar", "pack", "avatar"]).any? && rarity_filter.any? ? "OR Magic_Cards.rarity IS NULL " : "" )+
-          ") " unless rarity_filter.empty?
-        filters << " ( Magic_Sets.code IN ( #{ set_filter.map { |s| "'"+s+"'" }.join(', ') } ) ) " unless set_filter.empty?
-        sql_string += "AND #{ filters.join(" AND ") } " 
+        filters << "( Magic_Cards.rarity IN ( #{ rarity_filter.map { |s| "'"+s+"'" }.join(', ') } )
+          #{ ( (object_type_filter & ["planar", "pack", "vanguard"]).any? && rarity_filter.any? ? " OR Magic_Cards.rarity IS NULL " : "" ) } ) " unless rarity_filter.empty?
+        filters << "( Magic_Sets.code IN ( #{ set_filter.map { |s| "'"+s+"'" }.join(', ') } ) ) " unless set_filter.empty?
+        filters << "( ( Magic_Cards.name ILIKE '%#{ searchable(params[:search][:value]).gsub(/'/,"''") }%' ) OR 
+          ( Magic_Cards.plain_name ILIKE '%#{ searchable(params[:search][:value]).gsub(/'/,"''") }%' ) ) " unless searchable(params[:search][:value]).length == 0
       end
-      sql_string += "AND ( Magic_Cards.name ILIKE '%#{ searchable(params[:search][:value]).gsub(/'/,"''") }%' ) " if params[:search][:value].length > 0
+
+      sql_string =  "SELECT Magic_Cards.id "
+      sql_string += ", (SELECT MAX(t.price) FROM Transactions as t WHERE (t.magic_card_id = Magic_Cards.id AND t.status = 'buying')) AS buying_price " if @order[0] == "3"
+      sql_string += ", (SELECT MIN(t.price) FROM Transactions as t WHERE (t.magic_card_id = Magic_Cards.id AND t.status = 'selling')) AS selling_price "  if @order[0] == "4"
+      sql_string += ", (SELECT COUNT(*) FROM Stocks WHERE (Stocks.magic_card_id = Magic_Cards.id AND Stocks.status = 'online' AND Stocks.user_id = #{@user.id})) AS online " if @order[0] == "5"
+      sql_string += ", (SELECT COUNT(*) FROM Stocks WHERE (Stocks.magic_card_id = Magic_Cards.id AND Stocks.status = 'depositing' AND Stocks.user_id = #{@user.id})) AS depositing " if @order[0] == "6"
+      sql_string += ", (SELECT COUNT(*) FROM Stocks WHERE (Stocks.magic_card_id = Magic_Cards.id AND Stocks.status = 'withdrawing' AND Stocks.user_id = #{@user.id})) AS withdrawing " if @order[0] == "7"
+      sql_string += ", (SELECT COUNT(*) FROM Stocks WHERE (Stocks.magic_card_id = Magic_Cards.id AND Stocks.status = 'selling' AND Stocks.user_id = #{@user.id})) AS selling " if @order[0] == "8"
+      sql_string += ", (SELECT COUNT(*) FROM Transactions WHERE (Transactions.magic_card_id = Magic_Cards.id AND Transactions.status = 'buying' AND Transactions.buyer_id = #{@user.id})) AS buying " if @order[0] == "9"
+      sql_string += "FROM Magic_Cards "
+      sql_string += "JOIN Magic_Sets ON Magic_Cards.magic_set_id = Magic_Sets.id " unless set_filter.empty? && @order[0] != "1"
+      sql_string += "WHERE ( Magic_Cards.disabled = false ) AND ( Magic_Cards.id IN ( " 
+      unless collection_filter == ["buying"]
+        sql_string += "SELECT Stocks.magic_card_id "
+        sql_string += "FROM Stocks JOIN Magic_Cards ON Stocks.magic_card_id = Magic_Cards.id WHERE ( Stocks.user_id = #{@user.id} ) "
+        sql_string += "AND ( Stocks.status IN ( #{ collection_filter.map { |s| "'"+s+"'" }.join(', ') } ) ) " unless collection_filter.empty?
+        sql_string += "GROUP BY Stocks.magic_card_id "
+      end
+      if collection_filter.empty? || ( collection_filter.include? ("buying") )
+        sql_string += "UNION " unless collection_filter == ["buying"]
+        sql_string += "SELECT Transactions.magic_card_id "
+        sql_string += "FROM Transactions
+          WHERE ( Transactions.buyer_id = #{@user.id} ) AND ( status = 'buying' )
+          GROUP BY Transactions.magic_card_id "
+      end
+      sql_string += ") ) "
+      sql_string += "AND #{ filters.join(" AND ") } " unless filters.empty?
+      sql_string += "ORDER BY #{@order[1]} " 
       return sql_string
     end
 

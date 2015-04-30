@@ -22,6 +22,9 @@
             <%= button_tag(type: "submit", class: "btn btn-default") do %>
               <span class="glyphicon glyphicon-search"></span>
             <% end %>
+            <%= button_tag(type: "submit", class: "btn btn-default new_tab_submit") do %>
+              <span class="glyphicon glyphicon-new-window"></span>
+            <% end %>
           </span>
         </div>
       <% end %>
@@ -114,8 +117,10 @@
             <%= button_tag(type: "submit", class: "btn btn-default") do %>
               <span class="glyphicon glyphicon-search"></span>
             <% end %>
+            <%= button_tag(type: "submit", class: "btn btn-default new_tab_submit") do %>
+              <span class="glyphicon glyphicon-new-window"></span>
+            <% end %>
           </span>
-          <span class="hidden"/>
         </div>
       <% end %>
     </div>
@@ -141,6 +146,24 @@ $('.search').bootstrapValidator({
       }
     }
   }
+}).on("success.form.bv", function(e) {
+    var $form = $(e.target).clone();
+    if ( new_tab ) {
+      e.preventDefault();
+      $form.attr('target','_blank').submit();
+      // bv = $(e.target).data();
+      // bv.defaultSubmit();
+      // bv.submitForm();
+      new_tab = false;
+      $('.search input').val("");
+    }
+  })
+var new_tab = false;
+$('.new_tab_submit').on("click", function(){
+  new_tab = true;
+})
+$('.search input').on("input change", function(){
+  $('.search input').val($(this).val());
 })
 .on('status.field.bv', function(e, data) {
   var $parent = data.element.parents('.form-group');

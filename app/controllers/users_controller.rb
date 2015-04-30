@@ -193,6 +193,7 @@ before_action :mtgo_configured?, only: [:collection, :transactions, :transfers]
 
   def collection
     if request.format == 'json'
+      @order = []
       total_collection_sql = "
         SELECT COUNT (*) as total
         FROM Magic_Cards 
@@ -208,8 +209,7 @@ before_action :mtgo_configured?, only: [:collection, :transactions, :transfers]
           GROUP BY Transactions.magic_card_id
         )"
       total_records = ActiveRecord::Base.connection.execute(total_collection_sql).first["total"]
-      filtered_collection_sql = compile_filter_sql
-      filtered_collection = ActiveRecord::Base.connection.execute(filtered_collection_sql)
+      filtered_collection = ActiveRecord::Base.connection.execute(compile_filter_sql)
       filtered_records = filtered_collection.count
       showing = filtered_collection.drop(params[:start].to_i).first(params[:length].to_i).map{|c| c["id"]}
       showing_collection_sql = " 
@@ -224,16 +224,19 @@ before_action :mtgo_configured?, only: [:collection, :transactions, :transfers]
         , (SELECT COUNT(*) FROM Transactions WHERE (Transactions.magic_card_id = Magic_Cards.id AND Transactions.status = 'buying' AND Transactions.buyer_id = #{@user.id})) AS buying
         FROM Magic_Cards 
         JOIN Magic_Sets ON Magic_Cards.magic_set_id = Magic_Sets.id
-        WHERE Magic_Cards.disabled = false AND Magic_Cards.id IN ( #{ ( showing.empty? ? "'0'" : showing.join(', ') ) } ) "
+        WHERE Magic_Cards.disabled = false AND Magic_Cards.id IN ( #{ ( showing.empty? ? "'0'" : showing.join(', ') ) } ) ORDER BY #{@order[1]} " 
       showing_collection = MagicCard.find_by_sql(showing_collection_sql)
       json = {
         draw: params[:draw].to_i,
         recordsTotal: total_records,
         recordsFiltered: filtered_records,
         data: showing_collection.map do |card|
-          [ card.name + " " + (card.foil ? "Foil" : ""),
-            card.code,
-            ( card.rarity.present? ? card.rarity : card.object_type).titleize,
+          rarity = ( card.rarity.present? ? card.rarity : card.object_type)
+          [ view_context.link_to( magic_set_magic_card_path( card.code, card.mtgo_id ) ) do
+            ( card.name + ( card.foil ? " "+view_context.image_tag("foil.png", height: "30%", title: "Foil") : "" ) ).html_safe
+          end,
+            view_context.link_to(card.code, magic_set_path( card.code ) ).html_safe,
+            "<strong class='#{rarity}-text' title='#{rarity.titleize}'>#{rarity.titleize.chars.first}</strong>".html_safe,
             card.buying_price,
             card.selling_price,
             card.online,

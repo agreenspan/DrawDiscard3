@@ -50,17 +50,16 @@ module MagicSetHelper
     end
   end
 
-
   def object_filter_index
-    return ["card", "planar", "pack", "vanguard"]
+    return ['card', 'planar', 'pack', 'vanguard']
   end
 
   def rarity_filter_index
-    return ["special", "mythic", "rare", "uncommon", "common"]
+    return ['special', 'mythic', 'rare', 'uncommon', 'common']
   end
 
   def collection_filter_index
-    return ["online", "depositing", "withdrawing", "selling", "buying"]
+    return ['online', 'depositing', 'withdrawing', 'selling', 'buying']
   end
 
   def set_filter_index

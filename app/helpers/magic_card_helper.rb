@@ -10,7 +10,7 @@ module MagicCardHelper
   end
 
   def searchable(name)
-    return name.gsub(/%/,"")
+    return name.gsub(/%/,"").gsub(/#/,"").gsub(/{/,"").gsub(/}/,"")
   end
 
 end

@@ -48,13 +48,9 @@
   </div>
 </div>
 
-
-
+<%= javascript_include_tag "dataTablesPagingTypeInput" %>
 <script>
 $(document).ready(function() {
-
-  // $(".panel-heading").on("click", function() {
-  // })
 
   var selected_foils = [];
   var selected_rarities = [];
@@ -72,15 +68,51 @@ $(document).ready(function() {
   $("#apply_filters").on("click submit", function() {
     parse_filter();
     collection_table.draw();
-  })
+  });
+  $("#filters-search").keypress(function(e) {
+    if (e.which == '13') {
+      parse_filter();
+      collection_table.draw();
+    }
+  });
+
+  $("#collection_table").on("draw.dt", function () {
+    uPageButtons();
+  });
+
+  function uPageButtons() {
+    var iCurrentPage = collection_table.page()+1;
+    var iTotalPages = collection_table.page.info().pages;
+    if (iTotalPages > 1) {
+      $("#collection_table_first").removeClass('disabled');
+      $("#collection_table_previous").removeClass('disabled');
+      $("#collection_table_next").removeClass('disabled');
+      $("#collection_table_last").removeClass('disabled');
+      if (iCurrentPage == 1 ) {
+        $("#collection_table_first").addClass('disabled');
+        $("#collection_table_previous").addClass('disabled');
+      }
+      if (iCurrentPage == iTotalPages ) {
+        $("#collection_table_next").addClass('disabled');
+        $("#collection_table_last").addClass('disabled');
+      }
+    } else {
+      $("#collection_table_first").addClass('disabled');
+      $("#collection_table_previous").addClass('disabled');
+      $("#collection_table_next").addClass('disabled');
+      $("#collection_table_last").addClass('disabled');
+    }
+  }
 
   var collection_table = $('#collection_table').DataTable({
     "columnDefs": [
       { "searchable": false, "targets": [3,4] },
+      { "className": "set-link", "targets": [1] },
+      { "orderSequence": [ "desc", "asc" ], "targets": [ 3, 4, 5, 6, 7, 8, 9 ] }
     ],
     "dom": 'tipr',
     "paging": true,
-    "pagingType": "full_numbers",
+    "pagingType": "input",
     "stateSave": false,
     "processing": true,
     "serverSide": true,
@@ -92,7 +124,7 @@ $(document).ready(function() {
     "language": {
       "processing": "<img alt='Loading...' src='/assets/table_loading.gif' class='spinner' />"
     },
-      "ajax": {
+    "ajax": {
       "url": "<%= user_collection_url(@user, format: "json") %>",
       "type": 'POST',
       "data": function ( d ) {
@@ -105,13 +137,13 @@ $(document).ready(function() {
     "initComplete": function (settings, json) {
       $('#collection_table').show();
       $(".dataTables_info").show();
-      $(".dataTables_info").parent('div').eq(1).removeClass("col-xs-6");
-      $(".dataTables_info").parent('div').eq(1).addClass("col-sm-12 col-md-6 sm-center");
-      $(".dataTables_paginate").parent('div').eq(1).removeClass("col-xs-6");
-      $(".dataTables_paginate").parent('div').eq(1).addClass("col-sm-12 col-md-6 sm-center");
+      $(".dataTables_paginate").show();
+      $(".dataTables_info").closest('div').removeClass("col-xs-6");
+      $(".dataTables_info").closest('div').addClass("col-sm-12 col-md-6 sm-center");
+      $(".dataTables_paginate").closest('div').removeClass("col-xs-6");
+      $(".dataTables_paginate").closest('div').addClass("col-sm-12 col-md-6 sm-center");
     } 
   });
-
 });
 
 </script>
