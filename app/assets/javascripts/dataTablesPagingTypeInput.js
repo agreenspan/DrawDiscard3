@@ -163,7 +163,9 @@ $.fn.dataTableExt.oPagination.input = {
         $(nInputSubmit).css({"height": "34px", "width": "34px", "font-weight": "bold", "color": "#428bca", "padding": "2px"})
         $('.input-group-btn', nPaging).css({"height": "34px", "width": "66px"})
         $('input', nPaging).css({"text-align": "right", "color": "#428bca", "padding-right": "2px", "font-weight": "bold"});
-        document.styleSheets[0].addRule("input[type=number]::-webkit-inner-spin-button", "margin-left: 6px;");
+        $(nOf).css({"height": "34px"});
+        $(nPage).css({"height": "34px"});
+
         nInputGroup.style.width = "400px"
         nInput.style.width = "100px"
         nInputSubmit.style.width = "34px"

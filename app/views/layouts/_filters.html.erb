@@ -101,7 +101,7 @@
                 Set
               </dt>
               <div class="row" id="set_filters_container">
-                <dd class="col-md-12 col-xs-6 col-sm-3 hidden" id="set_filter_template" style="padding-bottom: 6px;">
+                <div class="col-md-12 col-xs-6 col-sm-3 hidden" id="set_filter_template" style="padding-bottom: 6px;">
                   <form class="form-inline">
                     <div class="form-group" style="width: 100%;">
                       <%= select_tag "set_select0", options_for_select( @collection_sets
@@ -113,7 +113,7 @@
                       </button>
                     </div>
                   </form>
-                </dd>
+                </div>
               </div>
               <div class="row">
                 <dd class="col-xs-12">
@@ -129,7 +129,7 @@
           <dl style="margin-bottom: 0px;">
             <div class="row">
               <dd class="col-xs-12">
-                <button class="btn btn-block btn-success" id="apply_filters">Apply</button>
+                <button class="btn btn-block btn-success apply_filters" style="height: 22px; padding: 0px;">Apply</button>
               </dd>
             </div>
           </dl>

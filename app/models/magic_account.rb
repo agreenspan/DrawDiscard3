@@ -22,9 +22,21 @@ class MagicAccount < ActiveRecord::Base
   end
 
   def revert_withdrawing
-    Stock.where(magic_acount_id: self.id, status: "withdrawing").each do |stock|
-      stock.update_attribute(:status, "online")
+    stocks_left = true 
+    while 
+      stocks_left = false
+      Stock.where(magic_account_id: self.id, status: "withdrawing").each do |stock|
+        stock.with_lock do 
+          if stock.status == "withdrawing"
+            stock.update_attributes(status: "online", magic_account_id: "")
+          else
+            stocks_left = true
+          end
+        end
+      end
     end
+    self.user.update_attribute(:wallet, self.user.wallet + self.tickets_withdrawing)
+    self.update_attribute(:tickets_withdrawing, 0)
   end
 
 end

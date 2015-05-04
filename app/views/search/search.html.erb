@@ -172,7 +172,7 @@
               <tr>
                 <td data-search=<%= "\"#{planar.name} #{planar.plain_name} #{planar.set_name}\"".html_safe %> class="planar-link">
                   <%= link_to planar.name, magic_set_magic_card_path(planar.code, planar.mtgo_id) %>
-                  <%= (planar.foil ? link_to(image_tag("foil.png", height: "30%", title: "Foil"), magic_set_magic_card_path(planar.code, planar.mtgo_id)) : "") %>
+                  <%= (planar.foil ? link_to(image_tag("foil.png", height: "10px", title: "Foil"), magic_set_magic_card_path(planar.code, planar.mtgo_id)) : "") %>
                 </td>
                 <td data-search=<%= (planar.foil ? "foil" : "normal") %> ></td>
                 <td class="set-link" title="<%= planar.set_name %>">
@@ -367,7 +367,7 @@
               <tr>
                 <td data-search=<%= "\"#{card.name} #{card.plain_name} #{card.set_name}\"".html_safe %>>
                   <%= link_to card.name, magic_set_magic_card_path(card.code, card.mtgo_id) %>
-                  <%= (card.foil ? link_to(image_tag("foil.png", height: "30%", title: "Foil"), magic_set_magic_card_path(card.code, card.mtgo_id)) : "") %>
+                  <%= (card.foil ? link_to(image_tag("foil.png", height: "10px", title: "Foil"), magic_set_magic_card_path(card.code, card.mtgo_id)) : "") %>
                 </td>
                 <td data-search=<%= (card.foil ? "foil" : "normal") %> ></td>
                 <td class="set-link" title="<%= card.set_name %>">

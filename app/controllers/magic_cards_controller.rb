@@ -31,7 +31,7 @@ class MagicCardsController < ApplicationController
     @listings = Transaction.find_by_sql("SELECT t.price, t.magic_card_id, t.status,
       (SELECT COUNT(*) FROM Transactions WHERE Transactions.magic_card_id = #{@object.id} AND Transactions.price = t.price AND Transactions.status = 'selling') AS num_listings
       FROM Transactions AS t WHERE t.magic_card_id = #{@object.id} AND t.status = 'selling' GROUP BY t.price, t.magic_card_id, t.status ORDER BY t.price ASC").first(10)
-    @sales = Transaction.find_by_sql("SELECT t.price, t.magic_card_id, t.status, DATE_TRUNC('second', t.finish) AS truncated_finish,
+    @sales = Transaction.find_by_sql("SELECT t.price, t.magic_card_id, t.status, DATE_TRUNC('minute', t.finish) AS truncated_finish,
       (SELECT COUNT(*) FROM Transactions WHERE Transactions.magic_card_id = #{@object.id} AND Transactions.price = t.price AND Transactions.status = 'finished') AS num_sales
       FROM Transactions AS t WHERE t.magic_card_id = #{@object.id} AND t.status = 'finished' GROUP BY t.price, t.magic_card_id, t.status, truncated_finish ORDER BY truncated_finish DESC").first(10)
 

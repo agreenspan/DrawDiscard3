@@ -43,7 +43,7 @@
           <td> <%= ( row < @bids.count ? @bids[row].num_bids : "" ) %> </td>
           <td> <%= ( row < @listings.count ? "$"+@listings[row].price.to_s : "" ) %> </td>
           <td> <%= ( row < @listings.count ? @listings[row].num_listings : "" ) %> </td>
-          <td class="price_table_date"> <%= ( row < @sales.count ? @sales[row].truncated_finish.to_s.chomp(" UTC") : "" ) %> </td>
+          <td class="price_table_date"> <%= ( row < @sales.count ? @sales[row].truncated_finish.strftime("%b %e, %Y - %k:%M").to_s : "" ) %> </td>
           <td> <%= ( row < @sales.count ? "$"+@sales[row].price.to_s : "" ) %> </td>
           <td> <%= ( row < @sales.count ? @sales[row].num_sales : "" ) %> </td>
         </tr>

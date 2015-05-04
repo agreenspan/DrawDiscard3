@@ -2,8 +2,402 @@
 <% provide(:header, "TRANSACTIONS") %>
 <div class="container">
   <div class="row">
-    <div class="col-xs-12">
+    <div class="col-md-2">
+      <%= render 'layouts/filters' %>
+    </div>
+    <div class="col-md-10 ">
+      <div class="row" id="bottom_filters" style="display: none;">
+        <div class="col-md-12">
+          <div class="panel panel-success" style="margin-bottom: 0px">
+            <table class="table table-condensed table-bordered">
+              <tbody>
+                <tr>
+                  <th width="30%">
+                    <form class="form-horizontal">
+                      <div class="form-group" style="margin-bottom: 0px;">
+                        <label for="price_select" class="col-md-6" style="margin-top: 5px;"> Price </label>
+                        <div class="col-xs-12 col-md-6">
+                          <select class="form-control input-sm" id="price_select" style="width: 100%">
+                            <option value disabled selected>-Select-</option>
+                            <option value="equals">Equals</option>
+                            <option value="between">Between</option>
+                            <option value="less_than">Less Than</option>
+                            <option value="greater_than">Greater Than</option>
+                          </select>
+                        </div>
+                      </div>
+                    </form>
+                  </th>
+                  <th width="30%">
+                    <form class="form-horizontal">
+                      <div class="form-group" style="margin-bottom: 0px;">
+                        <label for="start_select" class="col-md-6" style="margin-top: 5px;"> Start Date </label>
+                        <div class="col-xs-12 col-md-6">
+                          <select class="form-control input-sm" id="start_select" style="width: 100%;">
+                            <option value disabled selected>-Select-</option>
+                            <option value="equals">On</option>
+                            <option value="between">Between</option>
+                            <option value="less_than">Before</option>
+                            <option value="greater_than">After</option>
+                          </select>
+                        </div>
+                      </div>
+                    </form>
+                  </th>
+                  <th width="30%">
+                    <form class="form-horizontal">
+                      <div class="form-group" style="margin-bottom: 0px;">
+                        <label for="finish_select" class="col-md-6" style="margin-top: 5px;"> Finish Date </label>
+                        <div class="col-xs-12 col-md-6">
+                          <select class="form-control input-sm" id="finish_select" style="width: 100%;">
+                            <option value disabled selected>-Select-</option>
+                            <option value="equals">On</option>
+                            <option value="between">Between</option>
+                            <option value="less_than">Before</option>
+                            <option value="greater_than">After</option>
+                          </select>
+                        </div>
+                      </div>
+                    </form>
+                  </th>
+                  <th width="10%" style="vertical-align: middle;">
+                    <button class="btn btn-block btn-success apply_filters pull-right" style="padding: 0px; height: 29px">Apply</button>
+                  </th>
+                </tr>
+                <tr class="hidden" id="price_date_filter_row">
+                  <td>
+                    <form class="form-inline hidden" id="price_form" style="margin-bottom: 0px;">
+                      <div class="form-group" style="width: 100%; margin-top: 0px; position: relative;">
+                        <input type="number" class="form-control input-sm " id="price1" style="width: calc(100% - 30px);" min="0" max="999.9">
+                        <span id="price_between" class="hidden" style="width: 24px; position: absolute; right: 0px; top: 5px;"> and </span>
+                        <input type="number" class="form-control input-sm hidden" id="price2" style="width: calc(100% - 30px); margin-top: 3px;" min="0" max="999.9">
+                        <button type="button" class="btn btn-sm btn-danger btn-xs" id="price_remove" style="width: 25px; height: 30px; bottom: 0px; right: 0px; position: absolute;">
+                          <span class="glyphicon glyphicon-remove"> </span>
+                        </button>
+                      </div>
+                    </form>
+                  </td>
+                  <td>
+                    <form class="form-inline hidden" id="start_form" style="margin-bottom: 0px">
+                      <div class="form-group" style="width: 100%; margin-top: 0px; position: relative;">
+                        <div class="input-group date" id="start1" style="width: calc(100% - 30px);">
+                          <input type="text" class="form-control input-sm">
+                          <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                        </div>
+                        <span id="start_between" class="hidden" style="width: 24px; position: absolute; right: 0px; top: 5px;"> and </span>
+                        <div class="input-group date hidden" id="start2" style="width: calc(100% - 30px); margin-top: 3px;">
+                          <input type="text" class="form-control input-sm">
+                          <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-danger btn-xs" id="start_remove" style="width: 25px; height: 30px; bottom: 0px; right: 0px; position: absolute;">
+                          <span class="glyphicon glyphicon-remove"> </span>
+                        </button>
+                      </div>
+                    </form>
+                  </td>
+                  <td>
+                    <form class="form-inline hidden" id="finish_form" style="margin-bottom: 0px">
+                      <div class="form-group" style="width: 100%; margin-top: 0px; position: relative;">
+                        <div class="input-group date" id="finish1" style="width: calc(100% - 30px);">
+                          <input type="text" class="form-control input-sm">
+                          <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                        </div>
+                        <span id="finish_between" class="hidden" style="width: 24px; position: absolute; right: 0px; top: 5px;"> and </span>
+                        <div class="input-group date hidden" id="finish2" style="width: calc(100% - 30px); margin-top: 3px;">
+                          <input type="text" class="form-control input-sm">
+                          <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-danger btn-xs" id="finish_remove" style="width: 25px; height: 30px; bottom: 0px; right: 0px; position: absolute;">
+                          <span class="glyphicon glyphicon-remove"> </span>
+                        </button>
+                      </div>
+                    </form>
+                  </td>
+                  <td style="display: none; background-color: gainsboro;">
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 inverse">
+          <table class="table table-condensed set-table" id="transactions_table" style="display: none; margin-top: 0px; margin-bottom: 0px">
+            <thead>
+              <tr>
+                <th>
+                  Card Name
+                </th>
+                <th>
+                  Set
+                </th>
+                <th>
+                  Rarity
+                </th>
+                <th>
+                  Relation
+                </th>
+                <th>
+                  Quantity
+                </th>
+                <th>
+                  Price
+                </th>
+                <th>
+                  Status              
+                </th>
+                <th>
+                  Start
+                </th>
+                <th>
+                  Finish
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
+<%= javascript_include_tag "dataTablesPagingTypeInput" %>
+<script>
+
+  var price_date_filters = [false, false, false];
+  var selected_foils = [];
+  var selected_rarities = [];
+  var selected_relations = [];
+  var selected_statuses = [];
+  var selected_sets = [];
+  var selected_prices = [];
+  var selected_starts = [];
+  var selected_finishes = [];
+
+
+  function parse_filter() { 
+    selected_foils = $("#foil_filters :checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { return (this.id); } }).get();
+    selected_rarities = $("#rarity_filters :checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { return (this.id); } }).get();
+    selected_relations = $("#relation_filters :checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { return (this.id); } }).get();
+    selected_statuses = $("#status_filters :checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { return (this.id); } }).get();
+    selected_sets = $('.set_select option:selected').map(function() { return $(this).val(); }).get();
+    $(".input-group.date input").trigger("submit");
+    selected_prices = $('#price_select option:selected').map(function() { if ($(this).val() !== "") { return [$(this).val(), $("#price1").val(), $("#price2").val() ]; } }).get();
+    selected_starts = $('#start_select option:selected').map(function() { if ($(this).val() !== "") { return [$(this).val(), $("#start1 input").val(), $("#start2 input").val() ]; } }).get();
+    selected_finishes = $('#finish_select option:selected').map(function() { if ($(this).val() !== "") { return [$(this).val(), $("#finish1 input").val(), $("#finish2 input").val() ]; } }).get();
+    transactions_table.search( $("#filters-search").val() );
+  }
+
+  function clear_price() {
+    $("#price_form").addClass("hidden");
+    $("#price_select option[value='']").prop("selected","selected");
+    $("#price1").val("");
+    $("#price2").val("");
+  }
+  function clear_start() {
+    $("#start_form").addClass("hidden");
+    $("#start_select option[value='']").prop("selected","selected");
+    $("#start1 input").val("");
+    $("#start2 input").val("");
+  }
+  function clear_finish() {
+    $("#finish_form").addClass("hidden");
+    $("#finish_select option[value='']").prop("selected","selected");
+    $("#finish1 input").val("");
+    $("#finish2 input").val("");
+  }
+
+  clear_price(); clear_start(); clear_finish();
+
+  $("#price_select").on("change", function() {
+    price_date_filters[0] = true;
+    $('#price_date_filter_row').removeClass("hidden");
+    $("#price_form").removeClass("hidden");
+    if ( $('#price_select option:selected').val() === "between" ) {
+      $("#price2").removeClass("hidden");
+      $("#price_between").removeClass("hidden");
+    } else {
+      $("#price2").addClass("hidden");
+      $("#price_between").addClass("hidden");
+    }
+  });
+  $("#price_remove").on("click submit", function() {
+    price_date_filters[0] = false;
+    hide_price_date_filter_row();
+    clear_price();
+  });
+
+  $('#start_form .input-group.date').datepicker({
+      todayHighlight: true,
+      startDate: "1-1-2015",
+      endDate: 'today',
+      autoclose: true,
+      orientation: "auto"
+  });
+  $("#start_select").on("change", function() {
+    price_date_filters[1] = true;
+    $('#price_date_filter_row').removeClass("hidden");
+    $("#start_form").removeClass("hidden");
+    if ( $('#start_select option:selected').val() === "between" ) {
+      $("#start2").removeClass("hidden");
+      $("#start_between").removeClass("hidden");
+    } else {
+      $("#start2").addClass("hidden");
+      $("#start_between").addClass("hidden");
+    }
+  });
+  $("#start_remove").on("click submit", function() {
+    price_date_filters[1] = false;
+    hide_price_date_filter_row();
+    clear_start();
+  });
+
+  $('#finish_form .input-group.date').datepicker({
+      todayHighlight: true,
+      startDate: "1-1-2015",
+      endDate: 'today',
+      autoclose: true,
+      orientation: "auto"
+  });
+  $("#finish_select").on("change", function() {
+    price_date_filters[2] = true;
+    $('#price_date_filter_row').removeClass("hidden");
+    $("#finish_form").removeClass("hidden");
+    if ( $('#finish_select option:selected').val() === "between" ) {
+      $("#finish2").removeClass("hidden");
+      $("#finish_between").removeClass("hidden");
+    } else {
+      $("#finish2").addClass("hidden");
+      $("#finish_between").addClass("hidden");
+    }
+  });
+  $("#finish_remove").on("click submit", function() {
+    price_date_filters[2] = false;
+    hide_price_date_filter_row();
+    clear_finish();    
+  });
+
+  function hide_price_date_filter_row() {
+    if ( (price_date_filters[0] == false) && (price_date_filters[1] == false) && (price_date_filters[2] == false) ) { $('#price_date_filter_row').addClass("hidden"); }
+  }
+
+  $(".apply_filters").on("click submit", function() {
+    parse_filter();
+    transactions_table.draw();
+  });
+  $("#filters-search").keypress(function(e) {
+    if (e.which == '13') {
+      parse_filter();
+      transactions_table.draw();
+    }
+  });
+  $("#transactions_table").on("draw.dt", function () {
+    uPageButtons();
+  });
+  function uPageButtons() {
+    var iCurrentPage = transactions_table.page()+1;
+    var iTotalPages = transactions_table.page.info().pages;
+    if (iTotalPages > 1) {
+      $("#transactions_table_first").removeClass('disabled');
+      $("#transactions_table_previous").removeClass('disabled');
+      $("#transactions_table_next").removeClass('disabled');
+      $("#transactions_table_last").removeClass('disabled');
+      if (iCurrentPage == 1 ) {
+        $("#transactions_table_first").addClass('disabled');
+        $("#transactions_table_previous").addClass('disabled');
+      }
+      if (iCurrentPage == iTotalPages ) {
+        $("#transactions_table_next").addClass('disabled');
+        $("#transactions_table_last").addClass('disabled');
+      }
+    } else {
+      $("#transactions_table_first").addClass('disabled');
+      $("#transactions_table_previous").addClass('disabled');
+      $("#transactions_table_next").addClass('disabled');
+      $("#transactions_table_last").addClass('disabled');
+    }
+  }
+
+  var transactions_table = $('#transactions_table').DataTable({
+    "columnDefs": [
+      { "className": "set-link", "targets": [1] },
+      // { "orderable": false, "targets": [9] },
+      { "orderSequence": [ "desc", "asc" ], "targets": [ 3, 5, 6, 7, 8 ] }
+    ],
+    "dom": 'tipr',
+    "paging": true,
+    "pagingType": "input",
+    "stateSave": false,
+    "processing": true,
+    "serverSide": true,
+    "autoWidth": false,
+    "orderCellsTop": true,
+    "pageLength": 20,
+    "lengthChange": false,
+    "searching": true,
+    "language": {
+      "processing": "<img alt='Loading...' src='/assets/table_loading.gif' class='spinner' />"
+    },
+    "ajax": {
+      "url": "<%= user_transactions_url(@user, format: "json") %>",
+      "type": 'POST',
+      "data": function ( d ) {
+        d.foil = selected_foils;
+        d.rarity = selected_rarities;
+        d.relation = selected_relations;
+        d.status = selected_statuses;
+        d.set = selected_sets;
+        d.price = selected_prices;
+        d.start_date = selected_starts;
+        d.finish_date = selected_finishes;
+      }      
+    },
+    "initComplete": function (settings, json) {
+      $('#bottom_filters').show();
+      $('#transactions_table').show();
+      $(".dataTables_info").show();
+      $(".dataTables_paginate").show();
+      $(".dataTables_info").closest('div').removeClass("col-xs-6");
+      $(".dataTables_info").closest('div').addClass("col-sm-12 col-md-6 sm-center");
+      $(".dataTables_paginate").closest('div').removeClass("col-xs-6");
+      $(".dataTables_paginate").closest('div').addClass("col-sm-12 col-md-6 sm-center");
+    } 
+  });
+
+  $.fn.dataTable.ext.errMode = 'none';
+  $('#transactions_table')
+    .on( 'error.dt', function ( e, settings, techNote, message ) {
+      console.log( 'An error has been reported by DataTables: ', message );
+      $("#transfer_error_modal").modal("show");
+    } )
+    .DataTable();
+
+  $("table").on("click", '.cancel_transaction', function() {
+    var row = $(this).closest("tr").find("td").map(function(index,value) {
+      return $(value).text().trim()+( $(this).find('img').length  ? " Foil" : "" );
+    }).get();
+    $("#cancel_name").html(row[0]);
+    $("#cancel_set").html(row[1]);
+    $("#cancel_price").html(row[3]);
+    $("#cancel_relation").html(row[4]);
+    $("#cancel_start").html(row[7]);
+    $("#cancel_quantity").val(row[5]);
+    $("#max_quantity").html(row[5]);
+    if ( parseInt(row[5]) > 1) {
+      $("#cancel_quantity").removeClass("disabled");
+      $("#cancel_quantity").prop({"max": row[5]});
+    } else {
+      $("#cancel_quantity").addClass("disabled");
+    }
+    $("#transactions_cancel_modal").modal("show");
+  });
+
+</script>
+<style type="text/css">
+  input[type=number]::-webkit-inner-spin-button { margin-left: 6px; }
+</style>
+<%= render 'transactions_cancel_modal' %>
+<%= render 'transfer_error_modal' %>

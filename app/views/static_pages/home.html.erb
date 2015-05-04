@@ -60,6 +60,10 @@
       return selector.apply(element);
     }).get() );
   };
+  $(document).ready(function(){
+    equalHeight();
+    
+  })
   $(window).on("load resize", function(e) {
     equalHeight();
   });

@@ -21,7 +21,8 @@ Rails.application.routes.draw do
 
   resources :users, only: [:create, :update] do
     match 'collection', to: 'users#collection', via: [:get, :post]
-    get 'transactions'
+    match 'transactions', to: 'users#transactions', via: [:get, :post]
+    post 'cancel_transaction', constraints: -> (req) { req.xhr? }
     get 'transfers'
     get 'get_transfer_data', constraints: -> (req) { req.xhr? }
     get 'post_transfer_data', constraints: -> (req) { req.xhr? }

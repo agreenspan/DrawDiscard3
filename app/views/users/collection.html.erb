@@ -61,11 +61,11 @@ $(document).ready(function() {
     selected_foils = $("#foil_filters :checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { return (this.id); } }).get();
     selected_rarities = $("#rarity_filters :checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { return (this.id); } }).get();
     selected_collections = $("#collection_filters :checkbox" ).map(function() { if ($("#"+this.id).is(":checked")) { return (this.id); } }).get();
-    selected_sets = $('option:selected').map(function() { return $(this).val(); }).get();
+    selected_sets = $('.set_select option:selected').map(function() { return $(this).val(); }).get();
     collection_table.search( $("#filters-search").val() );
   }
 
-  $("#apply_filters").on("click submit", function() {
+  $(".apply_filters").on("click submit", function() {
     parse_filter();
     collection_table.draw();
   });
@@ -106,7 +106,6 @@ $(document).ready(function() {
 
   var collection_table = $('#collection_table').DataTable({
     "columnDefs": [
-      { "searchable": false, "targets": [3,4] },
       { "className": "set-link", "targets": [1] },
       { "orderSequence": [ "desc", "asc" ], "targets": [ 3, 4, 5, 6, 7, 8, 9 ] }
     ],
@@ -144,6 +143,19 @@ $(document).ready(function() {
       $(".dataTables_paginate").closest('div').addClass("col-sm-12 col-md-6 sm-center");
     } 
   });
+
+  $.fn.dataTable.ext.errMode = 'none';
+  $('#collection_table')
+    .on( 'error.dt', function ( e, settings, techNote, message ) {
+      console.log( 'An error has been reported by DataTables: ', message );
+      $("#transfer_error_modal").modal("show");
+    } )
+    .DataTable();
+
 });
 
 </script>
+<style type="text/css">
+  input[type=number]::-webkit-inner-spin-button { margin-left: 6px; }
+</style>
+<%= render 'transfer_error_modal' %>

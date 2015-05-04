@@ -1,0 +1,93 @@
+<div id="transactions_cancel_modal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content panel-danger">
+      <div class="modal-heading panel-heading">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title"> Cancel Transaction </h4>        
+      </div>
+      <table class="table table-condensed" style="margin-bottom: 0px;">
+        <tbody>
+          <tr>
+            <th> Card Name </th>
+            <td id="cancel_name"> </td>
+          </tr>
+          <tr>
+            <th> Set </th>
+            <td id="cancel_set"> </td>
+          </tr>
+          <tr>
+            <th> Price </th>
+            <td id="cancel_price"> </td>
+          </tr>
+          <tr>
+            <th> Relation </th>
+            <td id="cancel_relation"> </td>
+          </tr>
+          <tr>
+            <th> Start </th>
+            <td id="cancel_start"> </td>
+          </tr>
+          <tr>
+            <th> Quantity </th>
+            <td>
+              <span class="hidden" id="max_quantity"> </span>
+              <input id="cancel_quantity" class="form-control disabled" type="number" min="1" max="1">
+             </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="modal-footer panel-footer ">
+        <button class="btn btn-info" id="back">
+          <span>Back</span>
+        </button>
+        <button class="btn btn-danger" id="confirmed_cancel">
+          <span>Cancel</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$("#cancel_quantity").on("blur", function () {
+  var val = parseInt($(this).val());
+  var max = parseInt($("#max_quantity").text().trim());
+  if ( (val < 1) || (val > max) || (isNaN(val)) ) {
+    $(this).val(max);
+  }
+});
+$("#back").on("click submit", function () {
+  $("#transactions_cancel_modal").modal("hide");
+});
+$("#confirmed_cancel").on("click submit", function () {
+  $("#cancel_quantity").trigger("blur");
+  $(".cancel_transaction").addClass("disabled");
+  $("#transactions_cancel_modal").modal("hide");
+  var name = $("#cancel_name").text().trim();
+  var set = $("#cancel_set").text().trim();
+  var price = $("#cancel_price").text().trim();
+  var relation = $("#cancel_relation").text().trim();
+  var start = $("#cancel_start").text().trim();
+  var quantity = $("#cancel_quantity").val();
+
+  $.ajax({
+    url: "/users/"+<%= @user.id%>+"/cancel_transaction",
+    data: { name: name, set: set, price: price, relation: relation, start: start, quantity: quantity },
+    dataType: "html",
+    type: "POST",
+    success: function(data){
+      var html = $('<div />').append(data);
+      if ( html.find('error').text().trim() == "true" ) {
+        $("#transfer_error_modal").modal("show");
+      } else {
+        transactions_table.draw();
+      }
+    },
+    error: function ( ) {
+      console.log("ajax error");
+      $("#transfer_error_modal").modal("show");
+    }
+  })
+
+})
+</script>

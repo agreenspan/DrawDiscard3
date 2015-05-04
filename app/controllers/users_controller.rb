@@ -209,11 +209,11 @@ before_action :mtgo_configured?, only: [:collection, :transactions, :transfers]
           GROUP BY Transactions.magic_card_id
         )"
       total_records = ActiveRecord::Base.connection.execute(total_collection_sql).first["total"]
-      filtered_collection = ActiveRecord::Base.connection.execute(compile_filter_sql)
+      filtered_collection = ActiveRecord::Base.connection.execute(compile_collection_filter_sql)
       filtered_records = filtered_collection.count
       showing = filtered_collection.drop(params[:start].to_i).first(params[:length].to_i).map{|c| c["id"]}
       showing_collection_sql = " 
-        SELECT Magic_Cards.id, Magic_Cards.mtgo_id, Magic_Cards.name, Magic_Cards.plain_name, Magic_Cards.foil, Magic_Cards.rarity, Magic_Cards.object_type, Magic_Cards.magic_set_id
+        SELECT Magic_Cards.mtgo_id, Magic_Cards.name, Magic_Cards.foil, Magic_Cards.rarity, Magic_Cards.object_type, Magic_Cards.magic_set_id
         , (Magic_Sets.name) AS set_name, Magic_Sets.code 
         , (SELECT MAX(Transactions.price) FROM Transactions WHERE (Transactions.magic_card_id = Magic_Cards.id AND Transactions.status = 'buying')) AS buying_price 
         , (SELECT MIN(Transactions.price) FROM Transactions WHERE (Transactions.magic_card_id = Magic_Cards.id AND Transactions.status = 'selling')) AS selling_price 
@@ -233,9 +233,9 @@ before_action :mtgo_configured?, only: [:collection, :transactions, :transfers]
         data: showing_collection.map do |card|
           rarity = ( card.rarity.present? ? card.rarity : card.object_type)
           [ view_context.link_to( magic_set_magic_card_path( card.code, card.mtgo_id ) ) do
-            ( card.name + ( card.foil ? " "+view_context.image_tag("foil.png", height: "30%", title: "Foil") : "" ) ).html_safe
+            ( card.name + ( card.foil ? " "+view_context.image_tag("foil.png", height: "10px", title: "Foil") : "" ) ).html_safe
           end,
-            view_context.link_to(card.code, magic_set_path( card.code ) ).html_safe,
+            view_context.link_to(card.code.gsub(/_/,""), magic_set_path( card.code ) ).html_safe,
             "<strong class='#{rarity}-text' title='#{rarity.titleize}'>#{rarity.titleize.chars.first}</strong>".html_safe,
             card.buying_price,
             card.selling_price,
@@ -297,6 +297,128 @@ before_action :mtgo_configured?, only: [:collection, :transactions, :transfers]
   end
 
   def transactions
+    if request.format == 'json'
+      total_transactions_sql ="SELECT Transactions.magic_card_id, Transactions.price, COUNT (*) as quantity, Transactions.status 
+        , DATE_TRUNC('day', Transactions.start) as truncated_start, DATE_TRUNC('day', Transactions.finish) as truncated_finish 
+        , CASE WHEN Transactions.buyer_id = #{@user.id} THEN 'Buyer' WHEN Transactions.seller_id = #{@user.id} THEN 'Seller' END as relation
+        FROM Transactions
+        WHERE ( Transactions.buyer_id = #{@user.id} OR Transactions.seller_id = #{@user.id} ) AND Transactions.magic_card_id IN (
+        SELECT Magic_Cards.id FROM Magic_Cards WHERE disabled = false ) 
+        GROUP BY Transactions.magic_card_id, Transactions.price, Transactions.status, truncated_start, truncated_finish, relation "
+      total_records = ActiveRecord::Base.connection.execute(total_transactions_sql).count
+      showing_transactions = Transaction.find_by_sql(compile_transactions_filter_sql)
+      filtered_records = ActiveRecord::Base.connection.execute(@count_sql_string).count
+      json = {
+        draw: params[:draw].to_i,
+        recordsTotal: total_records,
+        recordsFiltered: filtered_records,
+        data: showing_transactions.map do |transaction|
+          rarity = ( transaction.rarity.present? ? transaction.rarity : transaction.object_type)
+          [ view_context.link_to( magic_set_magic_card_path( transaction.code, transaction.mtgo_id ) ) do
+            ( transaction.name + ( transaction.foil ? " "+view_context.image_tag("foil.png", height: "10px", title: "Foil") : "" ) ).html_safe
+          end,
+            view_context.link_to(transaction.code.gsub(/_/,""), magic_set_path( transaction.code ) ).html_safe,
+            "<strong class='#{rarity}-text' title='#{rarity.titleize}'>#{rarity.titleize.chars.first}</strong>".html_safe,
+            ( transaction.relation == "Seller" ? view_context.image_tag('forSale.png', height: "20px", title: "Seller") : view_context.image_tag('bids.png', height: "20px", title: "Buyer") ),
+            transaction.quantity,
+            "$"+transaction.price.to_s,
+            case transaction.status
+              when "buying", "selling"
+                '<span class="label label-info">Active</span>'
+              when "finished"
+                '<span class="label label-success">Complete</span>'
+              when "cancelled"
+                '<span class="label label-warning">Cancelled</span>'
+              else
+                '<span class="label label-success">Error</span>'
+            end,
+            ( !transaction.start.nil? ? transaction.start.strftime("%b %e, %Y").to_s : "" ),
+            ( !transaction.finish.nil? ? transaction.finish.strftime("%b %e, %Y").to_s : "<a href='#' class='cancel_transaction'>X</a>" )
+          ]
+        end 
+      }
+    else
+      @collection_page_override = true
+      @filters = Hash.new
+      @filters[:on]= Hash.new
+      @filters[:on][:on] = false
+      @filters[:on][:foil] = true
+      @filters[:on][:rarity] = true
+      @filters[:on][:collection] = false
+      @filters[:on][:relation] = true
+      @filters[:on][:status] = true
+      @filters[:on][:set] = false
+      @filters[:foil] = Hash.new
+      @filters[:foil][:normal] = ""
+      @filters[:foil][:foil] = ""
+      @filters[:rarity] = Hash.new
+      @filters[:rarity][:special] = ""
+      @filters[:rarity][:mythic] = ""
+      @filters[:rarity][:rare] = ""
+      @filters[:rarity][:uncommon] = ""
+      @filters[:rarity][:common] = ""
+      @filters[:rarity][:planar] = ""
+      @filters[:rarity][:pack] = ""
+      @filters[:rarity][:vanguard] = ""
+      @filters[:rarity][:basic] = 0
+      @filters[:relation]= Hash.new
+      @filters[:relation][:buyer] = ""
+      @filters[:relation][:seller] =""
+      @filters[:status]= Hash.new
+      @filters[:status][:active] = ""
+      @filters[:status][:complete] = ""
+      @filters[:status][:cancelled] = ""
+      collection_sets_sql = "
+        SELECT Magic_Sets.code, Magic_Sets.name
+        FROM Magic_Cards JOIN Magic_Sets ON Magic_Cards.magic_set_id = Magic_Sets.id
+        WHERE Magic_Cards.id IN (
+          SELECT Transactions.magic_card_id
+          FROM Transactions
+          WHERE Transactions.buyer_id = #{@user.id} OR Transactions.seller_id = #{@user.id} 
+          GROUP BY Transactions.magic_card_id
+        ) GROUP BY Magic_Sets.code, Magic_Sets.name"
+      @collection_sets = ActiveRecord::Base.connection.execute(collection_sets_sql)
+    end
+    respond_to do |format|
+      format.html
+      format.json { render json: json }
+    end
+  end
+
+  def cancel_transaction
+    errors = false
+    foil = ( params[:name].split(//).last(4).join == "Foil" ? true : false )
+    name = ( foil ? searchable(params[:name].chomp(" Foil")) : searchable(params[:name]) ) 
+    set = params[:set]
+    errors = true unless set_filter_index.include? (set)
+    @price = params[:price].gsub(/\$/,'').to_f
+    errors = true if @price < 0.1 || @price > 999.9
+    @relation = params[:relation]
+    errors = true unless ["Buyer", "Seller"].include? (@relation) 
+    @start = Date.parse(params[:start], :date)
+    errors = true if @start == nil
+    @quantity = params[:quantity].to_i
+    errors = true if @quantity < 1
+    redirect_to user_transfer_error_path(@user) and return if errors == true
+    set = MagicSet.find_by_code(set)
+    @card = MagicCard.where(name: name, foil: foil, magic_set_id: set.id, disabled: false)
+    errors = true if @card.count != 1
+    @card = @card.first
+    redirect_to user_transfer_error_path(@user) and return if errors == true
+    @finish = DateTime.now
+    if @relation == "Buyer"
+      transactions = Transaction.where("buyer_id = #{@user.id} AND magic_card_id = #{@card.id} AND status = 'buying' AND price = #{@price} 
+        AND start >= '#{ (@start).to_datetime.to_formatted_s(:db) }' AND start <= '#{ (@start+1).to_datetime.to_formatted_s(:db) }' ")
+      errors = true if transactions.count == 0 || transactions.count < @quantity
+      redirect_to user_transfer_error_path(@user) and return if errors == true
+    elsif @relation == "Seller"
+      transactions = Transaction.where("seller_id = #{@user.id} AND magic_card_id = #{@card.id} AND status = 'selling' AND price = #{@price} 
+        AND start >= '#{ (@start).to_datetime.to_formatted_s(:db) }' AND start <= '#{ (@start+1).to_datetime.to_formatted_s(:db) }' ")
+      errors = true if transactions.count == 0 || transactions.count < @quantity
+      redirect_to user_transfer_error_path(@user) and return if errors == true
+    end
+    cancel
+    render nothing: true
   end
 
   def transfers
@@ -479,6 +601,7 @@ before_action :mtgo_configured?, only: [:collection, :transactions, :transfers]
           end
       end
     else
+      params[:set] = "_CON" if params[:set] == "CON"
       @set = MagicSet.find_by_code( params[:set] )
       @card = []
       if @set != nil

@@ -33,7 +33,7 @@
             </strong>
           </td>
           <td width="30px" id="edit_code">
-            <%= stock.code %>
+            <%= stock.code.gsub(/_/,"") %>
           </td>
           <td width="30px" id="edit_quantity">
             <%= stock.quantity %>
@@ -64,7 +64,7 @@
             </strong>
           </td>
           <td width="30px" id="edit_code">
-            <%= stock.code %>
+            <%= stock.code.gsub(/_/,"") %>
           </td>
           <td width="30px" id="edit_quantity">
             <%= stock.quantity %>

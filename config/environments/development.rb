@@ -23,9 +23,11 @@ Rails.application.configure do
     :enable_starttls_auto => true,
     :address              => "smtp.gmail.com",
     :port                 => 587,
+    :domain               => "drawdiscard.com",
     :authentication       => 'plain',
     :user_name            => 'drawdiscard@gmail.com',
-    :password             => 'projectnewstart1!'
+    :password             => 'projectnewstart1!',
+    :enable_starttls_auto => true
   }
   config.action_mailer.perform_deliveries = true
   config.action_mailer.default_url_options = { host: "localhost:3000" }

@@ -19,17 +19,27 @@ module TransactionsHelper
       return false
     else 
       price = params[:price].to_f
-      if (price < 2) && (price != price.round(3))
-        flash_message :danger, "Prices under 2 tickets must be set in increments of 0.001."
-        return false
-      elsif (price < 10) && (price != price.round(2))
-        flash_message :danger, "Prices between 2 and 10 tickets must be set in increments of 0.01."
-        return false
-      elsif (price > 10) && (price != price.round(1))
-        flash_message :danger, "Prices above 10 tickets must be set in increments of 0.1."
-        return false
-      else
-        return true
+      if (price < 2) 
+        if ( price != price.round(3))
+          flash_message :danger, "Prices under 2 tickets must be set in increments of 0.001."
+          return false
+        else
+          return true
+        end
+      elsif (price < 10) 
+        if ( price != price.round(2) )
+          flash_message :danger, "Prices between 2 and 10 tickets must be set in increments of 0.01."
+          return false
+        else
+          return true
+        end
+      elsif (price > 10)
+          if ( price != price.round(1) )
+          flash_message :danger, "Prices above 10 tickets must be set in increments of 0.1."
+          return false
+        else
+          return true
+        end
       end
     end
   end
@@ -214,6 +224,53 @@ module TransactionsHelper
     end
     sell_log.each do |key, value|
       flash_message :success, value.to_s+" copy".pluralize(value)+" sold at $#{key}."
+    end
+  end
+
+  def cancel
+    if @relation == "Buyer"
+      catch :ran_out_of_copies do
+        @quantity.times do
+          complete = false
+          until complete
+            transaction = Transaction.where("buyer_id = #{@user.id} AND magic_card_id = #{@card.id} AND status = 'buying' AND price = #{@price} 
+              AND start >= '#{ (@start).to_datetime.to_formatted_s(:db) }' AND start <= '#{ (@start+1).to_datetime.to_formatted_s(:db) }' ").first
+            throw :ran_out_of_copies if transaction.nil?
+            transaction.with_lock do 
+              if transaction.status == "buying"
+                @user.with_lock do 
+                  @user.update_attribute(:wallet, @user.wallet+transaction.price)
+                end                  
+                transaction.update_attributes(status: "cancelled", finish: @finish)
+                complete = true
+              end
+            end
+          end
+        end
+      end
+    elsif @relation == "Seller"
+      catch :ran_out_of_copies do
+        @quantity.times do
+          complete = false
+          until complete
+            transaction = Transaction.where("seller_id = #{@user.id} AND magic_card_id = #{@card.id} AND status = 'selling' AND price = #{@price} 
+              AND start >= '#{ (@start).to_datetime.to_formatted_s(:db) }' AND start <= '#{ (@start+1).to_datetime.to_formatted_s(:db) }' ").first
+            throw :ran_out_of_copies if transaction.nil?
+            transaction.with_lock do 
+              if transaction.status == "selling"
+                stock = Stock.find(transaction.stock_id)
+                stock.with_lock do 
+                  if stock.status == "selling"
+                    stock.update_attributes(status: "online")
+                    transaction.update_attributes(status: "cancelled", finish: @finish)
+                    complete = true
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
     end
   end
 
