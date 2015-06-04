@@ -80,6 +80,7 @@ $("#confirmed_cancel").on("click submit", function () {
       if ( html.find('error').text().trim() == "true" ) {
         $("#transfer_error_modal").modal("show");
       } else {
+        $("span.wallet").html( html.find("#wallet_update").text().trim() )
         transactions_table.draw();
       }
     },
@@ -88,6 +89,6 @@ $("#confirmed_cancel").on("click submit", function () {
       $("#transfer_error_modal").modal("show");
     }
   })
-
 })
+
 </script>

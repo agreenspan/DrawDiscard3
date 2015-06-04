@@ -1,8 +1,5 @@
 def make_samples(object, object_id)
 
-  rand(0...12).times do
-    Stock.create(user_id: @user.id, status: "online", magic_account_id: @account.id, object_id => object.id)
-  end
   # @price = nil
   # @price = Transaction.where(status: "selling", object_id => object.id).order(price: :asc).first.price if Transaction.where(status: "selling", object_id => object.id).present?
   # @price ||= Transaction.where(status: "buying", object_id => object.id).order(price: :desc).first.price if Transaction.where(status: "buying", object_id => object.id).present?
@@ -45,24 +42,16 @@ def make_samples(object, object_id)
 
 end
 
-# @bank = Bot.create(name: "test_bank", role: "bank")
-# @users = [{email: "greenspan.aron@gmail.com", password: "ewewewew"}, {email: "aronskis@aol.com", password: "ewewewew"}, {email: "test@test.com", password: "testtest"}]
-# @users.each do |user|
-#   @user = User.create(email: user[:email], password: user[:password], password_confirmation: user[:password])
-#   @user.update_attribute(:confirmed, true)
-#   @user.update_attributes(user_code: "123456", bot_code: "654321", wallet: 1000.0)
-#   @account = MagicAccount.create(user_id: @user.id, name: "sample")
-#   MagicCard.all.each do |card|
-#     make_samples(card, 'magic_card_id')
-#   end
-
-# end
-
-@bank = Bot.where(name: "test_bank", role: "bank").first
-@user = User.where(email: "support@mtgons5.com").first
-@account = @user.magic_accounts.first
+@bank = Bot.first
+@users = [{email: "greenspan.aron@gmail.com", password: "ewewewew"}, {email: "aronskis@aol.com", password: "ewewewew"}, {email: "test@test.com", password: "testtest"}]
+@users.each do |user|
+  @user = User.create(email: user[:email], password: user[:password], password_confirmation: user[:password])
+  @user.update_attribute(:confirmed, true)
+  @user.update_attributes(user_code: "123456", bot_code: "654321", wallet: 1000.0)
+  @account = MagicAccount.create(user_id: @user.id, name: "sample")
   MagicCard.all.each do |card|
     make_samples(card, 'magic_card_id')
   end
 
+end
 

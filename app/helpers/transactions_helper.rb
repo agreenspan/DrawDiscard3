@@ -239,7 +239,9 @@ module TransactionsHelper
             transaction.with_lock do 
               if transaction.status == "buying"
                 @user.with_lock do 
-                  @user.update_attribute(:wallet, @user.wallet+transaction.price)
+                  puts transaction.price
+                  puts @user.wallet
+                  @user.update_attribute(:wallet, @user.wallet+transaction.price )
                 end                  
                 transaction.update_attributes(status: "cancelled", finish: @finish)
                 complete = true

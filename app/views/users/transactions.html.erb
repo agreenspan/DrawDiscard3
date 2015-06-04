@@ -327,6 +327,7 @@
       // { "orderable": false, "targets": [9] },
       { "orderSequence": [ "desc", "asc" ], "targets": [ 3, 5, 6, 7, 8 ] }
     ],
+    "order": [[7, "desc"]],
     "dom": 'tipr',
     "paging": true,
     "pagingType": "input",
@@ -377,20 +378,25 @@
 
   $("table").on("click", '.cancel_transaction', function() {
     var row = $(this).closest("tr").find("td").map(function(index,value) {
-      return $(value).text().trim()+( $(this).find('img').length  ? " Foil" : "" );
+      if (index != 3) {
+        return $(value).text().trim()+( $(this).find('img').length  ? " Foil" : "" );
+      } else {
+        return $(this).find('img').attr("title");
+      }
     }).get();
+    
     $("#cancel_name").html(row[0]);
     $("#cancel_set").html(row[1]);
-    $("#cancel_price").html(row[3]);
-    $("#cancel_relation").html(row[4]);
+    $("#cancel_price").html(row[5]);
+    $("#cancel_relation").html(row[3]);
     $("#cancel_start").html(row[7]);
-    $("#cancel_quantity").val(row[5]);
-    $("#max_quantity").html(row[5]);
-    if ( parseInt(row[5]) > 1) {
-      $("#cancel_quantity").removeClass("disabled");
-      $("#cancel_quantity").prop({"max": row[5]});
+    $("#cancel_quantity").val(row[4]);
+    $("#max_quantity").html(row[4]);
+    if ( parseInt(row[4]) > 1) {
+      $("#cancel_quantity").prop("disabled", false);
+      $("#cancel_quantity").prop({"max": row[4]});
     } else {
-      $("#cancel_quantity").addClass("disabled");
+      $("#cancel_quantity").prop("disabled", true);
     }
     $("#transactions_cancel_modal").modal("show");
   });

@@ -27,8 +27,8 @@
         <div class="panel-body" style="height: 402px;">   
           <div class="btn-group-vertical btn-block" data-toggle="buttons" id="account_selector">
             <% @magic_accounts.each do |account| %>
-              <label class="btn btn-default">
-                <input type="radio" name="gender" value="<%= account.name %>" /> 
+              <label class="btn btn-default <%= ( TradeQueue.where("status != 'finished' AND magic_account_id = ? ", account.id).empty? ? "" : "disabled" ) %>">
+                <input type="radio" name="gender" value="<%= account.name %>" class="" /> 
                   <%= account.name %>
               </label>
             <% end %>
@@ -477,6 +477,10 @@ function update_transfer() {
 
     $("button").addClass("disabled");
     $("button.email").removeClass("disabled");
+    $("button.nav_search").removeClass("disabled");
+    $("button.new_tab_submit").removeClass("disabled");
+    $("button#foil_button").removeClass("disabled");
+    $("button#normal_button").removeClass("disabled");
 
     var edit_type = this.id;
     var edit_quantity = $("#edit_selected_quantity").val();

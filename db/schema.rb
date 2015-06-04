@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150412230620) do
+ActiveRecord::Schema.define(version: 20150603094657) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,16 +22,17 @@ ActiveRecord::Schema.define(version: 20150412230620) do
     t.integer  "wallet",     default: 0
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "password"
+    t.string   "status"
   end
 
   create_table "magic_accounts", force: true do |t|
     t.integer  "user_id"
     t.string   "name"
-    t.integer  "wallet",              default: 0
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "tickets_depositing",  default: 0
     t.integer  "tickets_withdrawing", default: 0
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "magic_accounts", ["user_id"], name: "index_magic_accounts_on_user_id", using: :btree
@@ -82,7 +83,6 @@ ActiveRecord::Schema.define(version: 20150412230620) do
     t.integer  "bot_id"
     t.integer  "magic_card_id"
     t.string   "status"
-    t.integer  "transfer_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -94,9 +94,7 @@ ActiveRecord::Schema.define(version: 20150412230620) do
     t.integer  "runner_id"
     t.integer  "bank_id"
     t.string   "status"
-    t.string   "transfer_id"
-    t.boolean  "cancelled",        default: false
-    t.text     "history",          default: [],    array: true
+    t.text     "history"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -114,18 +112,9 @@ ActiveRecord::Schema.define(version: 20150412230620) do
     t.datetime "updated_at"
   end
 
-  add_index "transactions", ["buyer_id"], name: "index_transactions_on_buyer_id", using: :btree
+  add_index "transactions", ["buyer_id", "status"], name: "index_transactions_on_buyer_id_and_status", using: :btree
   add_index "transactions", ["magic_card_id", "status", "price"], name: "index_transactions_on_magic_card_id_and_status_and_price", using: :btree
-  add_index "transactions", ["seller_id"], name: "index_transactions_on_seller_id", using: :btree
-
-  create_table "transfers", force: true do |t|
-    t.integer  "user_id"
-    t.integer  "magic_account_id"
-    t.integer  "wallet_depositing"
-    t.integer  "wallet_withdrawing"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
+  add_index "transactions", ["seller_id", "status"], name: "index_transactions_on_seller_id_and_status", using: :btree
 
   create_table "users", force: true do |t|
     t.string   "account_status",                             default: "active"

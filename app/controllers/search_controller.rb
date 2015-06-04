@@ -57,7 +57,7 @@ class SearchController < ApplicationController
       FROM Magic_Sets JOIN Magic_Cards ON Magic_Cards.magic_set_id = Magic_Sets.id
       WHERE Magic_Cards.name LIKE ? AND disabled = false
       GROUP BY Magic_Sets.name, Magic_Sets.code, Magic_Cards.object_type
-      ORDER BY Magic_Sets.name', "%#{searchable(params[:search])}%",])
+      ORDER BY Magic_Sets.name', "#{searchable(params[:search])}",])
     render partial: 'search/set_search' and return if @sets.empty?
     (["card", "planar"].include?(@sets.first.object_type) ? @foil = "on" : @foil = "off" )
     render partial: 'search/set_search'

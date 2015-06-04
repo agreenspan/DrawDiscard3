@@ -19,3 +19,4 @@ end
 #type | string
 #cancelled | boolean
 #transfer_id | integer
+#history | text

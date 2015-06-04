@@ -1,38 +1,54 @@
-<%= form_tag transaction_path, method: :post, id: "form-transaction", html: {autocomplete: "off"} do %>
-  <%= hidden_field_tag :mtgo_id, @object.mtgo_id %>
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <div class="panel-title">
-        Transactions
-      </div>
-    </div>
-    <div class="panel-body">
-      <div class="form-group">
-        <%= label_tag 'price', "Price", class: "control-label" %>
-        <%= number_field_tag 'price', nil, min: 0.01, max: 999.9, step: 0.001, autocomplete: "off", class: "form-control" %>        
-      </div>
-      <div class="form-group">
-        <%= label_tag 'quantity', "Quantity", class: "control-label" %>
-        <%= number_field_tag 'quantity', 1, min: 1, max: 999, autocomplete: "off", class: "form-control" %>       
-      </div>
-      <small id="insufficient-tickets" style="display: none; color: #a94442;">
-        You do not have enough tickets for this purchase.
-      <br>
-      </small>
-      <small id="insufficient-cards" style="display: none; color: #a94442;">
-        You do not have that many copies on DrawDiscard. 
-      <br>
-      </small>
-    </div>
-    <div class="panel-footer">
-      <%= submit_tag "Buy", class: "btn btn-primary", id: "submit-buy" %>
-      <%= submit_tag "Sell", class: "btn btn-primary", id: "submit-sell" %>
+<div id="new_transaction_modal" class="modal fade">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content panel-primary">
+      <div class="modal-heading panel-heading">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <div class="modal-title">
+          <strong>New Transaction</strong>
+        </div>
+      </div> 
+      <%= form_tag transaction_path, method: :post, id: "form-transaction", html: {autocomplete: "off"} do %>
+        <%= hidden_field_tag :mtgo_id, @object.mtgo_id %>
+        <div class="modal-body panel-body">
+          <div class="form-group">
+            <%= label_tag 'price', "Price", class: "control-label" %>
+            <%= number_field_tag 'price', nil, min: 0.01, max: 999.9, step: 0.001, autocomplete: "off", class: "form-control" %>        
+          </div>
+          <div class="form-group">
+            <%= label_tag 'quantity', "Quantity", class: "control-label" %>
+            <%= number_field_tag 'quantity', 1, min: 1, max: 999, autocomplete: "off", class: "form-control" %>       
+          </div>
+          <small id="insufficient-tickets" style="display: none; color: #a94442;">
+            You do not have enough tickets for this purchase.
+          <br>
+          </small>
+          <small id="insufficient-cards" style="display: none; color: #a94442;">
+            You do not have that many copies on DrawDiscard. 
+          <br>
+          </small>
+        </div>
+        <div class="modal-footer panel-footer">
+          <div class="btn-group btn-group-justified">
+            <div class="btn-group">       
+              <%= submit_tag "Buy", class: "btn btn-info ", id: "submit-buy" %>
+            </div>
+            <div class="btn-group">       
+              <%= submit_tag "Sell", class: "btn btn-danger ", id: "submit-sell" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
     </div>
   </div>
-<% end %>
+</div>
+
+<div class="hidden" id="rails_count"> <%= @versions.select {|o| o.id == @object.id}.first.online %> </div>
 
 <script>
-$(document).ready(function() {
+$("#new_transaction").on("click submit", function() {
+  $("#new_transaction_modal").modal("show");
+})
+
   $("#price").on('input', function() { 
     if ($("#price").val() < 2 ){ document.getElementById("price").min = "0.01"; }
     else if ($("#price").val() >= 10 ) { document.getElementById("price").min = "0.0"; }
@@ -135,28 +151,35 @@ $(document).ready(function() {
      }
    }
  });
-  <% if @user.present? %>
+
    $("#price, #quantity").on("input", function() {
-     $('#form-transaction').data('bootstrapValidator').validate();
-     if (+$("#quantity").val() > <%= @versions.select {|o| o.id == @object.id}.first.online %>) {
-       document.getElementById('submit-sell').disabled = true;
-       $('#insufficient-cards').show();
-     } else if ($('#form-transaction').data('bootstrapValidator').isValid()) {
-       document.getElementById('submit-sell').disabled = false;
-       $('#insufficient-cards').hide();
-     } else {
-       $('#insufficient-cards').hide();
-     }
-     if ((+$("#quantity").val() * +$('#price').val()) > <%= @user.wallet %>) {
-       document.getElementById('submit-buy').disabled = true;
-       $('#insufficient-tickets').show();
-     } else if ($('#form-transaction').data('bootstrapValidator').isValid()) {
-       document.getElementById('submit-buy').disabled = false;
-       $('#insufficient-tickets').hide();
-     } else {
-       $('#insufficient-tickets').hide();
-     }
-   });
-  <% end %>
-});
+    $('#form-transaction').data('bootstrapValidator').validate();
+
+    var rails_count = parseInt( $("#rails_count").text().trim()) ;
+    var rails_wallet = parseFloat( $("span.wallet").first().text().trim().replace(/\$/,'') );
+
+    if (+$("#quantity").val() > rails_count ) {
+      document.getElementById('submit-sell').disabled = true;
+      $('#insufficient-cards').show();
+    } else if ($('#form-transaction').data('bootstrapValidator').isValid()) {
+      document.getElementById('submit-sell').disabled = false;
+      $('#insufficient-cards').hide();
+    } else {
+      $('#insufficient-cards').hide();
+    }
+    if ((+$("#quantity").val() * +$('#price').val()) > rails_wallet ) {
+      document.getElementById('submit-buy').disabled = true;
+      $('#insufficient-tickets').show();
+    } else if ($('#form-transaction').data('bootstrapValidator').isValid()) {
+      document.getElementById('submit-buy').disabled = false;
+      $('#insufficient-tickets').hide();
+    } else {
+      $('#insufficient-tickets').hide();
+    }
+  });
+
+
 </script>
+
+<%= render 'users/transactions_cancel_modal' %>
+<%= render 'users/transfer_error_modal' %>

@@ -104,4 +104,6 @@ MagicSet.create(name: "Theros", code: "THS", magic_block_id: MagicBlock.find_by(
 MagicSet.create(name: "Born of the Gods", code: "BNG", magic_block_id: MagicBlock.find_by(name: "Theros Block" ).id)
 MagicSet.create(name: "Journey into Nyx", code: "JOU", magic_block_id: MagicBlock.find_by(name: "Theros Block" ).id)
 MagicSet.create(name: "Khans of Tarkir", code: "KTK", magic_block_id: MagicBlock.find_by(name: "Khans of Tarkir Block" ).id)
+MagicSet.create(name: "Fate Reforged", code: "FRF", magic_block_id: MagicBlock.find_by(name: "Khans of Tarkir Block" ).id)
+MagicSet.create(name: "Dragons of Tarkir", code: "DTK", magic_block_id: MagicBlock.find_by(name: "Khans of Tarkir Block" ).id)
 

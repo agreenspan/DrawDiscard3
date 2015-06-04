@@ -271,11 +271,11 @@ module UserHelper
           rarity_filter_index.map.with_index { |value, index| "WHEN Magic_Cards.rarity = '"+value.to_s+"' THEN "+index.to_s+" "}.join("")+
           " END "+
           ( dir == "desc" ? "DESC NULLS LAST" : "ASC NULLS LAST" )+", Magic_Cards.name ASC"
-        when "3"
-          return "price "+( dir == "desc" ? "DESC NULLS LAST" : "ASC NULLS FIRST" )
-        when "4"
-          return "relation "+( dir == "desc" ? "DESC NULLS LAST" : "ASC NULLS FIRST" )
         when "5"
+          return "price "+( dir == "desc" ? "DESC NULLS LAST" : "ASC NULLS FIRST" )
+        when "3"
+          return "relation "+( dir == "desc" ? "DESC NULLS LAST" : "ASC NULLS FIRST" )
+        when "4"
           return "quantity "+( dir == "desc" ? "DESC NULLS LAST" : "ASC NULLS FIRST" )
         when "6"
           return "status "+( dir == "desc" ? "DESC NULLS LAST" : "ASC NULLS FIRST" )
@@ -454,6 +454,7 @@ module UserHelper
       filters << "( Magic_Sets.code IN ( #{ set_filter.map { |s| "'"+s+"'" }.join(', ') } ) ) " unless set_filter.empty?
       filters << "( ( Magic_Cards.name ILIKE '%#{ searchable(params[:search][:value]).gsub(/'/,"''") }%' ) OR 
         ( Magic_Cards.plain_name ILIKE '%#{ searchable(params[:search][:value]).gsub(/'/,"''") }%' ) ) " unless searchable(params[:search][:value]).length == 0
+      filters << "( Magic_Cards.mtgo_id = #{ params[:mtgo_id].to_i } ) " unless params[:mtgo_id].nil?
       filters << "( Magic_Cards.disabled = false ) "
       card_filter_string = ""
       card_filter_string += "AND ( Transactions.magic_card_id IN ( SELECT Magic_Cards.id FROM Magic_Cards "
@@ -463,7 +464,8 @@ module UserHelper
       sql_string = "
         SELECT Magic_Cards.mtgo_id, Magic_Cards.name, Magic_Cards.foil, Magic_Cards.rarity, Magic_Cards.object_type, Magic_Sets.code, t.price, t.quantity, t.status, t.truncated_start as start, t.truncated_finish as finish, t.relation
         FROM (
-          SELECT Transactions.magic_card_id, Transactions.price, COUNT (*) as quantity, Transactions.status 
+          SELECT Transactions.magic_card_id, Transactions.price, COUNT (*) as quantity
+          , CASE WHEN Transactions.status in ('buying', 'selling') THEN 'active' ELSE Transactions.status END as status 
           , DATE_TRUNC('day', Transactions.start) as truncated_start, DATE_TRUNC('day', Transactions.finish) as truncated_finish
           , CASE WHEN Transactions.buyer_id = #{@user.id} THEN 'Buyer' WHEN Transactions.seller_id = #{@user.id} THEN 'Seller' END as relation "
       sql_string += ", Magic_Cards.mtgo_id, Magic_Cards.name, Magic_Cards.foil, Magic_Cards.rarity, Magic_Cards.object_type " if ["0", "1", "2"].include? (@order[0]) 

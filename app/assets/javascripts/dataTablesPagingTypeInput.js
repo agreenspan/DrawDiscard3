@@ -167,6 +167,7 @@ $.fn.dataTableExt.oPagination.input = {
         $(nPage).css({"height": "34px"});
 
         nInputGroup.style.width = "400px"
+        nInputGroup.style.height = "34px"
         nInput.style.width = "100px"
         nInputSubmit.style.width = "34px"
         nPage.style.width = "50px"
@@ -174,7 +175,6 @@ $.fn.dataTableExt.oPagination.input = {
 
         $(nInput).trigger("change");
     },
- 
  
     "fnUpdate": function ( oSettings, fnCallbackDraw ) {
         if ( !oSettings.aanFeatures.p ) { return; }

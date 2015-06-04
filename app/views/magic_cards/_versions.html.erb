@@ -1,30 +1,30 @@
 <div class="panel panel-default">
-  <table class="table table-condensed table-bordered" id="versions">
+  <table class="table table-condensed table-striped table-bordered" id="versions">
     <thead>
       <tr>
         <th style="width: 20%;">
-          Version
+          Versions
         </th>
-        <th style="width: 15%;">
+        <th style="width: 20%;" class="info">
           High Buyer
         </th>
-        <th style="width: 15%;">
+        <th style="width: 20%;" class="danger">
           Low Seller
         </th>
         <% if @user.present? %>
-          <th style="width: 10%;" >
+          <th style="width: 8%;" >
             <%= image_tag('DD.png', height: "20px", title: "DrawDiscard") %>
           </th>
-          <th style="width: 10%;" >
+          <th style="width: 8%;" >
             <%= image_tag('arrowDD.png', height: "20px", title: "Depositing") %>
           </th>
-          <th style="width: 10%;" >
+          <th style="width: 8%;" >
             <%= image_tag('arrowM.png', height: "20px", title: "Withdrawing") %>
           </th>
-          <th style="width: 10%;" >
+          <th style="width: %;" >
             <%= image_tag('forSale.png', height: "20px", title: "Selling") %>
           </th>
-          <th style="width: 10%;" >
+          <th style="width: 8%;" >
             <%= image_tag('bids.png', height: "20px", title: "Buying") %>
           </th>
         <% end %>
@@ -36,7 +36,7 @@
         <tr <%= ( card.mtgo_id == @object.mtgo_id ? "class=success" : "" ) %> >
           <td class="">
             <%= link_to magic_set_magic_card_path(card.code, card.mtgo_id), title: version_string do %>
-              <%= card.code %>
+              <%= card.code.gsub(/_/,"") %>
               <%= (card.foil ? " - Foil" : "" ) %>
               <%= (card.name.include?("(Alt.)") ? " - (Alt.)" : "" ) %>
             <% end %>

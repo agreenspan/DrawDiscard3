@@ -20,5 +20,7 @@ end
 
 #Attributes
 #name | string
+#password | string
 #role | string
+#status | string
 #wallet | integer

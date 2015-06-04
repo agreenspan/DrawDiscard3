@@ -30,7 +30,7 @@
   }
 }
 
-@media (max-width: 992px) and (min-width: 768px) {
+@media (max-width: 1199px) and (min-width: 992px) {
     .price_table_date {font-size: 12px;}
 }
 
@@ -108,13 +108,13 @@ body {
 .banner1 {
   position: fixed;
   top: 51px;
-  z-index: 99;
+  z-index: -99;
 }
 .banner2 {
   position: fixed;
   left: 1921px;
   top: 51px;
-  z-index: 99;
+  z-index: -99;
 }
 
 .card-image {
@@ -355,23 +355,9 @@ table.dataTable thead tr th {
     color: darkcyan;
   }
 }
-a.cancel_transaction:link{
-  font-weight: bold;
-  color: red;
-}
-a.cancel_transaction:visited{
-  font-weight: bold;
-  color: red;
-}
-a.cancel_transaction:hover{
-  font-weight: bold;
-  text-decoration: none;
-  color: red;
-}
-a.cancel_transaction:active{
-  font-weight: bold;
-  text-decoration: none;
-  color: red;
+.cancel_transaction {
+ cursor: pointer;
+ cursor: hand;
 }
 
 .planar-text {

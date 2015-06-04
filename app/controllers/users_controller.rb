@@ -163,13 +163,13 @@ before_action :mtgo_configured?, only: [:collection, :transactions, :transfers]
             redirect_to user_mtgo_accounts_path(@user) and return
           end
         end
-        if account.stocks.any?
-          flash_message :warning, "Some stocks were left over. Please contact support."
-        end
         if account.destroy
           flash_message :info, "Magic Account removed."
         else
           flash_message :danger, "Something went wrong with the account removal."
+        end
+        if account.stocks.any?
+          flash_message :warning, "Some stocks were left over. Please contact support."
         end
         redirect_to user_mtgo_accounts_path(@user) and return
       when "mtgo_codes"
@@ -323,17 +323,17 @@ before_action :mtgo_configured?, only: [:collection, :transactions, :transfers]
             transaction.quantity,
             "$"+transaction.price.to_s,
             case transaction.status
-              when "buying", "selling"
+              when "buying", "selling", "active"
                 '<span class="label label-info">Active</span>'
               when "finished"
                 '<span class="label label-success">Complete</span>'
               when "cancelled"
                 '<span class="label label-warning">Cancelled</span>'
               else
-                '<span class="label label-success">Error</span>'
+                '<span class="label label-danger">Error</span>'
             end,
             ( !transaction.start.nil? ? transaction.start.strftime("%b %e, %Y").to_s : "" ),
-            ( !transaction.finish.nil? ? transaction.finish.strftime("%b %e, %Y").to_s : "<a href='#' class='cancel_transaction'>X</a>" )
+            ( !transaction.finish.nil? ? transaction.finish.strftime("%b %e, %Y").to_s : "<span class='label label-danger cancel_transaction'> Cancel </span>" )
           ]
         end 
       }
@@ -418,7 +418,7 @@ before_action :mtgo_configured?, only: [:collection, :transactions, :transfers]
       redirect_to user_transfer_error_path(@user) and return if errors == true
     end
     cancel
-    render nothing: true
+    render partial: "cancel_transaction"
   end
 
   def transfers
