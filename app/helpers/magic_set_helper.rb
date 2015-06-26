@@ -64,7 +64,7 @@ module MagicSetHelper
 
   def set_filter_index
     return [
-      "DTK", "FRF",
+      "MM2", "DTK", "FRF",
       "KTK", "M15", "JOU", "BNG", "THS", "M14", "MMA", "DGM", "GTC", "RTR", "M13", "AVR", "DKA", "ISD", "M12",
       "NPH", "MBS", "SOM", "M11", "ROE", "WWK", "ZEN", "M10", "ARB", "_CON", "CON", "ALA", "EVE", "SHM", "MOR",
       "LRW", "10E", "FUT", "PLC", "TSB", "TSP", "CSP", "DIS", "GPT", "RAV", "9ED", "SOK", "BOK", "CHK", "5DN",

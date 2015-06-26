@@ -89,14 +89,24 @@ ActiveRecord::Schema.define(version: 20150603094657) do
 
   add_index "stocks", ["user_id", "magic_card_id"], name: "index_stocks_on_user_id_and_magic_card_id", using: :btree
 
+  create_table "trade_histories", force: true do |t|
+    t.integer  "trade_queue_id"
+    t.integer  "bot_id"
+    t.string   "status"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "trade_histories", ["trade_queue_id"], name: "index_trade_histories_on_trade_queue_id", using: :btree
+
   create_table "trade_queues", force: true do |t|
     t.integer  "magic_account_id"
     t.integer  "runner_id"
     t.integer  "bank_id"
     t.string   "status"
-    t.text     "history"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "magic_account_name"
   end
 
   create_table "transactions", force: true do |t|

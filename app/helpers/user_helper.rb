@@ -112,6 +112,14 @@ module UserHelper
       end
     end
 
+    def account_in_trade?
+      if TradeQueue.where("status != 'finished' AND magic_account_id = ?", @account.id).empty?
+        return false
+      else
+        return true
+      end
+    end
+
     def collection_column_key(col_num, dir)
       case col_num
         when "0"

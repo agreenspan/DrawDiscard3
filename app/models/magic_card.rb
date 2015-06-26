@@ -20,8 +20,6 @@ class MagicCard < ActiveRecord::Base
     mtgo_id
   end
 
-private 
-
   def generate_plain_name
     self.plain_name = name.downcase.replace_special_characters
   end

@@ -1,5 +1,5 @@
 <% provide(:title, @object.name ) %>
-<% provide(:header, ((link_to image_tag(set_rarity_image(@set.code, @object.rarity), title: @set.name), magic_set_path(@set.code)) + " " + @object.name + " " + (@object.foil ? image_tag("foil.png", height: "30px", title: "Foil") : "")).html_safe ) %>
+<% provide(:header, ((link_to image_tag(set_rarity_image(@set.code, @object.rarity), title: @set.name, id: "set_rarity_image"), magic_set_path(@set.code)) + " " + @object.name + " " + (@object.foil ? image_tag("foil.png", height: "30px", title: "Foil") : "")).html_safe ) %>
 <div class="container">
   <div class="row">
     <% if @object.object_type != "planar" %>
@@ -50,11 +50,28 @@
 </div>
 
 <script>
+
+
+
 $(document).ready(function () {
+  if ( ( $("#set_rarity_image").width() > 48 ) || ( $("#set_rarity_image").height() > 48 ) ) {
+    if ( $("#set_rarity_image").width() > $("#set_rarity_image").height() ) {
+      var ratio = $("#set_rarity_image").width() / $("#set_rarity_image").height()
+      $("#set_rarity_image").css("width", 48)
+      $("#set_rarity_image").css("height", 48/ratio)
+      console.log(ratio)
+    } else {
+      var ratio = $("#set_rarity_image").height() / $("#set_rarity_image").width() 
+      $("#set_rarity_image").css("height", 48)
+      $("#set_rarity_image").css("width", 48/ratio)
+      console.log(ratio)
+    }
+  }
     // will call refreshPartial every 3 seconds
     setInterval(refreshData, 10000)
 
 });
+
 
 function refreshData() {
   transactions_table.draw();

@@ -128,12 +128,12 @@ before_action :mtgo_configured?, only: [:collection, :transactions, :transfers]
         errors = true if max_accounts?
         errors = true unless account_valid?
         errors = true unless authenticate_password?(@user, params[:password])
-        if MagicAccount.where(user_id: @user.id, name: params[:magic_account]).any?
+        if MagicAccount.where("user_id = ? AND lower(name) = ? ",  @user.id, searchable(params[:magic_account]).downcase).any?
           errors = true
           flash_message :danger, "You've already added that account."
         end
         redirect_to user_mtgo_accounts_path(@user) and return if errors == true
-        MagicAccount.create(user_id: @user.id, name: params[:magic_account])
+        MagicAccount.create(user_id: @user.id, name: params[:magic_account].downcase)
         flash_message :success, "#{params[:magic_account]} added."
         if @user.user_code.blank? && @user.bot_code.blank?
           flash_message :info, "Setup, Step 3: Set up your MTGO codes."
@@ -465,6 +465,7 @@ before_action :mtgo_configured?, only: [:collection, :transactions, :transfers]
     errors = true unless ["deposit", "withdraw"].include?(params[:direction])
     redirect_to user_transfer_error_path(@user) and return if errors == true
     @account = MagicAccount.where(user_id: @user.id, name: params[:magic_account]).first
+    errors = true if account_in_trade?
     @card = @card.first
     case params[:direction]
       when "deposit"
@@ -542,6 +543,7 @@ before_action :mtgo_configured?, only: [:collection, :transactions, :transfers]
       errors = true unless (( quantity >= 1 && quantity <= 400 ) || params[:edit_type] == "edit_remove") 
       redirect_to user_transfer_error_path(@user) and return if errors == true
       @account = MagicAccount.where(user_id: @user.id, name: params[:magic_account]).first
+      errors = true if account_in_trade?
       depositing_count = @account.tickets_depositing
       withdrawing_count = @account.tickets_withdrawing
       online_count = @user.wallet
@@ -619,6 +621,7 @@ before_action :mtgo_configured?, only: [:collection, :transactions, :transfers]
       errors = true unless (( quantity >= 1 && quantity <= 400 ) || params[:edit_type] == "edit_remove") 
       redirect_to user_transfer_error_path(@user) and return if errors == true
       @account = MagicAccount.where(user_id: @user.id, name: params[:magic_account]).first
+      errors = true if account_in_trade?
       @card = @card.first
       depositing_count = Stock.where(user_id: @user.id, magic_account_id: @account.id, status: "depositing", magic_card_id: @card.id).count
       withdrawing_count = Stock.where(user_id: @user.id, magic_account_id: @account.id, status: "withdrawing", magic_card_id: @card.id).count
@@ -716,6 +719,8 @@ before_action :mtgo_configured?, only: [:collection, :transactions, :transfers]
     errors = true unless associated_account?
     redirect_to user_transfer_error_path(@user) and return if errors == true
     @account = MagicAccount.where(user_id: @user.id, name: params[:magic_account]).first
+    errors = true if account_in_trade?
+    redirect_to user_transfer_error_path(@user) and return if errors == true
     Stock.where(user_id: @user.id, magic_account_id: @account.id, status: "depositing").destroy_all
     Stock.where(user_id: @user.id, magic_account_id: @account.id, status: "withdrawing").update_all(status: "online", magic_account_id: "")
     @account.update_attribute(:tickets_depositing, 0)

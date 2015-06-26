@@ -35,6 +35,7 @@ MagicSet.create(name: "Masters Edition II", code: "ME2", magic_block_id: MagicBl
 MagicSet.create(name: "Masters Edition III", code: "ME3", magic_block_id: MagicBlock.find_by(name: "Masters Editions" ).id)
 MagicSet.create(name: "Masters Edition IV", code: "ME4", magic_block_id: MagicBlock.find_by(name: "Masters Editions" ).id)
 MagicSet.create(name: "Modern Masters", code: "MMA", magic_block_id: MagicBlock.find_by(name: "Masters Editions" ).id) 
+MagicSet.create(name: "Modern Masters 2015", code: "MM2", magic_block_id: MagicBlock.find_by(name: "Masters Editions" ).id)
 MagicSet.create(name: "Vintage Masters", code: "VMA", magic_block_id: MagicBlock.find_by(name: "Masters Editions" ).id)
 MagicSet.create(name: "Seventh Edition", code: "7E", magic_block_id: MagicBlock.find_by(name: "Core Sets" ).id)
 MagicSet.create(name: "Eighth Edition", code: "8ED", magic_block_id: MagicBlock.find_by(name: "Core Sets" ).id)
@@ -106,4 +107,5 @@ MagicSet.create(name: "Journey into Nyx", code: "JOU", magic_block_id: MagicBloc
 MagicSet.create(name: "Khans of Tarkir", code: "KTK", magic_block_id: MagicBlock.find_by(name: "Khans of Tarkir Block" ).id)
 MagicSet.create(name: "Fate Reforged", code: "FRF", magic_block_id: MagicBlock.find_by(name: "Khans of Tarkir Block" ).id)
 MagicSet.create(name: "Dragons of Tarkir", code: "DTK", magic_block_id: MagicBlock.find_by(name: "Khans of Tarkir Block" ).id)
+MagicSet.create(name: "Modern Masters 2015", code: "MM2", magic_block_id: MagicBlock.find_by(name: "" ).id)
 

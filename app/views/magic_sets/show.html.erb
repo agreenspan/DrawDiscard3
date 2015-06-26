@@ -115,6 +115,7 @@
               <td data-search=<%= "\"#{card.name} #{card.plain_name}\"".html_safe %>>
                 <%= link_to card.name, magic_set_magic_card_path(@set, card.mtgo_id) %>
                 <%= (card.foil ? link_to(image_tag("foil.png", height: "10px", title: "Foil"), magic_set_magic_card_path(@set, card.mtgo_id)) : "") %>
+                <%#= image_tag(card_image(card)) %>
               </td>
               <td data-search=<%= (card.foil ? "foil" : "normal") %> ></td>
               <td data-search="<%= card.rarity %>" data-order="<%= rarity_number(card.rarity) %>">

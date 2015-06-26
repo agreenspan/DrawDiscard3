@@ -27,7 +27,7 @@
         <div class="panel-body" style="height: 402px;">   
           <div class="btn-group-vertical btn-block" data-toggle="buttons" id="account_selector">
             <% @magic_accounts.each do |account| %>
-              <label class="btn btn-default <%= ( TradeQueue.where("status != 'finished' AND magic_account_id = ? ", account.id).empty? ? "" : "disabled" ) %>">
+              <label class="btn btn-default">
                 <input type="radio" name="gender" value="<%= account.name %>" class="" /> 
                   <%= account.name %>
               </label>
@@ -174,6 +174,9 @@
   <div role="tabpanel" class="tab-pane" id="history" aria-labelledby="history_tab">
   </div>
 </div>
+<div id="in_trade_message" class="hidden">
+  
+</div>
 <div id="transfer_data_script" class="hidden"></div>
 
 <script>
@@ -185,6 +188,29 @@ var selected_foil;
 var online_count;
 var deposit_count;
 var withdraw_count;
+
+function in_trade() {
+  $.ajax ({
+    url: "/users/"+<%=@user.id%>+"/get_transfer_data?magic_account="+account,
+    dataType: "html",
+    type: "GET",
+    success: function( data ) {
+      var html = $('<div />').append(data);
+      if ( html.find('#in_trade').text().trim() === "yes"  ) {
+        $("#clear").addClass("disabled");
+        $("#deposit_button").addClass("disabled");
+        $("#withdraw_button").addClass("disabled");
+        $("#edit_ok").addClass("disabled");
+        $("#edit_deposit").addClass("disabled");
+        $("#edit_withdraw").addClass("disabled");
+        $("#edit_remove").addClass("disabled");
+        $("#in_trade_message").removeClass("hidden");
+      } else {
+        $("#in_trade_message").addClass("hidden");
+      }
+    }
+  })
+}
 
 function update_transfer() {
   $("#deposit_button").addClass("disabled");
@@ -596,6 +622,10 @@ function update_transfer() {
   $('.help-block').addClass("hidden");
   $("#account_selector input:radio:first").trigger('click');
   $("#card_name").trigger("change");
+
+  $("body").on("change", function() {
+    in_trade();
+  });
 
 </script>
 
