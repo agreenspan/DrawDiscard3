@@ -1,6 +1,6 @@
-class CreateTradeQueues < ActiveRecord::Migration
+class CreateTrades < ActiveRecord::Migration
   def change
-    create_table :trade_queues do |t|
+    create_table :trades do |t|
       t.string :magic_account_name
       t.integer :magic_account_id
       t.integer :runner_id
@@ -10,7 +10,7 @@ class CreateTradeQueues < ActiveRecord::Migration
       t.timestamps
     end
 
-    add_index :trade_queues, :magic_account_name
+    add_index :trades, :magic_account_name
 
   end
 end

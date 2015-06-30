@@ -1,4 +1,4 @@
-class TradeQueue < ActiveRecord::Base
+class Trade < ActiveRecord::Base
   has_one :magic_account
   has_one :user, through: :magic_account
   has_one :transfer
@@ -13,10 +13,8 @@ end
 
 #Attributes
 #magic_account_id | integer
+#magic_account_name | string
 #runner_id | integer
 #bank_id | integer
 #status | string
 #type | string
-#cancelled | boolean
-#transfer_id | integer
-#history | text

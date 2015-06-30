@@ -2,7 +2,7 @@
 
 <div id="wallet_update">$<%= @user.wallet %></div>
 
-<div id="in_trade">$<%= ( TradeQueue.where("magic_account_id = ? AND status <> ?", @account.id, "finished" ).empty? ? "yes" : "no" ) %></div>
+<div id="in_trade">$<%= ( @account.in_queue? ? "yes" : "no" ) %></div>
 
 <div id="depositing_count">
   <span class="pull-right" id="depositing_count_data" >

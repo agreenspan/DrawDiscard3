@@ -465,7 +465,7 @@ before_action :mtgo_configured?, only: [:collection, :transactions, :transfers]
     errors = true unless ["deposit", "withdraw"].include?(params[:direction])
     redirect_to user_transfer_error_path(@user) and return if errors == true
     @account = MagicAccount.where(user_id: @user.id, name: params[:magic_account]).first
-    errors = true if account_in_trade?
+    errors = true if @account.in_queue?
     @card = @card.first
     case params[:direction]
       when "deposit"
@@ -543,7 +543,7 @@ before_action :mtgo_configured?, only: [:collection, :transactions, :transfers]
       errors = true unless (( quantity >= 1 && quantity <= 400 ) || params[:edit_type] == "edit_remove") 
       redirect_to user_transfer_error_path(@user) and return if errors == true
       @account = MagicAccount.where(user_id: @user.id, name: params[:magic_account]).first
-      errors = true if account_in_trade?
+      errors = true if @account.in_queue?
       depositing_count = @account.tickets_depositing
       withdrawing_count = @account.tickets_withdrawing
       online_count = @user.wallet
@@ -621,7 +621,7 @@ before_action :mtgo_configured?, only: [:collection, :transactions, :transfers]
       errors = true unless (( quantity >= 1 && quantity <= 400 ) || params[:edit_type] == "edit_remove") 
       redirect_to user_transfer_error_path(@user) and return if errors == true
       @account = MagicAccount.where(user_id: @user.id, name: params[:magic_account]).first
-      errors = true if account_in_trade?
+      errors = true if @account.in_queue?
       @card = @card.first
       depositing_count = Stock.where(user_id: @user.id, magic_account_id: @account.id, status: "depositing", magic_card_id: @card.id).count
       withdrawing_count = Stock.where(user_id: @user.id, magic_account_id: @account.id, status: "withdrawing", magic_card_id: @card.id).count
@@ -719,7 +719,7 @@ before_action :mtgo_configured?, only: [:collection, :transactions, :transfers]
     errors = true unless associated_account?
     redirect_to user_transfer_error_path(@user) and return if errors == true
     @account = MagicAccount.where(user_id: @user.id, name: params[:magic_account]).first
-    errors = true if account_in_trade?
+    errors = true if @account.in_queue?
     redirect_to user_transfer_error_path(@user) and return if errors == true
     Stock.where(user_id: @user.id, magic_account_id: @account.id, status: "depositing").destroy_all
     Stock.where(user_id: @user.id, magic_account_id: @account.id, status: "withdrawing").update_all(status: "online", magic_account_id: "")

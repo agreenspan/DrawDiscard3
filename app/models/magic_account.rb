@@ -3,14 +3,14 @@ class MagicAccount < ActiveRecord::Base
   before_destroy :not_in_queue?
   before_destroy :revert_withdrawing
   has_many :stocks, dependent: :destroy
-  has_many :trade_queues
+  has_many :trades
 
   VALID_NAME_REGEX = /\A[\w\-.]+\z/
   validates :name, presence: true, format: { with: VALID_NAME_REGEX }
 
 
   def in_queue?
-  	if self.trade_queues.where.not(status: "finished").any?
+  	if self.trades.where.not(status: "finished").any?
   	  return true
   	else
   	  return false

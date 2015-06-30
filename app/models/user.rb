@@ -1,7 +1,7 @@
 class User < ActiveRecord::Base
   has_secure_password
   has_many :magic_accounts
-  has_many :trade_queues, through: :magic_accounts
+  has_many :trades, through: :magic_accounts
   has_many :stocks
   has_many :bids, class_name: "Transaction", foreign_key: "buyer_id"
   has_many :listings, class_name: "Transaction", foreign_key: "seller_id"
@@ -16,7 +16,7 @@ class User < ActiveRecord::Base
   after_create :assign_bank
 
   def in_queue?
-  	if self.trade_queues.where.not(status: "finished").any?
+  	if self.trades.where.not(status: "finished").any?
   	  return true
   	else
   	  return false
