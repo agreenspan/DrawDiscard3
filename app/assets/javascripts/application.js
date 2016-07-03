@@ -20,7 +20,7 @@
 //= require bootstrap-sprockets
 //= require bootstrapValidator
 //= require bootstrap-datepicker
-//= require highstocks
+//= require highstock
 //= require highcharts-more
 //= require dark-unica
 

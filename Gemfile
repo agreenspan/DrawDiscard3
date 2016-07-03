@@ -1,8 +1,10 @@
-source 'https://rubygems.org'
+source 'http://rubygems.org'
 
+gem 'eventmachine', github: "eventmachine/eventmachine"
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.1.7'
+
 # Use postgresql as the database for Active Record
 gem 'pg'
 #gem 'pg_search'
@@ -25,7 +27,7 @@ gem 'coffee-rails', '~> 4.0.0'
 
 # graph plugin
 gem 'graphite-api'
-gem "highstocks-rails" 
+gem "highstock-rails"
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'

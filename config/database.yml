@@ -26,7 +26,9 @@ default: &default
   pool: 5
 
 development:
-  <<: *default
+  adapter: postgresql
+  pool: 5
+  timeout: 5000
   database: drawdiscard_development
 
   # The specified database role being used to connect to postgres.

@@ -9,9 +9,9 @@ class Bot < ActiveRecord::Base
   validates :role, presence: true
 
   def trades
-  	if self.type == "runner"
+  	if self.role == "runner"
   		return self.runner_for
-  	elsif self.type == "bank" 
+  	elsif self.role == "bank"
         return self.bank_for
   	end
   end

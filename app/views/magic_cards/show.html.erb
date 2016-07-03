@@ -38,7 +38,7 @@
     <div class="col-md-12 col-lg-6" id="table_partial">
       <%= render 'magic_cards/price_table' %>
     </div>
-    <% if @versions.count > 1 || @user.present %>
+    <% if @versions.count > 1 || @user.present? %>
       <div class="col-md-12 col-lg-6" id="versions_partial">
         <%= render 'magic_cards/versions' %>
       </div>

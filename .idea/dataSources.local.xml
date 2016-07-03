@@ -2,8 +2,6 @@
 <project version="4">
   <component name="dataSourceStorageLocal">
     <data-source name="Rails DrawDiscard3: development" uuid="43c291af-2dfe-4789-93d4-4f4504c9f7f7">
-      <user-name>rails</user-name>
-      <user-password>dffedfd8dfeadfcedfc3dfc4dfcddffadf9adfd9dfde</user-password>
       <schema-pattern>drawdiscard_development.pg_catalog drawdiscard_development.public</schema-pattern>
       <default-schemas>drawdiscard_development.pg_catalog drawdiscard_development.public</default-schemas>
     </data-source>

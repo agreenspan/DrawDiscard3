@@ -107,5 +107,4 @@ MagicSet.create(name: "Journey into Nyx", code: "JOU", magic_block_id: MagicBloc
 MagicSet.create(name: "Khans of Tarkir", code: "KTK", magic_block_id: MagicBlock.find_by(name: "Khans of Tarkir Block" ).id)
 MagicSet.create(name: "Fate Reforged", code: "FRF", magic_block_id: MagicBlock.find_by(name: "Khans of Tarkir Block" ).id)
 MagicSet.create(name: "Dragons of Tarkir", code: "DTK", magic_block_id: MagicBlock.find_by(name: "Khans of Tarkir Block" ).id)
-MagicSet.create(name: "Modern Masters 2015", code: "MM2", magic_block_id: MagicBlock.find_by(name: "" ).id)
 
